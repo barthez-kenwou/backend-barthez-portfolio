@@ -1,0 +1,26 @@
+# Path fragment index for docs/api/paths/
+#
+# Canonical OpenAPI path definitions live in:
+#   ../generator/paths/*.js
+# assembled by ../openapi.config.js → ../openapi.yaml
+#
+# The YAML files in this directory are legacy human reference snippets.
+# They are NOT loaded by the generator or at runtime.
+
+# Authentication — see ../generator/paths/auth.js
+# (legacy snippet: ./auth.yaml)
+
+# OAuth — see ../generator/paths/oauth.js
+# (legacy snippet: ./oauth.yaml)
+
+# Users — see ../generator/paths/users.js
+# (legacy snippet: ./users.yaml)
+
+# Blogs — see ../generator/paths/blogs.js
+# (legacy snippet: ./blogs.yaml)
+
+# Files — see ../generator/paths/files.js
+# (legacy snippet: ./files.yaml)
+
+# System — see ../generator/paths/system.js
+# (legacy snippet: ./system.yaml)

@@ -1,0 +1,39 @@
+<%- include('partials/shell-open', { pageTitle: 'Backup completed — ' + appName }) %>
+<%- include('partials/header', { eyebrow: 'System notification', title: 'Database backup completed', tone: 'success' }) %>
+<tr>
+  <td class="mail-body" style="padding:36px 32px 28px;">
+    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;">Hello,</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
+      The automatic database backup for <strong style="color:<%= colors.text %>;"><%= appName %></strong> finished successfully.
+    </p>
+
+    <div class="mail-panel mail-panel-success" style="background:<%= colors.successSoft %>;border-left:4px solid <%= colors.success %>;border-radius:12px;padding:18px 20px;margin:22px 0;">
+      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">Backup date</span>
+        <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= date %></span>
+      </div>
+      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">File location</span>
+        <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;word-break:break-all;"><%= backupPath %></span>
+      </div>
+      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">File size</span>
+        <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= size %></span>
+      </div>
+      <div class="mail-meta-row" style="padding:8px 0;">
+        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">Duration</span>
+        <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= duration %></span>
+      </div>
+    </div>
+
+    <% if (backupPath && String(backupPath).indexOf('http') === 0) { %>
+      <%- include('partials/cta', { href: backupPath, label: 'Open backup location', variant: 'success' }) %>
+    <% } %>
+
+    <p style="margin:16px 0 0;font-size:14px;color:<%= colors.textMuted %>">
+      Keep an off-site copy as part of your recovery plan.
+    </p>
+  </td>
+</tr>
+<%- include('partials/footer') %>
+<%- include('partials/shell-close') %>

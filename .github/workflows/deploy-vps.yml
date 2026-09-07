@@ -1,0 +1,209 @@
+name: Deploy VPS
+
+on:
+  workflow_run:
+    workflows: [Docker]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Tag to deploy (e.g. main, latest, sha-<40hex>, v1.2.3). Empty = main'
+        required: false
+        default: 'main'
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Resolve image reference
+        id: image
+        run: |
+          set -euo pipefail
+          REGISTRY="${{ vars.CONTAINER_REGISTRY || 'ghcr.io' }}"
+          NAME="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          IMAGE="${REGISTRY}/${NAME}"
+
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            # Pin to the exact commit the Docker workflow built (immutable).
+            HEAD_SHA="${{ github.event.workflow_run.head_sha }}"
+            TAG="sha-${HEAD_SHA}"
+          else
+            TAG="${{ inputs.image_tag }}"
+            if [ -z "${TAG}" ]; then
+              TAG="main"
+            fi
+          fi
+
+          REF="${IMAGE}:${TAG}"
+          echo "ref=${REF}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Deploying ${REF}"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          # Optional: PAT with read:packages if the GHCR package is private
+          GHCR_USER: ${{ secrets.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          APP_PATH: ${{ secrets.VPS_APP_PATH }}
+          HEALTH_URL: ${{ vars.DEPLOY_HEALTH_URL }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          # Non-default SSH port (e.g. 2222). Omit secret → 22.
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          # Forward env into the remote shell
+          envs: IMAGE_REF,GHCR_USER,GHCR_TOKEN,APP_PATH,HEALTH_URL
+          script: |
+            set -euo pipefail
+
+            APP_DIR="${APP_PATH:?VPS_APP_PATH secret is required}"
+            cd "${APP_DIR}"
+
+            COMPOSE="infra/docker/docker-compose.deploy.yml"
+
+            if [ ! -f "${COMPOSE}" ]; then
+              echo "Missing ${COMPOSE} — VPS_APP_PATH must be the repo root checkout."
+              exit 1
+            fi
+
+            if [ ! -f .env ]; then
+              echo "Missing root .env — copy from .env.example and set production values."
+              exit 1
+            fi
+
+            if [ ! -d keys ] || [ -z "$(ls -A keys/*.pem 2>/dev/null || true)" ]; then
+              echo "Missing JWT PEMs under ${APP_DIR}/keys — run keys:generate on the host first."
+              exit 1
+            fi
+
+            DEPLOY_USER="$(id -un)"
+            DEPLOY_GROUP="$(id -gn)"
+
+            # PEMs must be UID 1000 for the container. Never chown -R the whole keys/
+            # directory to 1000 — that breaks git operations for the deploy user.
+            ensure_pem_perms() {
+              if ! command -v sudo >/dev/null 2>&1 || ! sudo -n true 2>/dev/null; then
+                return 1
+              fi
+              sudo chown "${DEPLOY_USER}:${DEPLOY_GROUP}" keys 2>/dev/null || true
+              sudo chown 1000:1000 keys/*.pem
+              sudo chmod 600 keys/*-private.pem
+              sudo chmod 644 keys/*-public.pem
+              # Drop a leftover root/node-owned README from older checkouts (no longer tracked).
+              if [ -f keys/README.md ] && [ ! -w keys/README.md ]; then
+                sudo rm -f keys/README.md
+              fi
+              return 0
+            }
+
+            if [ -f keys/README.md ] && [ ! -w keys/README.md ]; then
+              echo "Removing stale unwritable keys/README.md (no longer in git)…"
+              if ! ensure_pem_perms; then
+                echo "ERROR: keys/README.md is owned by another user (often UID 1000 after chown -R)."
+                echo "SSH to the VPS once and run:"
+                echo "  sudo rm -f keys/README.md"
+                echo "  sudo chown ${DEPLOY_USER}:${DEPLOY_GROUP} keys"
+                echo "  sudo chown 1000:1000 keys/*.pem"
+                echo "  sudo chmod 600 keys/*-private.pem && sudo chmod 644 keys/*-public.pem"
+                exit 1
+              fi
+            fi
+
+            # Keep infra/compose in sync with the repo (image pull alone does not update YAML).
+            if [ -d .git ]; then
+              git fetch --prune origin
+              BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+              if [ "${BRANCH}" = "HEAD" ]; then
+                BRANCH="main"
+              fi
+              git checkout "${BRANCH}"
+              git pull --ff-only origin "${BRANCH}"
+            else
+              echo "WARNING: ${APP_DIR} is not a git checkout — compose/infra will not auto-update."
+            fi
+
+            ensure_pem_perms || true
+
+            # Drop a leftover nginx container that still has host :80 published (NPM owns :80).
+            if docker inspect BACKEND_NGINX >/dev/null 2>&1; then
+              HAS_80="$(docker inspect -f '{{range $p, $c := .HostConfig.PortBindings}}{{println $p}}{{end}}' BACKEND_NGINX || true)"
+              if echo "${HAS_80}" | grep -q '^80/'; then
+                echo "Removing stale BACKEND_NGINX (still bound to host :80)…"
+                docker rm -f BACKEND_NGINX
+              fi
+            fi
+
+            # Login to GHCR when pulling a private package
+            if [ -n "${GHCR_TOKEN:-}" ]; then
+              echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER:-${USER}}" --password-stdin
+            fi
+
+            export IMAGE_REF
+            printf 'IMAGE_REF=%s\n' "${IMAGE_REF}" > .env.image
+
+            docker compose \
+              -f "${COMPOSE}" \
+              --env-file .env \
+              --env-file .env.image \
+              pull backend-api backend-worker
+
+            docker compose \
+              -f "${COMPOSE}" \
+              --env-file .env \
+              --env-file .env.image \
+              up -d --remove-orphans
+
+            # Authoritative probe: inside the API container (no Cloudflare / NPM / DNS).
+            # Public DEPLOY_HEALTH_URL often returns 403 (cf-mitigated challenge) to curl.
+            echo "Waiting for local /health/live (Backend-Init-http) …"
+            ok=0
+            for i in $(seq 1 40); do
+              if docker exec Backend-Init-http node -e \
+                "fetch('http://127.0.0.1:3000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+                ok=1
+                break
+              fi
+              sleep 3
+            done
+            if [ "${ok}" != "1" ]; then
+              echo "Local health check failed after deploy"
+              docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image ps
+              docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image logs --tail=80 backend-api || true
+              exit 1
+            fi
+            echo "Local health OK"
+
+            if [ -n "${HEALTH_URL:-}" ]; then
+              echo "Optional public probe: ${HEALTH_URL}"
+              if curl -fsS -A 'BackendInitDeploy/1.0' "${HEALTH_URL}" >/dev/null 2>&1; then
+                echo "Public health OK: ${HEALTH_URL}"
+              else
+                echo "WARNING: public URL failed (often Cloudflare bot challenge). Local stack is healthy — not failing the job."
+              fi
+            fi
+
+            echo "Deploy OK: ${IMAGE_REF}"
+
+      - name: Summary
+        run: |
+          {
+            echo "## VPS deploy"
+            echo ""
+            echo "- **Image:** \`${{ steps.image.outputs.ref }}\`"
+            echo "- **Environment:** \`production\`"
+          } >> "$GITHUB_STEP_SUMMARY"

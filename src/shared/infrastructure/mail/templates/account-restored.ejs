@@ -1,0 +1,21 @@
+<%- include('partials/shell-open', { pageTitle: 'Account restored — ' + appName }) %>
+<%- include('partials/header', { eyebrow: 'Account lifecycle', title: 'Welcome back', tone: 'success' }) %>
+<tr>
+  <td class="mail-body" style="padding:36px 32px 28px;">
+    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;">Hello <%= name %>,</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
+      Your <strong style="color:<%= colors.text %>;"><%= appName %></strong> account was restored on
+      <strong style="color:<%= colors.text %>;"><%= date %></strong>. You can sign in again with your credentials.
+    </p>
+
+    <div class="mail-panel mail-panel-success" style="background:<%= colors.successSoft %>;border-left:4px solid <%= colors.success %>;border-radius:12px;padding:18px 20px;margin:22px 0;font-size:14px;color:<%= colors.text %>;">
+      For safety, consider rotating your password and reviewing active sessions after you sign in.
+    </div>
+
+    <% if (clientUrl) { %>
+      <%- include('partials/cta', { href: clientUrl, label: 'Sign in', variant: 'success' }) %>
+    <% } %>
+  </td>
+</tr>
+<%- include('partials/footer') %>
+<%- include('partials/shell-close') %>
