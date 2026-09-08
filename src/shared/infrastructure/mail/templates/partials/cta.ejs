@@ -7,11 +7,12 @@
   if (typeof btnVariant === 'string' && btnVariant) _tone = btnVariant;
   else if (typeof variant === 'string' && variant) _tone = variant;
   var bg = colors.primary;
-  if (_tone === 'success') bg = colors.success;
-  if (_tone === 'danger') bg = colors.danger;
+  var border = colors.primaryDark;
+  if (_tone === 'success') { bg = colors.success; border = colors.successDark; }
+  if (_tone === 'danger') { bg = colors.danger; border = colors.dangerDark; }
 %>
 <div class="mail-cta" style="text-align:center;margin:28px 0 8px;">
-  <a class="mail-btn" href="<%= href %>" style="display:inline-block;background-color:<%= bg %>;color:<%= colors.onPrimary %>;padding:14px 28px;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;">
+  <a class="mail-btn" href="<%= href %>" style="display:inline-block;background-color:<%= bg %>;color:<%= colors.onPrimary %>;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;letter-spacing:0.02em;border:1px solid <%= border %>;">
     <%= label %>
   </a>
 </div>

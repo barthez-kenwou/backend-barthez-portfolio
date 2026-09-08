@@ -12,9 +12,18 @@ import {
 
 export type MailHeaderTone = 'brand' | 'success' | 'warning' | 'danger';
 
+export type MailHeaderGradient = {
+  from: string;
+  mid: string;
+  to: string;
+  soft: string;
+};
+
 export type MailBrandLocals = {
   colors: MailBrandColors;
   logoUrl: string;
+  brandName: string;
+  monogram: string;
   tagline: string;
   company: string;
   address: string;
@@ -26,9 +35,10 @@ export type MailBrandLocals = {
   socials: MailSocialLink[];
   supportEmail: string;
   clientUrl: string;
+  /** Technical app name (process / API). Prefer brandName in user copy. */
   appName: string;
   year: number;
-  headerGradient: (tone?: MailHeaderTone) => { from: string; to: string; soft: string };
+  headerGradient: (tone?: MailHeaderTone) => MailHeaderGradient;
 };
 
 export function buildMailBrandLocals(
@@ -52,22 +62,45 @@ export function buildMailBrandLocals(
 
   const clientUrl = (data.clientUrl as string | undefined)?.trim() || envs.CLIENT_URL || '';
 
-  const headerGradient = (tone: MailHeaderTone = 'brand') => {
+  const headerGradient = (tone: MailHeaderTone = 'brand'): MailHeaderGradient => {
     switch (tone) {
       case 'success':
-        return { from: colors.success, to: colors.successDark, soft: colors.successSoft };
+        return {
+          from: colors.successDark,
+          mid: colors.success,
+          to: colors.success,
+          soft: colors.successSoft,
+        };
       case 'warning':
-        return { from: colors.warning, to: colors.warningDark, soft: colors.warningSoft };
+        return {
+          from: colors.warningDark,
+          mid: colors.warning,
+          to: colors.warning,
+          soft: colors.warningSoft,
+        };
       case 'danger':
-        return { from: colors.danger, to: colors.dangerDark, soft: colors.dangerSoft };
+        return {
+          from: colors.dangerDark,
+          mid: colors.danger,
+          to: colors.danger,
+          soft: colors.dangerSoft,
+        };
       default:
-        return { from: colors.primary, to: colors.primaryDark, soft: colors.primarySoft };
+        // Site primary gradient: ink → amethyst → mid violet
+        return {
+          from: colors.ink,
+          mid: colors.primary,
+          to: colors.primaryMid,
+          soft: colors.primarySoft,
+        };
     }
   };
 
   return {
     ...data,
     appName: envs.APP_NAME,
+    brandName: brand.name,
+    monogram: brand.monogram,
     year: new Date().getFullYear(),
     clientUrl,
     supportEmail,
@@ -77,7 +110,7 @@ export function buildMailBrandLocals(
     company: brand.company,
     address: brand.address,
     phone: brand.phone,
-    websiteLabel: brand.websiteLabel || 'Visit website',
+    websiteLabel: brand.websiteLabel || 'Visit barthez-kenwou.dev',
     privacyUrl: brand.privacyUrl,
     termsUrl: brand.termsUrl,
     helpUrl: brand.helpUrl,

@@ -1,23 +1,24 @@
-<%- include('partials/shell-open', { pageTitle: 'Welcome to ' + appName }) %>
+<%- include('partials/shell-open', { pageTitle: 'Welcome — ' + brandName }) %>
 <%- include('partials/header', { eyebrow: 'Welcome aboard', title: 'Your account is ready', tone: 'brand' }) %>
 <tr>
-  <td class="mail-body" style="padding:36px 32px 28px;">
-    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;">Hello <%= name %>,</h2>
-    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
-      Thanks for joining <strong style="color:<%= colors.text %>;"><%= appName %></strong>.
-      Your account is set up and you can start exploring right away.
+  <td class="mail-body" style="padding:36px 36px 28px;">
+    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;letter-spacing:-0.02em;">Hello <%= name %>,</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>;">
+      Welcome to <strong style="color:<%= colors.text %>;"><%= brandName %></strong> —
+      Full Stack Developer &amp; DevOps Engineer. Your account is active and ready to use.
     </p>
 
-    <div class="mail-panel mail-panel-brand" style="background:<%= colors.primarySoft %>;border-left:4px solid <%= colors.primary %>;border-radius:12px;padding:18px 20px;margin:22px 0;font-size:14px;color:<%= colors.text %>;">
-      Tip: complete your profile and review security settings (password, 2FA) for a smoother experience.
+    <div class="mail-panel mail-panel-brand" style="background:<%= colors.primarySoft %>;border-left:3px solid <%= colors.primary %>;border-radius:8px;padding:18px 20px;margin:22px 0;font-size:14px;color:<%= colors.text %>;">
+      Tip: secure your session with a strong password and enable two-factor authentication
+      when available. Explore the portfolio, case studies, and admin space when you are ready.
     </div>
 
     <% if (clientUrl) { %>
-      <%- include('partials/cta', { href: clientUrl, label: 'Go to my account', variant: 'brand' }) %>
+      <%- include('partials/cta', { href: clientUrl, label: 'Visit barthez-kenwou.dev', variant: 'brand' }) %>
     <% } %>
 
-    <p style="margin:18px 0 0;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
-      Need a hand? Reply to this email or reach us at
+    <p style="margin:18px 0 0;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>;">
+      Questions? Reply to this email or write to
       <a href="mailto:<%= supportEmail %>" style="color:<%= colors.primary %>;font-weight:600;text-decoration:none;"><%= supportEmail %></a>.
     </p>
   </td>

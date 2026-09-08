@@ -4,6 +4,8 @@
  */
 import {
   MAIL_BRAND_COLORS_DEFAULT,
+  MAIL_BRAND_MONOGRAM_DEFAULT,
+  MAIL_BRAND_NAME_DEFAULT,
   type MailBrandColors,
 } from '@/shared/constants/mail-brand.constants';
 
@@ -36,6 +38,9 @@ export const mailConfig = {
   supportEmail: optional('MAIL_SUPPORT_EMAIL'),
 
   brand: {
+    /** Public brand name in email body (defaults to Barthez Kenwou). */
+    name: color('MAIL_BRAND_NAME', MAIL_BRAND_NAME_DEFAULT),
+    monogram: color('MAIL_BRAND_MONOGRAM', MAIL_BRAND_MONOGRAM_DEFAULT),
     logoUrl: optional('MAIL_LOGO_URL'),
     tagline: optional('MAIL_FOOTER_TAGLINE'),
     company: optional('MAIL_FOOTER_COMPANY'),
@@ -48,6 +53,7 @@ export const mailConfig = {
     colors: {
       primary: color('MAIL_BRAND_PRIMARY', MAIL_BRAND_COLORS_DEFAULT.primary),
       primaryDark: color('MAIL_BRAND_PRIMARY_DARK', MAIL_BRAND_COLORS_DEFAULT.primaryDark),
+      primaryMid: color('MAIL_BRAND_PRIMARY_MID', MAIL_BRAND_COLORS_DEFAULT.primaryMid),
       primarySoft: color('MAIL_BRAND_PRIMARY_SOFT', MAIL_BRAND_COLORS_DEFAULT.primarySoft),
       accent: color('MAIL_BRAND_ACCENT', MAIL_BRAND_COLORS_DEFAULT.accent),
       success: color('MAIL_BRAND_SUCCESS', MAIL_BRAND_COLORS_DEFAULT.success),
@@ -66,6 +72,10 @@ export const mailConfig = {
       border: color('MAIL_BRAND_BORDER', MAIL_BRAND_COLORS_DEFAULT.border),
       footerBg: color('MAIL_BRAND_FOOTER_BG', MAIL_BRAND_COLORS_DEFAULT.footerBg),
       onPrimary: color('MAIL_BRAND_ON_PRIMARY', MAIL_BRAND_COLORS_DEFAULT.onPrimary),
+      ink: color('MAIL_BRAND_INK', MAIL_BRAND_COLORS_DEFAULT.ink),
+      spectrum1: color('MAIL_BRAND_SPECTRUM_1', MAIL_BRAND_COLORS_DEFAULT.spectrum1),
+      spectrum2: color('MAIL_BRAND_SPECTRUM_2', MAIL_BRAND_COLORS_DEFAULT.spectrum2),
+      spectrum3: color('MAIL_BRAND_SPECTRUM_3', MAIL_BRAND_COLORS_DEFAULT.spectrum3),
     } satisfies MailBrandColors,
     social: {
       facebook: optional('MAIL_SOCIAL_FACEBOOK'),

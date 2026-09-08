@@ -8,11 +8,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : appName %></title>
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : brandName %></title>
   <%- include('styles') %>
 </head>
 <body style="margin:0;padding:0;background-color:<%= colors.canvas %>;">
-  <table role="presentation" class="mail-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:<%= colors.canvas %>;padding:32px 12px;">
+  <table role="presentation" class="mail-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:<%= colors.canvas %>;padding:40px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" class="mail-card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:<%= colors.card %>;border-radius:16px;overflow:hidden;border:1px solid <%= colors.border %>;">
+        <table role="presentation" class="mail-card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:<%= colors.card %>;border-radius:10px;overflow:hidden;border:1px solid <%= colors.border %>;">

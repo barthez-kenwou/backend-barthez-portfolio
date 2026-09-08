@@ -1,33 +1,34 @@
-<%- include('partials/shell-open', { pageTitle: 'Sign-in alert — ' + appName }) %>
+<%- include('partials/shell-open', { pageTitle: 'Sign-in alert — ' + brandName }) %>
 <%- include('partials/header', { eyebrow: 'Security alert', title: 'New sign-in detected', tone: 'danger' }) %>
 <tr>
-  <td class="mail-body" style="padding:36px 32px 28px;">
-    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;">Hello <%= name %>,</h2>
-    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
-      A new sign-in to your <strong style="color:<%= colors.text %>;"><%= appName %></strong> account was recorded:
+  <td class="mail-body" style="padding:36px 36px 28px;">
+    <h2 style="margin:0 0 12px;font-size:20px;color:<%= colors.text %>;letter-spacing:-0.02em;">Hello <%= name %>,</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>;">
+      A new sign-in to your <strong style="color:<%= colors.text %>;"><%= brandName %></strong> account was recorded.
+      Review the details below — if this was not you, secure your account immediately.
     </p>
 
-    <div class="mail-panel mail-panel-danger" style="background:<%= colors.dangerSoft %>;border-left:4px solid <%= colors.danger %>;border-radius:12px;padding:18px 20px;margin:22px 0;">
-      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
-        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">IP address</span>
+    <div class="mail-panel mail-panel-danger" style="background:<%= colors.dangerSoft %>;border-left:3px solid <%= colors.danger %>;border-radius:8px;padding:18px 20px;margin:22px 0;">
+      <div class="mail-meta-row" style="padding:10px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="display:block;margin-bottom:3px;color:<%= colors.textMuted %>;font-weight:600;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;">IP address</span>
         <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= ip %></span>
       </div>
-      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
-        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">Location</span>
+      <div class="mail-meta-row" style="padding:10px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="display:block;margin-bottom:3px;color:<%= colors.textMuted %>;font-weight:600;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;">Location</span>
         <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= location %></span>
       </div>
-      <div class="mail-meta-row" style="padding:8px 0;border-bottom:1px dashed <%= colors.border %>;">
-        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">Date</span>
+      <div class="mail-meta-row" style="padding:10px 0;border-bottom:1px dashed <%= colors.border %>;">
+        <span class="mail-meta-label" style="display:block;margin-bottom:3px;color:<%= colors.textMuted %>;font-weight:600;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;">Date</span>
         <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= date %></span>
       </div>
-      <div class="mail-meta-row" style="padding:8px 0;">
-        <span class="mail-meta-label" style="color:<%= colors.textMuted %>;font-weight:600;font-size:12px;">Device</span>
+      <div class="mail-meta-row" style="padding:10px 0;">
+        <span class="mail-meta-label" style="display:block;margin-bottom:3px;color:<%= colors.textMuted %>;font-weight:600;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;">Device</span>
         <span class="mail-meta-value" style="color:<%= colors.text %>;font-size:14px;"><%= device %></span>
       </div>
     </div>
 
-    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>">
-      If this was you, no action is needed. If not, reset your password immediately and contact support.
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:<%= colors.textMuted %>;">
+      If this was you, no action is needed. If not, reset your password and contact support.
     </p>
 
     <% if (clientUrl) { %>
