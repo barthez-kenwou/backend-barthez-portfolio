@@ -1,0 +1,41 @@
+<%
+  var isEn = typeof locale !== 'undefined' && locale === 'en';
+  var pageTitle = isEn ? "This week’s drop" : 'Ta dose de la semaine';
+  var eyebrow = isEn ? 'Weekly digest' : 'Digest hebdomadaire';
+  var title = isEn ? 'Catch up without the FOMO' : 'Rattrape sans le FOMO';
+  var itemsList = (typeof items !== 'undefined' && items) ? items : [];
+%>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: pageTitle }) %>
+<tr>
+  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+    <p style="margin:0 0 22px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <% if (isEn) { %>
+        Here’s what shipped this week on the blog. Pick one rabbit hole — or binge them all.
+      <% } else { %>
+        Voici ce qui est sorti cette semaine sur le blog. Choisis un terrier — ou enchaîne-les tous.
+      <% } %>
+    </p>
+    <% itemsList.forEach(function (item) { %>
+      <div style="margin:0 0 18px;padding:16px 18px;border-radius:8px;background:#17141a;border:1px solid #211d25;">
+        <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#9f6adc;font-weight:600;">
+          <%= item.category %> · <%= item.readTime %>
+        </p>
+        <a href="<%= item.postUrl %>" style="color:#ffffff;font-size:17px;font-weight:700;text-decoration:none;line-height:1.35;display:block;margin:0 0 8px;">
+          <%= isEn ? item.titleEn : item.titleFr %>
+        </a>
+        <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#948b9c;">
+          <%= isEn ? item.excerptEn : item.excerptFr %>
+        </p>
+        <a href="<%= item.postUrl %>" style="color:#9f6adc;font-size:13px;font-weight:600;text-decoration:none;">
+          <%= isEn ? 'Read →' : 'Lire →' %>
+        </a>
+      </div>
+    <% }) %>
+    <div style="text-align:center;margin:24px 0 8px;">
+      <a href="<%= blogIndexUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+        <%= isEn ? 'Open the blog' : 'Ouvrir le blog' %>
+      </a>
+    </div>
+  </td>
+</tr>
+<%- include('partials/newsletter-shell-close') %>

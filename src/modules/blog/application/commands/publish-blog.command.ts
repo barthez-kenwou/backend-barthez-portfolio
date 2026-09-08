@@ -5,12 +5,14 @@ import { BlogNotFoundError } from '../../domain/errors/blog.errors';
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import type { PublishBlogDto } from '../dto/blog.dto';
 import type { BlogCachePort } from '../services/blog-cache.port';
+import type { BlogPublishedNotifyPort } from '../services/blog-published-notify.port';
 import { assertBlogOwnership } from './blog-ownership';
 
 export type PublishBlogCommandDeps = {
   blogRepository: BlogRepositoryPort;
   cache?: BlogCachePort;
   audit?: AuditPort;
+  newsletter?: BlogPublishedNotifyPort;
 };
 
 /**
@@ -27,6 +29,8 @@ export class PublishBlogCommand {
 
     assertBlogOwnership(blog, input.authorId, input.isAdmin, 'publish');
 
+    const alreadyPublished = blog.isPublished;
+
     const updated = await this.deps.blogRepository.update(input.id, {
       isPublished: true,
     });
@@ -40,6 +44,10 @@ export class PublishBlogCommand {
       resource: 'blog',
       resourceId: input.id,
     });
+
+    if (!alreadyPublished) {
+      await this.deps.newsletter?.onBlogPublished(updated);
+    }
 
     return updated;
   }

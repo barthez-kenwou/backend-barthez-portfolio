@@ -17,7 +17,8 @@ const info = {
     '`/metrics`, CSP report URI, Bull Board) are at the application root.',
     '',
     '**Public vs admin:** most list/get endpoints are public (published filters).',
-    'Mutations require verified admin permissions. Contact form and testimonial feedback are public POSTs.',
+    'Mutations require verified admin permissions. Contact form, testimonial feedback, and',
+    'newsletter subscribe are public POSTs (newsletter uses double opt-in).',
   ].join('\n'),
   version: '1.0.0',
   contact: {
@@ -109,6 +110,11 @@ const tags = [
   {
     name: 'ContactResponses',
     description: 'Inbound contact-form messages (public POST, admin inbox)',
+  },
+  {
+    name: 'Newsletter',
+    description:
+      'Blog newsletter: double opt-in subscribe, confirm, unsubscribe, admin CRM, broadcasts, digests',
   },
   {
     name: 'CV',

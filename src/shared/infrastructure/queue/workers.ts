@@ -15,6 +15,8 @@ import log from '@/shared/infrastructure/logging/logger';
 import { sendMailDirect } from '@/shared/infrastructure/mail/mail.service';
 import type { MailJobPayload } from '@/shared/infrastructure/mail/mail.types';
 import { purgeUnverifiedUsers } from '@/shared/infrastructure/maintenance/user-cleanup.service';
+import { runNewsletterWeeklyDigest } from '@/shared/infrastructure/newsletter/digest.service';
+import { runNewsletterFanout } from '@/shared/infrastructure/newsletter/fanout.service';
 import { redisConnection } from '@/shared/infrastructure/queue/queue.service';
 
 /** Lock TTL must exceed worst-case job duration to prevent overlap. */
@@ -192,6 +194,12 @@ export const startWorkers = (): void => {
         switch (job.name) {
           case 'scan-presigned-object':
             await scanPresignedObject(job.data as { key?: string; userId?: string });
+            return;
+          case 'newsletter-fanout':
+            await runNewsletterFanout((job.data as { campaignId?: string }).campaignId || '');
+            return;
+          case 'newsletter-weekly-digest':
+            await runNewsletterWeeklyDigest();
             return;
           case 'export-users':
           case 'export-audit':

@@ -1,0 +1,24 @@
+<%
+  var isEn = typeof locale !== 'undefined' && locale === 'en';
+  var pageTitle = isEn ? 'Unsubscribed' : 'Désabonnement confirmé';
+%>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: isEn ? 'Done' : 'C’est noté', title: pageTitle }) %>
+<tr>
+  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <% if (isEn) { %>
+        You’re off the list. No more newsletter emails from Barthez Kenwou.
+        The blog stays open anytime you want signal without the inbox.
+      <% } else { %>
+        Tu es retiré de la liste. Plus d’emails newsletter de Barthez Kenwou.
+        Le blog reste ouvert quand tu veux du signal sans la boîte mail.
+      <% } %>
+    </p>
+    <div style="text-align:center;margin:28px 0 8px;">
+      <a href="<%= blogUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+        <%= isEn ? 'Back to the blog' : 'Retour au blog' %>
+      </a>
+    </div>
+  </td>
+</tr>
+<%- include('partials/newsletter-shell-close') %>

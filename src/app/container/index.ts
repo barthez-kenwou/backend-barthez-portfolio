@@ -48,6 +48,11 @@ import {
   createDefaultLanguageDeps,
   createLanguageModule,
 } from '@/modules/languages';
+import {
+  type NewsletterModule,
+  createDefaultNewsletterDeps,
+  createNewsletterModule,
+} from '@/modules/newsletter';
 import { type OAuthModule, createDefaultOAuthDeps, createOAuthModule } from '@/modules/oauth';
 import {
   type ProjectModule,
@@ -79,6 +84,7 @@ export type AppContainer = {
   users: UsersModule;
   rbac: RbacModule;
   blog: BlogModule;
+  newsletter: NewsletterModule;
   oauth: OAuthModule;
   files: FilesModule;
   projects: ProjectModule;
@@ -102,6 +108,7 @@ export type ContainerOverrides = {
   users?: Parameters<typeof createDefaultUsersDeps>[0];
   rbac?: Parameters<typeof createDefaultRbacDeps>[0];
   blog?: Parameters<typeof createDefaultBlogDeps>[0];
+  newsletter?: Parameters<typeof createDefaultNewsletterDeps>[0];
   oauth?: Parameters<typeof createDefaultOAuthDeps>[0];
   projects?: Parameters<typeof createDefaultProjectDeps>[0];
   services?: Parameters<typeof createDefaultServiceDeps>[0];
@@ -129,7 +136,15 @@ export function createContainer(overrides: ContainerOverrides = {}): AppContaine
 
   const auth = createAuthModule(createDefaultAuthDeps(overrides.auth));
   const users = createUsersModule(createDefaultUsersDeps(overrides.users));
-  const blog = createBlogModule(createDefaultBlogDeps(overrides.blog));
+  const newsletter = createNewsletterModule(createDefaultNewsletterDeps(overrides.newsletter));
+  const blog = createBlogModule(
+    createDefaultBlogDeps({
+      ...overrides.blog,
+      newsletter: overrides.blog?.newsletter ?? {
+        onBlogPublished: (b) => newsletter.onBlogPublished(b),
+      },
+    }),
+  );
   const oauth = createOAuthModule(createDefaultOAuthDeps(overrides.oauth));
   const files = createFilesModule(createDefaultFilesDeps(overrides.files));
   const contactResponses = createContactResponseModule(
@@ -162,6 +177,7 @@ export function createContainer(overrides: ContainerOverrides = {}): AppContaine
     users,
     rbac,
     blog,
+    newsletter,
     oauth,
     files,
     projects,

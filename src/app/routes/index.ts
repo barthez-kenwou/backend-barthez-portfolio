@@ -28,6 +28,7 @@ export function registerRoutes(app: Express, container: AppContainer): void {
   api.use('/auth/oauth', rateLimitingSubRoute, container.oauth.router);
   api.use('/users', rateLimitingSubRoute, container.users.router);
   api.use('/blogs', rateLimitingSubRoute, container.blog.router);
+  api.use('/newsletter', rateLimitingSubRoute, container.newsletter.router);
   api.use('/files', rateLimitingSubRoute, container.files.router);
   api.use('/cv', rateLimitingSubRoute, container.cv.router);
   api.use('/contact-responses', rateLimitingSubRoute, container.contactResponses.router);

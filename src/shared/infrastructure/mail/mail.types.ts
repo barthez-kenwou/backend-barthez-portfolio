@@ -10,7 +10,13 @@ export type MailTemplateName =
   | 'role-changed'
   | 'user-invited'
   | 'db-notification-success'
-  | 'db-notification-error';
+  | 'db-notification-error'
+  | 'newsletter-confirm'
+  | 'newsletter-welcome'
+  | 'newsletter-blog-alert'
+  | 'newsletter-digest'
+  | 'newsletter-broadcast'
+  | 'newsletter-unsubscribed';
 
 export interface MailJobPayload {
   to: string;

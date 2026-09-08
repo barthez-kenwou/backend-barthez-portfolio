@@ -1,0 +1,38 @@
+<%
+  var isEn = typeof locale !== 'undefined' && locale === 'en';
+  var pageTitle = isEn ? "You're in" : 'Bienvenue dans le cercle';
+  var eyebrow = isEn ? 'Welcome' : 'Bienvenue';
+  var title = isEn ? 'You’re officially on the list' : 'Tu es officiellement dans le cercle';
+%>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: isEn ? 'Welcome to the Barthez Kenwou newsletter.' : 'Bienvenue dans la newsletter Barthez Kenwou.' }) %>
+<tr>
+  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+    <p style="margin:0 0 14px;font-size:16px;line-height:1.7;color:#f7f7f7;">
+      <%= isEn ? 'Hey' : 'Salut' %> <strong style="color:#ffffff;"><%= name %></strong>,
+    </p>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <% if (isEn) { %>
+        Glad you’re here. You’ll get the pieces that matter: deep-dive articles, battle-tested DevOps notes,
+        and the occasional “I shipped this so you don’t have to learn it the hard way.”
+      <% } else { %>
+        Content que tu sois là. Tu recevras ce qui compte vraiment&nbsp;: articles de fond, notes DevOps éprouvées,
+        et de temps en temps un «&nbsp;j’ai livré ça pour que tu n’aies pas à l’apprendre à la dure&nbsp;».
+      <% } %>
+    </p>
+    <div style="background-color:#17141a;border-left:3px solid #9f6adc;border-radius:8px;padding:18px 20px;margin:22px 0;font-size:14px;line-height:1.65;color:#f7f7f7;">
+      <% if (isEn) { %>
+        <strong style="color:#9f6adc;">What to expect</strong><br/>
+        New posts the moment they go live · a weekly digest when the week was dense · zero sales spam.
+      <% } else { %>
+        <strong style="color:#9f6adc;">À quoi t’attendre</strong><br/>
+        Nouveaux articles dès la publication · un digest hebdo quand la semaine a été dense · zéro spam commercial.
+      <% } %>
+    </div>
+    <div style="text-align:center;margin:28px 0 8px;">
+      <a href="<%= blogUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+        <%= isEn ? 'Explore the blog' : 'Explorer le blog' %>
+      </a>
+    </div>
+  </td>
+</tr>
+<%- include('partials/newsletter-shell-close') %>

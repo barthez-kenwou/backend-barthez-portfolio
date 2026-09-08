@@ -58,6 +58,7 @@ export const registerRepeatableJobs = async (): Promise<void> => {
 
   await clearRepeatableJobs(backupQueue);
   await clearRepeatableJobs(maintenanceQueue);
+  await clearRepeatableJobs(heavyTasksQueue);
 
   const backupEnabled = await featureFlagService.isEnabled('enable_backup', true);
   const maintenanceEnabled = await featureFlagService.isEnabled('enable_maintenance_jobs', true);
@@ -100,6 +101,15 @@ export const registerRepeatableJobs = async (): Promise<void> => {
         jobId: 'purge-audit-logs',
       },
     );
+
+    await heavyTasksQueue.add(
+      'newsletter-weekly-digest',
+      {},
+      {
+        repeat: { pattern: config.queue.newsletterDigestCron },
+        jobId: 'newsletter-weekly-digest',
+      },
+    );
   }
 
   log.info('Repeatable BullMQ jobs registered', {
@@ -108,6 +118,7 @@ export const registerRepeatableJobs = async (): Promise<void> => {
     backupCron: config.queue.backup.cron,
     maintenanceCron: config.queue.maintenanceCron,
     blacklistPurgeCron: config.queue.blacklistPurgeCron,
+    newsletterDigestCron: config.queue.newsletterDigestCron,
   });
 };
 

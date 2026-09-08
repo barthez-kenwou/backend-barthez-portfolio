@@ -1,0 +1,39 @@
+<%
+  var isEn = typeof locale !== 'undefined' && locale === 'en';
+  var pageTitle = isEn ? 'Confirm your subscription' : 'Confirme ton abonnement';
+  var eyebrow = isEn ? 'One click away' : 'Plus qu’un clic';
+  var title = isEn ? 'Confirm you’re in' : 'Confirme que tu es bien là';
+%>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: isEn ? 'Confirm your Barthez Kenwou newsletter subscription.' : 'Confirme ton abonnement à la newsletter Barthez Kenwou.' }) %>
+<tr>
+  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+    <p style="margin:0 0 14px;font-size:16px;line-height:1.7;color:#f7f7f7;">
+      <%= isEn ? 'Hey' : 'Salut' %> <strong style="color:#ffffff;"><%= name %></strong>,
+    </p>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <% if (isEn) { %>
+        Someone (hopefully you) asked to join the <strong style="color:#f7f7f7;">Barthez Kenwou</strong> newsletter —
+        field notes on DevOps, Full Stack, AWS Cloud, and shipping systems that don’t fall over at 3&nbsp;AM.
+      <% } else { %>
+        Quelqu’un (idéalement toi) a demandé à rejoindre la newsletter de <strong style="color:#f7f7f7;">Barthez Kenwou</strong> —
+        notes de terrain sur le DevOps, le Full Stack, AWS Cloud, et les systèmes qui ne plantent pas à 3&nbsp;h du matin.
+      <% } %>
+    </p>
+    <p style="margin:0 0 22px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <% if (isEn) { %>
+        Hit the button. No spam. No fluff. Just signal — and a one-click exit whenever you want.
+      <% } else { %>
+        Clique le bouton. Pas de spam. Pas de blabla. Juste du signal — et une sortie en un clic quand tu veux.
+      <% } %>
+    </p>
+    <div style="text-align:center;margin:28px 0 12px;">
+      <a href="<%= confirmUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+        <%= isEn ? 'Yes — confirm my subscription' : 'Oui — confirmer mon abonnement' %>
+      </a>
+    </div>
+    <p style="margin:20px 0 0;font-size:12px;line-height:1.6;color:#948b9c;">
+      <%= isEn ? 'Link expires in 48 hours. If this wasn’t you, ignore this email.' : 'Lien valable 48&nbsp;h. Si ce n’était pas toi, ignore ce message.' %>
+    </p>
+  </td>
+</tr>
+<%- include('partials/newsletter-shell-close') %>

@@ -11,6 +11,7 @@ import { GetBlogQuery } from './application/queries/get-blog.query';
 import { ListPublicBlogsQuery } from './application/queries/list-public-blogs.query';
 import { SearchBlogsQuery } from './application/queries/search-blogs.query';
 import type { BlogCachePort } from './application/services/blog-cache.port';
+import type { BlogPublishedNotifyPort } from './application/services/blog-published-notify.port';
 import type { BlogRbacPort } from './application/services/rbac.port';
 import type { BlogRepositoryPort } from './domain/repositories/blog.repository';
 import {
@@ -33,6 +34,7 @@ export type BlogModuleDeps = {
   cache?: BlogCachePort;
   audit?: AuditPort;
   search?: SearchPort;
+  newsletter?: BlogPublishedNotifyPort;
 };
 
 export type BlogModule = {
@@ -61,6 +63,7 @@ export function createDefaultBlogDeps(overrides: Partial<BlogModuleDeps> = {}): 
     cache: overrides.cache ?? createBlogCacheAdapter(),
     audit: overrides.audit ?? auditRepository,
     search: overrides.search ?? mongoSearchAdapter,
+    newsletter: overrides.newsletter,
   };
 }
 

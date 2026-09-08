@@ -107,6 +107,9 @@ export const SYSTEM_PERMISSIONS = [
   { name: 'contact_response:update:any', resource: 'contact_response', action: 'update:any' },
   { name: 'contact_response:delete:own', resource: 'contact_response', action: 'delete:own' },
   { name: 'contact_response:delete:any', resource: 'contact_response', action: 'delete:any' },
+  { name: 'newsletter:read', resource: 'newsletter', action: 'read' },
+  { name: 'newsletter:delete', resource: 'newsletter', action: 'delete' },
+  { name: 'newsletter:broadcast', resource: 'newsletter', action: 'broadcast' },
   { name: 'audit:read', resource: 'audit', action: 'read' },
 ] as const;
 

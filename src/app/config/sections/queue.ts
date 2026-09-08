@@ -16,6 +16,8 @@ export const queueConfig = {
   maintenanceCron: fromEnv.get('MAINTENANCE_CRON').default('0 0 * * *').asString(),
   blacklistPurgeCron: fromEnv.get('BLACKLIST_PURGE_CRON').default('0 */6 * * *').asString(),
   auditPurgeCron: fromEnv.get('AUDIT_PURGE_CRON').default('15 3 * * *').asString(),
+  /** Mondays 09:00 — weekly newsletter digest of recent posts. */
+  newsletterDigestCron: fromEnv.get('NEWSLETTER_DIGEST_CRON').default('0 9 * * 1').asString(),
   auditRetentionDays: fromEnv.get('AUDIT_RETENTION_DAYS').default(365).asInt(),
 } as const;
 

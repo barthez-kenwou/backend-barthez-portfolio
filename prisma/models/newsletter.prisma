@@ -1,0 +1,82 @@
+// Newsletter subscribers + outbound campaigns (blog alerts, digests, broadcasts)
+
+enum NewsletterStatus {
+  pending
+  active
+  unsubscribed
+  bounced
+}
+
+enum NewsletterLocale {
+  fr
+  en
+}
+
+enum NewsletterCampaignType {
+  confirm
+  welcome
+  blog_publish
+  digest
+  broadcast
+}
+
+enum NewsletterCampaignStatus {
+  queued
+  sending
+  sent
+  failed
+  cancelled
+}
+
+model NewsletterSubscriber {
+  id                    String           @id @default(auto()) @map("_id") @db.ObjectId
+  email                 String
+  locale                NewsletterLocale @default(fr)
+  status                NewsletterStatus @default(pending)
+  /// Origin of the signup (blog CTA, admin import, API, …)
+  source                String           @default("blog")
+  confirmToken          String?
+  confirmTokenExpiresAt DateTime?
+  unsubscribeToken      String
+  confirmedAt           DateTime?
+  unsubscribedAt        DateTime?
+  lastEmailedAt         DateTime?
+  welcomeSentAt         DateTime?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  deletedAt             DateTime?
+
+  @@unique([email])
+  @@index([status, deletedAt])
+  @@index([unsubscribeToken])
+  @@index([confirmToken])
+  @@index([locale, status])
+}
+
+model NewsletterCampaign {
+  id              String                    @id @default(auto()) @map("_id") @db.ObjectId
+  type            NewsletterCampaignType
+  status          NewsletterCampaignStatus  @default(queued)
+  subjectFr       String
+  subjectEn       String
+  /// Optional preview / preheader text
+  previewFr       String?
+  previewEn       String?
+  /// Template name or structured payload for the fan-out worker
+  template        String
+  payload         Json?
+  blogId          String?                   @db.ObjectId
+  createdById     String?                   @db.ObjectId
+  totalRecipients Int                       @default(0)
+  sentCount       Int                       @default(0)
+  failCount       Int                       @default(0)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  deletedAt       DateTime?
+
+  @@index([type, status, createdAt])
+  @@index([blogId])
+  @@index([deletedAt])
+}

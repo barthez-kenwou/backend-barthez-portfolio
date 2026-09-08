@@ -1,0 +1,50 @@
+<%
+  var isEn = typeof locale !== 'undefined' && locale === 'en';
+  var postTitle = isEn ? titleEn : titleFr;
+  var excerpt = isEn ? excerptEn : excerptFr;
+  var pageTitle = postTitle;
+  var eyebrow = isEn ? 'Fresh off the keyboard' : 'Tout juste publié';
+  var title = isEn ? 'You might want to stop scrolling' : 'Tu vas peut‑être vouloir arrêter de scroller';
+%>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: excerpt }) %>
+<tr>
+  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+    <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9f6adc;font-weight:600;">
+      <%= category %> · <%= readTime %>
+    </p>
+    <h2 style="margin:0 0 14px;font-size:22px;line-height:1.35;color:#ffffff;font-weight:700;letter-spacing:-0.02em;">
+      <%= postTitle %>
+    </h2>
+    <% if (typeof image !== 'undefined' && image) { %>
+      <a href="<%= postUrl %>" style="display:block;margin:0 0 18px;">
+        <img src="<%= image %>" alt="" width="536" style="width:100%;max-width:536px;height:auto;border-radius:8px;border:1px solid #211d25;display:block;" />
+      </a>
+    <% } %>
+    <p style="margin:0 0 18px;font-size:15px;line-height:1.75;color:#948b9c;">
+      <%= excerpt %>
+    </p>
+    <p style="margin:0 0 22px;font-size:15px;line-height:1.75;color:#f7f7f7;">
+      <% if (isEn) { %>
+        I didn’t write this to fill a calendar. There’s a concrete takeaway inside — tools, method, and the mistakes I already paid for.
+      <% } else { %>
+        Je n’ai pas écrit ça pour remplir un calendrier. Il y a un takeaway concret dedans — outils, méthode, et les erreurs que j’ai déjà payées pour toi.
+      <% } %>
+    </p>
+    <% if (typeof tags !== 'undefined' && tags && tags.length) { %>
+      <p style="margin:0 0 22px;font-size:12px;color:#948b9c;">
+        <% tags.slice(0, 6).forEach(function (t) { %>
+          <span style="display:inline-block;margin:0 6px 6px 0;padding:4px 10px;border-radius:999px;background:#17141a;border:1px solid #211d25;color:#d1c8da;">#<%= t %></span>
+        <% }) %>
+      </p>
+    <% } %>
+    <div style="text-align:center;margin:8px 0 8px;">
+      <a href="<%= postUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+        <%= isEn ? 'Read the full article →' : 'Lire l’article complet →' %>
+      </a>
+    </div>
+    <p style="margin:22px 0 0;font-size:13px;color:#948b9c;">
+      — <%= typeof author !== 'undefined' ? author : brandName %>
+    </p>
+  </td>
+</tr>
+<%- include('partials/newsletter-shell-close') %>

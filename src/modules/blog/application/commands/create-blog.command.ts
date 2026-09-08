@@ -4,11 +4,13 @@ import type { BlogEntity } from '../../domain/entities/blog.entity';
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import type { CreateBlogDto } from '../dto/blog.dto';
 import type { BlogCachePort } from '../services/blog-cache.port';
+import type { BlogPublishedNotifyPort } from '../services/blog-published-notify.port';
 
 export type CreateBlogCommandDeps = {
   blogRepository: BlogRepositoryPort;
   cache?: BlogCachePort;
   audit?: AuditPort;
+  newsletter?: BlogPublishedNotifyPort;
 };
 
 const slugify = (value: string): string =>
@@ -20,8 +22,9 @@ const slugify = (value: string): string =>
     .replace(/-+/g, '-');
 
 /**
- * Creates an unpublished bilingual blog post and invalidates list caches.
+ * Creates a bilingual blog post and invalidates list caches.
  * Slug comes from the body or slugify(titleEn) + timestamp.
+ * When created already published, fans out newsletter alerts.
  */
 export class CreateBlogCommand {
   constructor(private readonly deps: CreateBlogCommandDeps) {}
@@ -57,6 +60,10 @@ export class CreateBlogCommand {
       resource: 'blog',
       resourceId: blog.id,
     });
+
+    if (blog.isPublished) {
+      await this.deps.newsletter?.onBlogPublished(blog);
+    }
 
     return blog;
   }

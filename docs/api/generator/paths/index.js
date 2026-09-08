@@ -6,6 +6,7 @@ const auth = require('./auth');
 const oauth = require('./oauth');
 const users = require('./users');
 const blogs = require('./blogs');
+const newsletter = require('./newsletter');
 const files = require('./files');
 const cv = require('./cv');
 const contactResponses = require('./contact-responses');
@@ -31,6 +32,7 @@ module.exports = {
   ...oauth,
   ...users,
   ...blogs,
+  ...newsletter,
   ...cv,
   ...contactResponses,
   ...contactInfos,

@@ -24,6 +24,12 @@ const templateFiles: Record<MailTemplateName, string> = {
   'user-invited': 'user-invited.ejs',
   'db-notification-success': 'db-notification-success.ejs',
   'db-notification-error': 'db-notification-error.ejs',
+  'newsletter-confirm': 'newsletter-confirm.ejs',
+  'newsletter-welcome': 'newsletter-welcome.ejs',
+  'newsletter-blog-alert': 'newsletter-blog-alert.ejs',
+  'newsletter-digest': 'newsletter-digest.ejs',
+  'newsletter-broadcast': 'newsletter-broadcast.ejs',
+  'newsletter-unsubscribed': 'newsletter-unsubscribed.ejs',
 };
 
 export const getMailFromAddress = (): string => {

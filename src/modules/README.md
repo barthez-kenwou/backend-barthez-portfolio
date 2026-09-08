@@ -7,7 +7,7 @@ portfolio backend.
 
 **Portfolio content:** blog, projects, services, skills, experiences, education,
 certifications, testimonials, achievements, references, languages,
-contact-infos, contact-responses, cv.
+contact-infos, contact-responses, newsletter, cv.
 
 ## Required layout
 

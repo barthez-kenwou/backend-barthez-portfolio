@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: 'Barthez Kenwou Portfolio API'
-  description: "Backend for https://barthez-kenwou.dev — public portfolio content and\n`/barthez-admin` CMS (projects, blogs, skills, CV, contact, testimonials).\n\nPlatform: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC, MinIO/S3 uploads,\nRedis, BullMQ, Flagsmith, audit, and operator surfaces.\n\n**Authentication:** `Authorization: Bearer <access_token>` on protected routes.\nRefresh tokens use an HTTP-only cookie; `/auth/refresh` also accepts `refreshToken` in JSON.\n\n**Base paths:** domain APIs under `/api/v1`. System endpoints (`/health`, `/csrf-token`,\n`/metrics`, CSP report URI, Bull Board) are at the application root.\n\n**Public vs admin:** most list/get endpoints are public (published filters).\nMutations require verified admin permissions. Contact form and testimonial feedback are public POSTs."
+  description: "Backend for https://barthez-kenwou.dev — public portfolio content and\n`/barthez-admin` CMS (projects, blogs, skills, CV, contact, testimonials).\n\nPlatform: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC, MinIO/S3 uploads,\nRedis, BullMQ, Flagsmith, audit, and operator surfaces.\n\n**Authentication:** `Authorization: Bearer <access_token>` on protected routes.\nRefresh tokens use an HTTP-only cookie; `/auth/refresh` also accepts `refreshToken` in JSON.\n\n**Base paths:** domain APIs under `/api/v1`. System endpoints (`/health`, `/csrf-token`,\n`/metrics`, CSP report URI, Bull Board) are at the application root.\n\n**Public vs admin:** most list/get endpoints are public (published filters).\nMutations require verified admin permissions. Contact form, testimonial feedback, and\nnewsletter subscribe are public POSTs (newsletter uses double opt-in)."
   version: 1.0.0
   contact:
     name: 'Barthez Kenwou'
@@ -66,6 +66,9 @@ tags:
   -
     name: ContactResponses
     description: 'Inbound contact-form messages (public POST, admin inbox)'
+  -
+    name: Newsletter
+    description: 'Blog newsletter: double opt-in subscribe, confirm, unsubscribe, admin CRM, broadcasts, digests'
   -
     name: CV
     description: 'Aggregated CV payload for the public resume page / PDF'
@@ -2233,6 +2236,364 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/v1/newsletter/subscribe:
+    post:
+      tags:
+        - Newsletter
+      summary: 'Subscribe (double opt-in)'
+      description: 'Public. Always returns a generic success. Sends a confirmation email when the address is new, pending, or previously unsubscribed.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                locale:
+                  type: string
+                  enum: [fr, en]
+                source:
+                  type: string
+                  maxLength: 64
+                  example: blog
+      responses:
+        '201':
+          description: 'Confirmation email may be on its way'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/newsletter/confirm:
+    get:
+      tags:
+        - Newsletter
+      summary: 'Confirm subscription'
+      description: 'Activates the subscriber and sends the welcome email. HTML clients redirect to the blog.'
+      parameters:
+        -
+          name: token
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 16
+      responses:
+        '200':
+          description: 'Subscription confirmed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '302':
+          description: 'Redirect to frontend blog with ?newsletter=confirmed'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/newsletter/unsubscribe:
+    get:
+      tags:
+        - Newsletter
+      summary: 'One-click unsubscribe'
+      parameters:
+        -
+          name: token
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 16
+      responses:
+        '200':
+          description: Unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '302':
+          description: 'Redirect to frontend blog with ?newsletter=unsubscribed'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Newsletter
+      summary: 'Unsubscribe (JSON)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  minLength: 16
+      responses:
+        '200':
+          description: Unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/newsletter/stats:
+    get:
+      tags:
+        - Newsletter
+      summary: 'Subscriber KPIs'
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Newsletter stats'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/newsletter/subscribers:
+    get:
+      tags:
+        - Newsletter
+      summary: 'List subscribers'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - pending
+              - active
+              - unsubscribed
+              - bounced
+        -
+          name: locale
+          in: query
+          schema:
+            type: string
+            enum:
+              - fr
+              - en
+        -
+          name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Subscribers list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/newsletter/subscribers/{subscriberId}':
+    get:
+      tags:
+        - Newsletter
+      summary: 'Get subscriber'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: subscriberId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: Subscriber
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Newsletter
+      summary: 'Soft-delete subscriber'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: subscriberId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Subscriber deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/newsletter/campaigns:
+    get:
+      tags:
+        - Newsletter
+      summary: 'List campaigns'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: type
+          in: query
+          schema:
+            type: string
+            enum:
+              - confirm
+              - welcome
+              - blog_publish
+              - digest
+              - broadcast
+        -
+          name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - queued
+              - sending
+              - sent
+              - failed
+              - cancelled
+      responses:
+        '200':
+          description: 'Campaigns list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /api/v1/newsletter/campaigns/broadcast:
+    post:
+      tags:
+        - Newsletter
+      summary: 'Queue custom broadcast'
+      description: 'Requires `newsletter:broadcast`. Fans out via BullMQ.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subjectFr
+                - subjectEn
+                - headlineFr
+                - headlineEn
+                - bodyFr
+                - bodyEn
+              properties:
+                subjectFr:
+                  type: string
+                  maxLength: 200
+                subjectEn:
+                  type: string
+                  maxLength: 200
+                previewFr:
+                  type: string
+                  maxLength: 200
+                previewEn:
+                  type: string
+                  maxLength: 200
+                headlineFr:
+                  type: string
+                  maxLength: 200
+                headlineEn:
+                  type: string
+                  maxLength: 200
+                bodyFr:
+                  type: string
+                  maxLength: 20000
+                bodyEn:
+                  type: string
+                  maxLength: 20000
+                ctaUrl:
+                  type: string
+                  format: uri
+                ctaLabelFr:
+                  type: string
+                  maxLength: 80
+                ctaLabelEn:
+                  type: string
+                  maxLength: 80
+      responses:
+        '201':
+          description: 'Broadcast queued'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /api/v1/cv:
     get:
       tags:
