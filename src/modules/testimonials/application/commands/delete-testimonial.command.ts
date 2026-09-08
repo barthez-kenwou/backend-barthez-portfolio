@@ -6,9 +6,12 @@ import {
 } from '../../domain/errors/testimonial.errors';
 import type { TestimonialRepositoryPort } from '../../domain/repositories/testimonial.repository';
 import type { DeleteTestimonialDto } from '../dto/testimonial.dto';
+import type { ProjectTestimonialLinkPort } from '../services/project-testimonial-link.port';
+import { syncProjectTestimonialMirror } from '../services/sync-project-testimonial';
 
 export type DeleteTestimonialCommandDeps = {
   testimonialRepository: TestimonialRepositoryPort;
+  projectLink?: ProjectTestimonialLinkPort;
   audit?: AuditPort;
 };
 
@@ -25,7 +28,11 @@ export class DeleteTestimonialCommand {
       throw new TestimonialForbiddenError();
     }
 
-    await this.deps.testimonialRepository.update(input.id, { deletedAt: new Date() });
+    const updated = await this.deps.testimonialRepository.update(input.id, {
+      deletedAt: new Date(),
+    });
+    await syncProjectTestimonialMirror(this.deps.projectLink, existing, updated);
+
     await this.deps.audit?.record({
       actorId: input.actorId,
       action: 'testimonial.delete',

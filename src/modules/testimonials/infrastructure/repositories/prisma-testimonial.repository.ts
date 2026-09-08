@@ -34,6 +34,7 @@ export class PrismaTestimonialRepository implements TestimonialRepositoryPort {
         status: (data.status ?? 'pending') as TestimonialModerationStatus,
         source: (data.source ?? 'admin') as PrismaSource,
         sortOrder: data.sortOrder ?? 0,
+        projectId: data.projectId ?? null,
         ownerId: data.ownerId ?? null,
         deletedAt: null,
       },
@@ -55,12 +56,14 @@ export class PrismaTestimonialRepository implements TestimonialRepositoryPort {
             prismaNotDeleted,
             { OR: [{ isPublished: true }, { status: 'approved' }] },
             { status: { notIn: ['pending', 'rejected'] } },
+            ...(filters.projectId ? [{ projectId: filters.projectId }] : []),
           ],
         }
       : {
           ...prismaNotDeleted,
           ...(filters.status ? { status: filters.status } : {}),
           ...(filters.isPublished !== undefined ? { isPublished: filters.isPublished } : {}),
+          ...(filters.projectId ? { projectId: filters.projectId } : {}),
         };
 
     const [rows, total] = await Promise.all([
@@ -101,6 +104,7 @@ export class PrismaTestimonialRepository implements TestimonialRepositoryPort {
           : {}),
         ...(data.source !== undefined ? { source: data.source as PrismaSource } : {}),
         ...(data.sortOrder !== undefined ? { sortOrder: data.sortOrder } : {}),
+        ...(data.projectId !== undefined ? { projectId: data.projectId } : {}),
         ...(data.deletedAt !== undefined ? { deletedAt: data.deletedAt } : {}),
       },
     });

@@ -20,6 +20,7 @@ export type TestimonialEntity = {
   status: TestimonialStatus;
   source: TestimonialSource;
   sortOrder: number;
+  projectId: string | null;
   ownerId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +41,7 @@ export type CreateTestimonialInput = {
   status?: TestimonialStatus;
   source?: TestimonialSource;
   sortOrder?: number;
+  projectId?: string | null;
   ownerId?: string | null;
 };
 
@@ -57,6 +59,7 @@ export type UpdateTestimonialInput = Partial<{
   status: TestimonialStatus;
   source: TestimonialSource;
   sortOrder: number;
+  projectId: string | null;
   deletedAt: Date | null;
 }>;
 
@@ -67,6 +70,7 @@ export type TestimonialListFilters = {
   publicOnly?: boolean;
   status?: TestimonialStatus;
   isPublished?: boolean;
+  projectId?: string;
 };
 
 export type TestimonialListResult = {

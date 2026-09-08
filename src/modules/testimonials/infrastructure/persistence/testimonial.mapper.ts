@@ -23,6 +23,7 @@ export const TestimonialMapper = {
       status: row.status as TestimonialStatus,
       source: row.source as TestimonialSource,
       sortOrder: row.sortOrder,
+      projectId: row.projectId ?? null,
       ownerId: row.ownerId ?? null,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,

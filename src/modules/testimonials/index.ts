@@ -10,9 +10,13 @@ import { SubmitPublicTestimonialCommand } from './application/commands/submit-pu
 import { UpdateTestimonialCommand } from './application/commands/update-testimonial.command';
 import { GetTestimonialQuery } from './application/queries/get-testimonial.query';
 import { ListTestimonialsQuery } from './application/queries/list-testimonials.query';
+import type { ProjectTestimonialLinkPort } from './application/services/project-testimonial-link.port';
 import type { TestimonialRbacPort } from './application/services/rbac.port';
 import type { TestimonialRepositoryPort } from './domain/repositories/testimonial.repository';
-import { createTestimonialRbacAdapter } from './infrastructure/providers/legacy-adapters';
+import {
+  createProjectTestimonialLinkAdapter,
+  createTestimonialRbacAdapter,
+} from './infrastructure/providers/legacy-adapters';
 import { PrismaTestimonialRepository } from './infrastructure/repositories/prisma-testimonial.repository';
 import {
   type TestimonialController,
@@ -23,6 +27,7 @@ import { createTestimonialRoutes } from './presentation/routes/testimonial.route
 export type TestimonialModuleDeps = {
   testimonialRepository: TestimonialRepositoryPort;
   rbac: TestimonialRbacPort;
+  projectLink?: ProjectTestimonialLinkPort;
   audit?: AuditPort;
 };
 
@@ -48,6 +53,7 @@ export function createDefaultTestimonialDeps(
   return {
     testimonialRepository: overrides.testimonialRepository ?? new PrismaTestimonialRepository(),
     rbac: overrides.rbac ?? createTestimonialRbacAdapter(),
+    projectLink: overrides.projectLink ?? createProjectTestimonialLinkAdapter(),
     audit: overrides.audit ?? auditRepository,
   };
 }

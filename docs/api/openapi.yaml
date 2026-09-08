@@ -3878,7 +3878,7 @@ paths:
       tags:
         - Testimonials
       summary: 'List testimonials'
-      description: 'Public list returns approved/published items. Authenticated admins may filter by `status` / `isPublished` and see the full moderation queue. Limit ≤ 100.'
+      description: 'Public list returns approved/published items. Authenticated admins may filter by `status` / `isPublished` and see the full moderation queue. Optional `projectId` filter. Limit ≤ 100.'
       parameters:
         -
           name: page
@@ -3909,6 +3909,15 @@ paths:
           in: query
           schema:
             type: boolean
+        -
+          name: projectId
+          in: query
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+          description: 'Filter testimonials linked to a project'
       responses:
         '200':
           description: 'Testimonials list'
@@ -3971,6 +3980,10 @@ paths:
                   type: string
                   format: email
                   nullable: true
+                projectId:
+                  type: string
+                  nullable: true
+                  description: 'Optional project ObjectId. Public submit requires a published project. On approve, the testimonial is also mirrored to Project.testimonial (case-study tab).'
                 isPublished:
                   type: boolean
                 status:
@@ -3997,7 +4010,7 @@ paths:
       tags:
         - Testimonials
       summary: 'Submit public testimonial'
-      description: 'Unauthenticated feedback form. Creates a pending testimonial for moderation.'
+      description: 'Unauthenticated feedback form. Creates a pending testimonial for moderation. Optional `projectId` (published project only).'
       requestBody:
         required: true
         content:
@@ -4043,6 +4056,10 @@ paths:
                   type: string
                   format: email
                   nullable: true
+                projectId:
+                  type: string
+                  nullable: true
+                  description: 'Optional project ObjectId. Public submit requires a published project. On approve, the testimonial is also mirrored to Project.testimonial (case-study tab).'
       responses:
         '201':
           description: 'Testimonial submitted'
@@ -4103,6 +4120,10 @@ paths:
                   type: string
                   format: email
                   nullable: true
+                projectId:
+                  type: string
+                  nullable: true
+                  description: 'Optional project ObjectId. Public submit requires a published project. On approve, the testimonial is also mirrored to Project.testimonial (case-study tab).'
       responses:
         '201':
           description: 'Testimonial submitted'
@@ -4200,6 +4221,10 @@ paths:
                   type: string
                   format: email
                   nullable: true
+                projectId:
+                  type: string
+                  nullable: true
+                  description: 'Optional project ObjectId. Public submit requires a published project. On approve, the testimonial is also mirrored to Project.testimonial (case-study tab).'
                 isPublished:
                   type: boolean
                 status:

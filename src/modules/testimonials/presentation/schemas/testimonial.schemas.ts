@@ -10,6 +10,15 @@ const testimonialIdParam = param('testimonialId')
   .isMongoId()
   .withMessage('Testimonial ID must be a valid Mongo ObjectId');
 
+const optionalProjectId = body('projectId')
+  .optional({ nullable: true })
+  .customSanitizer((value) => (value === '' || value === undefined ? null : value))
+  .custom((value) => {
+    if (value === null) return true;
+    return /^[a-f\d]{24}$/i.test(String(value));
+  })
+  .withMessage('projectId must be a valid Mongo ObjectId');
+
 const coreFields = (optional = false) => {
   const rating = optional
     ? body('rating').optional().isInt({ min: 1, max: 5 })
@@ -35,6 +44,7 @@ const coreFields = (optional = false) => {
     str('roleEn', 200),
     body('company').optional({ nullable: true }).trim().isLength({ max: 200 }),
     body('email').optional({ nullable: true }).trim().isEmail().withMessage('email must be valid'),
+    optionalProjectId,
   ];
 };
 
@@ -44,6 +54,10 @@ export const testimonialSchemas = {
     query('limit').optional().isInt({ min: 1, max: 100 }),
     query('status').optional().isIn(['pending', 'approved', 'rejected']),
     query('isPublished').optional().isBoolean(),
+    query('projectId')
+      .optional()
+      .isMongoId()
+      .withMessage('projectId must be a valid Mongo ObjectId'),
   ],
 
   byId: [testimonialIdParam],

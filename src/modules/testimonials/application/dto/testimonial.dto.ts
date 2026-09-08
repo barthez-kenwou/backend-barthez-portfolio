@@ -19,6 +19,8 @@ export type SubmitPublicTestimonialDto = {
   roleEn: string;
   company?: string | null;
   email?: string | null;
+  /** Optional published project the visitor is speaking about. */
+  projectId?: string | null;
 };
 
 export type UpdateTestimonialDto = UpdateTestimonialInput & {
@@ -50,4 +52,5 @@ export type ListTestimonialsDto = {
   status?: TestimonialStatus;
   isPublished?: boolean;
   source?: TestimonialSource;
+  projectId?: string;
 };

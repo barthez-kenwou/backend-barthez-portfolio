@@ -18,6 +18,7 @@ export class ListTestimonialsQuery {
       publicOnly: input.publicOnly,
       status: input.status,
       isPublished: input.isPublished,
+      projectId: input.projectId,
     });
   }
 }

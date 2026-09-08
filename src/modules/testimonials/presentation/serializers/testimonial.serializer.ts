@@ -20,6 +20,7 @@ export const TestimonialSerializer = {
       status: item.status,
       source: item.source,
       sortOrder: item.sortOrder,
+      projectId: item.projectId,
       ownerId: item.ownerId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,

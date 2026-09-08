@@ -16,3 +16,10 @@ export class TestimonialForbiddenError extends AppError {
     this.name = 'TestimonialForbiddenError';
   }
 }
+
+export class TestimonialInvalidProjectError extends AppError {
+  constructor(message = 'Selected project is invalid or not available for testimonials') {
+    super(400, message, 'TESTIMONIAL_INVALID_PROJECT');
+    this.name = 'TestimonialInvalidProjectError';
+  }
+}

@@ -45,6 +45,7 @@ export function createTestimonialController(deps: TestimonialControllerDeps) {
         admin && req.query.isPublished !== undefined
           ? String(req.query.isPublished) === 'true'
           : undefined,
+      projectId: req.query.projectId ? String(req.query.projectId) : undefined,
     });
     return response.ok(
       req,

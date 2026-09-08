@@ -26,6 +26,8 @@ model Testimonial {
   status      TestimonialModerationStatus  @default(pending)
   source      TestimonialSource            @default(admin)
   sortOrder   Int                          @default(0)
+  /** Optional link to a portfolio project (also mirrored on Project.testimonial when approved). */
+  projectId   String?                      @db.ObjectId
   ownerId     String?                      @db.ObjectId
   createdAt   DateTime                     @default(now())
   updatedAt   DateTime                     @updatedAt
@@ -33,5 +35,6 @@ model Testimonial {
 
   @@index([isPublished, status])
   @@index([sortOrder])
+  @@index([projectId])
   @@index([deletedAt])
 }

@@ -21,6 +21,13 @@ const coreProperties = {
   roleEn: { type: 'string', maxLength: 200 },
   company: { type: 'string', nullable: true, maxLength: 200 },
   email: { type: 'string', format: 'email', nullable: true },
+  projectId: {
+    type: 'string',
+    nullable: true,
+    description:
+      'Optional project ObjectId. Public submit requires a published project. ' +
+      'On approve, the testimonial is also mirrored to Project.testimonial (case-study tab).',
+  },
 };
 
 const publicSubmitBody = {
@@ -47,7 +54,7 @@ module.exports = {
       summary: 'List testimonials',
       description:
         'Public list returns approved/published items. Authenticated admins may filter by ' +
-        '`status` / `isPublished` and see the full moderation queue. Limit ≤ 100.',
+        '`status` / `isPublished` and see the full moderation queue. Optional `projectId` filter. Limit ≤ 100.',
       parameters: [
         { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
         {
@@ -61,6 +68,12 @@ module.exports = {
           schema: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
         },
         { name: 'isPublished', in: 'query', schema: { type: 'boolean' } },
+        {
+          name: 'projectId',
+          in: 'query',
+          schema: mongoObjectId,
+          description: 'Filter testimonials linked to a project',
+        },
       ],
       responses: {
         200: okContent(null, 'Testimonials list'),
@@ -89,7 +102,8 @@ module.exports = {
     post: {
       tags: ['Testimonials'],
       summary: 'Submit public testimonial',
-      description: 'Unauthenticated feedback form. Creates a pending testimonial for moderation.',
+      description:
+        'Unauthenticated feedback form. Creates a pending testimonial for moderation. Optional `projectId` (published project only).',
       requestBody: {
         required: true,
         content: { 'application/json': { schema: publicSubmitBody } },
@@ -173,7 +187,8 @@ module.exports = {
     patch: {
       tags: ['Testimonials'],
       summary: 'Approve testimonial',
-      description: 'Requires `testimonial:update:any`.',
+      description:
+        'Requires `testimonial:update:any`. Approves + publishes. If `projectId` is set, also writes `Project.testimonial` for the case-study tab.',
       security: bearer,
       parameters: [testimonialIdParam],
       responses: {
