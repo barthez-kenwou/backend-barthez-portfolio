@@ -22,14 +22,14 @@ const processRole =
     : 'all';
 
 export const appConfig = {
-  name: fromEnv.get('APP_NAME').default('Backend Init').asString(),
+  name: fromEnv.get('APP_NAME').default('Barthez Kenwou Portfolio API').asString(),
   version: fromEnv.get('APP_VERSION').default('1.0.0').asString(),
   description: fromEnv
     .get('APP_DESCRIPTION')
-    .default('Production-ready Express + TypeScript backend template')
+    .default('Backend API for barthez-kenwou.dev — portfolio CMS, auth, and public content')
     .asString(),
   author: fromEnv.get('APP_AUTHOR').default('Barthez Kenwou').asString(),
-  license: fromEnv.get('APP_LICENSE').default('MIT').asString(),
+  license: fromEnv.get('APP_LICENSE').default('UNLICENSED').asString(),
 
   /** HTTP listen port. */
   port: fromEnv.get('PORT').required().asPortNumber(),
@@ -68,7 +68,7 @@ export const appConfig = {
   trustProxyHops: fromEnv.get('TRUST_PROXY_HOPS').default(1).asInt(),
 
   /**
-   * Process role: `all` (template default), `api` (HTTP only), `worker` (BullMQ only).
+   * Process role: `all` (default), `api` (HTTP only), `worker` (BullMQ only).
    * Production replicas should split API and workers.
    */
   processRole,

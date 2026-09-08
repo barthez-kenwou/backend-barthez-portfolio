@@ -46,7 +46,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.eslint.json'],
         tsconfigRootDir: path.resolve(),
       },
       globals: {
@@ -59,7 +59,7 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: ['./tsconfig.json'],
+          project: ['./tsconfig.eslint.json'],
         },
         node: true,
       },
@@ -211,6 +211,18 @@ export default [
     files: ['src/app/config/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': 'off',
+    },
+  },
+  // One-shot CLI / seed scripts (outside the HTTP app)
+  {
+    files: ['infra/scripts/**/*.{ts,tsx}', 'prisma/**/*.{ts,tsx}'],
+    rules: {
+      'no-console': 'off',
+      'no-process-exit': 'off',
+      'no-restricted-syntax': 'off',
+      'no-await-in-loop': 'off',
+      'promise/catch-or-return': 'off',
+      'promise/no-return-in-finally': 'off',
     },
   },
   {

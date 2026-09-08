@@ -1,10 +1,11 @@
 import type { AuditPort } from '@/shared/infrastructure/audit';
 
 import type { BlogEntity } from '../../domain/entities/blog.entity';
-import { BlogForbiddenError, BlogNotFoundError } from '../../domain/errors/blog.errors';
+import { BlogNotFoundError } from '../../domain/errors/blog.errors';
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import type { UpdateBlogDto } from '../dto/blog.dto';
 import type { BlogCachePort } from '../services/blog-cache.port';
+import { assertBlogOwnership } from './blog-ownership';
 
 export type UpdateBlogCommandDeps = {
   blogRepository: BlogRepositoryPort;
@@ -13,7 +14,7 @@ export type UpdateBlogCommandDeps = {
 };
 
 /**
- * Updates blog fields when the caller is the author or an admin.
+ * Updates bilingual blog fields when the caller owns the post or has :any elevation.
  */
 export class UpdateBlogCommand {
   constructor(private readonly deps: UpdateBlogCommandDeps) {}
@@ -24,16 +25,30 @@ export class UpdateBlogCommand {
       throw new BlogNotFoundError();
     }
 
-    if (!input.isAdmin && blog.authorId !== input.authorId) {
-      throw new BlogForbiddenError('You can only update your own blogs');
-    }
+    assertBlogOwnership(blog, input.authorId, input.isAdmin, 'update');
+
+    const date =
+      input.date === undefined
+        ? undefined
+        : input.date instanceof Date
+          ? input.date
+          : new Date(input.date);
 
     const updated = await this.deps.blogRepository.update(input.id, {
-      title: input.title,
-      content: input.content,
-      excerpt: input.excerpt,
-      coverImage: input.coverImage,
-      visibility: input.visibility,
+      slug: input.slug,
+      titleFr: input.titleFr,
+      titleEn: input.titleEn,
+      excerptFr: input.excerptFr,
+      excerptEn: input.excerptEn,
+      contentFr: input.contentFr,
+      contentEn: input.contentEn,
+      image: input.image,
+      category: input.category,
+      date,
+      readTime: input.readTime,
+      author: input.author,
+      tags: input.tags,
+      isPublished: input.isPublished,
     });
 
     await this.deps.cache?.invalidate(`blogs:slug:${blog.slug}`);

@@ -68,8 +68,8 @@ treats them as warnings.
 ```bash
 sudo mkdir -p /srv/internal && sudo chown "$USER:$USER" /srv/internal
 cd /srv/internal
-git clone git@github.com:<owner>/backend-init.git backend-init
-cd backend-init
+git clone git@github.com:<owner>/backend-barthez-portfolio.git backend-barthez-portfolio
+cd backend-barthez-portfolio
 cp .env.example .env   # set production values — real SMTP, not MailHog
 npm ci && npm run keys:generate
 # PEMs only as UID 1000 (container user). Do NOT chown -R keys/ to 1000.
@@ -98,7 +98,7 @@ File: `infra/docker/docker-compose.deploy.yml`
 
 ```bash
 # Manual smoke on the VPS
-export IMAGE_REF=ghcr.io/<owner>/backend-init:main
+export IMAGE_REF=ghcr.io/<owner>/backend-barthez-portfolio:main
 printf 'IMAGE_REF=%s\n' "$IMAGE_REF" > .env.image
 docker compose -f infra/docker/docker-compose.deploy.yml \
   --env-file .env --env-file .env.image up -d

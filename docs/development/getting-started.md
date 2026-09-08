@@ -1,6 +1,7 @@
 # Getting Started
 
-Run Backend Init locally in minutes. Docker Compose is the recommended path.
+Run Barthez Kenwou Portfolio Backend locally in minutes. Docker Compose is the
+recommended path.
 
 ## Prerequisites
 
@@ -15,8 +16,8 @@ Git, and a copy of the repository. `npm run dev` uses **tsx watch** (not Bun).
 ## Clone
 
 ```bash
-git clone https://github.com/barthez-kenwou/backend-init.git
-cd backend-init
+git clone https://github.com/barthez-kenwou/backend-barthez-portfolio.git
+cd backend-barthez-portfolio
 ```
 
 ## Environment

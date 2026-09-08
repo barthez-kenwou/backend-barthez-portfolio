@@ -20,22 +20,33 @@ const slugify = (value: string): string =>
     .replace(/-+/g, '-');
 
 /**
- * Creates a draft blog post with a unique slug and invalidates list caches.
+ * Creates an unpublished bilingual blog post and invalidates list caches.
+ * Slug comes from the body or slugify(titleEn) + timestamp.
  */
 export class CreateBlogCommand {
   constructor(private readonly deps: CreateBlogCommandDeps) {}
 
   async execute(input: CreateBlogDto): Promise<BlogEntity> {
-    const slug = `${slugify(input.title)}-${Date.now().toString(36)}`;
+    const slug = input.slug?.trim() || `${slugify(input.titleEn)}-${Date.now().toString(36)}`;
+
+    const date = input.date instanceof Date ? input.date : new Date(input.date);
 
     const blog = await this.deps.blogRepository.create({
-      title: input.title,
-      content: input.content,
-      excerpt: input.excerpt,
-      coverImage: input.coverImage,
-      visibility: input.visibility ?? 'PUBLIC',
-      authorId: input.authorId,
       slug,
+      titleFr: input.titleFr,
+      titleEn: input.titleEn,
+      excerptFr: input.excerptFr,
+      excerptEn: input.excerptEn,
+      contentFr: input.contentFr,
+      contentEn: input.contentEn,
+      image: input.image,
+      category: input.category,
+      date,
+      readTime: input.readTime,
+      author: input.author,
+      tags: input.tags ?? [],
+      authorId: input.authorId,
+      isPublished: input.isPublished ?? false,
     });
 
     await this.deps.cache?.invalidatePattern('blogs:*');

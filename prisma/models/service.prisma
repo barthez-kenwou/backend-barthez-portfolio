@@ -1,0 +1,26 @@
+// Portfolio services offered (matches frontend IAdminService)
+
+model Service {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  iconKey     String
+  titleFr     String
+  titleEn     String
+  descFr      String
+  descEn      String
+  featuresFr  String[]
+  featuresEn  String[]
+  priceEur    Float
+  hourly      Boolean   @default(false)
+  priceFr     String
+  priceEn     String
+  sortOrder   Int       @default(0)
+  isPublished Boolean   @default(true)
+  ownerId     String?   @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([sortOrder])
+  @@index([isPublished])
+  @@index([deletedAt])
+}

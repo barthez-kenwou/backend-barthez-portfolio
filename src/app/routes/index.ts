@@ -29,7 +29,21 @@ export function registerRoutes(app: Express, container: AppContainer): void {
   api.use('/users', rateLimitingSubRoute, container.users.router);
   api.use('/blogs', rateLimitingSubRoute, container.blog.router);
   api.use('/files', rateLimitingSubRoute, container.files.router);
+  api.use('/cv', rateLimitingSubRoute, container.cv.router);
+  api.use('/contact-responses', rateLimitingSubRoute, container.contactResponses.router);
+  api.use('/contact-infos', rateLimitingSubRoute, container.contactInfos.router);
+  api.use('/education', rateLimitingSubRoute, container.education.router);
+  api.use('/languages', rateLimitingSubRoute, container.languages.router);
+  api.use('/references', rateLimitingSubRoute, container.references.router);
+  api.use('/achievements', rateLimitingSubRoute, container.achievements.router);
+  api.use('/testimonials', rateLimitingSubRoute, container.testimonials.router);
+  api.use('/certifications', rateLimitingSubRoute, container.certifications.router);
+  api.use('/experiences', rateLimitingSubRoute, container.experiences.router);
+  api.use('/skills', rateLimitingSubRoute, container.skills.router);
+  api.use('/services', rateLimitingSubRoute, container.services.router);
+  api.use('/projects', rateLimitingSubRoute, container.projects.router);
   api.use('/admin/audit', rateLimitingSubRoute, container.system.audit);
+  api.use('/admin/dashboard', rateLimitingSubRoute, container.system.dashboard);
 
   app.use(apiPrefix, api);
 }

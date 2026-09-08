@@ -1,0 +1,37 @@
+// Testimonials / public feedback (matches frontend ITestimonial)
+
+enum TestimonialModerationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum TestimonialSource {
+  admin
+  public_form
+}
+
+model Testimonial {
+  id          String                       @id @default(auto()) @map("_id") @db.ObjectId
+  rating      Int
+  textFr      String
+  textEn      String
+  nameFr      String
+  nameEn      String
+  roleFr      String
+  roleEn      String
+  company     String?
+  email       String?
+  isPublished Boolean                      @default(false)
+  status      TestimonialModerationStatus  @default(pending)
+  source      TestimonialSource            @default(admin)
+  sortOrder   Int                          @default(0)
+  ownerId     String?                      @db.ObjectId
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  deletedAt   DateTime?
+
+  @@index([isPublished, status])
+  @@index([sortOrder])
+  @@index([deletedAt])
+}

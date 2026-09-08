@@ -1,10 +1,11 @@
 import type { AuditPort } from '@/shared/infrastructure/audit';
 
 import type { BlogEntity } from '../../domain/entities/blog.entity';
-import { BlogForbiddenError, BlogNotFoundError } from '../../domain/errors/blog.errors';
+import { BlogNotFoundError } from '../../domain/errors/blog.errors';
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import type { PublishBlogDto } from '../dto/blog.dto';
 import type { BlogCachePort } from '../services/blog-cache.port';
+import { assertBlogOwnership } from './blog-ownership';
 
 export type PublishBlogCommandDeps = {
   blogRepository: BlogRepositoryPort;
@@ -13,7 +14,7 @@ export type PublishBlogCommandDeps = {
 };
 
 /**
- * Marks a blog as PUBLISHED and sets publishedAt.
+ * Sets isPublished=true when the actor owns the post or holds :any elevation.
  */
 export class PublishBlogCommand {
   constructor(private readonly deps: PublishBlogCommandDeps) {}
@@ -24,13 +25,10 @@ export class PublishBlogCommand {
       throw new BlogNotFoundError();
     }
 
-    if (!input.isAdmin && blog.authorId !== input.authorId) {
-      throw new BlogForbiddenError('You can only publish your own blogs');
-    }
+    assertBlogOwnership(blog, input.authorId, input.isAdmin, 'publish');
 
     const updated = await this.deps.blogRepository.update(input.id, {
-      status: 'PUBLISHED',
-      publishedAt: new Date(),
+      isPublished: true,
     });
 
     await this.deps.cache?.invalidate(`blogs:slug:${blog.slug}`);

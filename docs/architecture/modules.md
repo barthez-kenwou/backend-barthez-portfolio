@@ -18,6 +18,8 @@ module-name/
 
 ---
 
+# Platform modules
+
 ## auth
 
 **Purpose.** Signup, OTP verification, optional TOTP, login, `/me`, sessions,
@@ -111,6 +113,8 @@ blogs, drop the user row only when no blogs remain.
 
 See `src/modules/users/README.md`.
 
+---
+
 ## rbac
 
 **Purpose.** Roles, permissions, ACL resolution, system role seeding, and role
@@ -131,8 +135,9 @@ No dedicated public REST router. HTTP role assignment lives on the users module
 `rbacService.seedSystemRolesAndPermissions()`.
 
 Seeded slugs: `super-admin`, `admin`, `user`, `guest`. Catalogue includes
-`audit:read` (admin + super-admin). `SYSTEM_PERMISSIONS` lives in
-`src/shared/constants/app.constants.ts`.
+`audit:read` (admin + super-admin) and portfolio domain permissions
+(`project:*`, `blog:*`, `contact_response:*`, etc.). `SYSTEM_PERMISSIONS` lives
+in `src/shared/constants/app.constants.ts`.
 
 **How to extend.**
 
@@ -172,40 +177,6 @@ Mounted at: `{API_PREFIX}/auth/oauth`.
 
 **How to extend.** See
 [Adding an OAuth provider](../guides/adding-oauth-provider.md).
-
----
-
-## blog
-
-**Purpose.** Reference domain for the template: create, update, publish,
-soft-delete, public listing and search. Replace this module with your business
-domain when forking.
-
-**Public entry points.**
-
-```ts
-import {
-  createBlogModule,
-  createDefaultBlogDeps,
-  createBlogRouter,
-} from '@/modules/blog';
-```
-
-Mounted at: `{API_PREFIX}/blogs`.
-
-| Method | Path           | Auth              |
-| ------ | -------------- | ----------------- |
-| GET    | `/search`      | Public            |
-| GET    | `/`            | Public            |
-| GET    | `/:slug`       | Public            |
-| POST   | `/`            | `blog:create`     |
-| PUT    | `/:id`         | `blog:update:own` |
-| PATCH  | `/:id/publish` | `blog:publish`    |
-| DELETE | `/:id`         | `blog:delete:own` |
-
-**How to extend.** Prefer copying the blog module as a structural template for a
-new domain (see [Extending](./extending.md)), then delete or empty blog once
-your domain is wired.
 
 ---
 
@@ -305,7 +276,7 @@ import {
 
 **Purpose.** Operational HTTP surfaces: health (live/ready), CSRF token, CSP
 report, Prometheus metrics, Bull Board, audit investigation (list / detail /
-export).
+export), and admin dashboard counts for the CMS.
 
 **Public entry points.**
 
@@ -313,22 +284,235 @@ export).
 import { createSystemRouters } from '@/modules/system';
 
 const system = createSystemRouters();
-// system.health | .csrf | .csp | .metrics | .audit | .setupBullBoard(app)
+// system.health | .csrf | .csp | .metrics | .audit | .dashboard | .setupBullBoard(app)
 ```
 
-| Mount                                | Auth                          |
-| ------------------------------------ | ----------------------------- |
-| `/health`, `/live`, `/ready`         | none                          |
-| `/metrics`                           | HTTP Basic (except tests)     |
-| `/csrf-token`                        | none                          |
-| CSP report URI                       | none                          |
-| `/admin/queues`                      | Basic + JWT + `isAdmin`       |
-| `{API_PREFIX}/admin/audit`           | JWT + `audit:read` — list     |
-| `{API_PREFIX}/admin/audit/export`    | JWT + `audit:read` — CSV/JSON |
-| `{API_PREFIX}/admin/audit/{auditId}` | JWT + `audit:read` — detail   |
+| Mount                                | Auth                                    |
+| ------------------------------------ | --------------------------------------- |
+| `/health`, `/live`, `/ready`         | none                                    |
+| `/metrics`                           | HTTP Basic (except tests)               |
+| `/csrf-token`                        | none                                    |
+| CSP report URI                       | none                                    |
+| `/admin/queues`                      | Basic + JWT + `isAdmin`                 |
+| `{API_PREFIX}/admin/audit`           | JWT + `audit:read` — list               |
+| `{API_PREFIX}/admin/audit/export`    | JWT + `audit:read` — CSV/JSON           |
+| `{API_PREFIX}/admin/audit/{auditId}` | JWT + `audit:read` — detail             |
+| `{API_PREFIX}/admin/dashboard`       | JWT + admin/super-admin or `audit:read` |
+
+Dashboard returns counts: `publishedProjects`, `publishedBlogs`,
+`newContactResponses`, `pendingTestimonials`.
 
 **How to extend.** Add ops routes under `presentation/routes` and expose them
 from `createSystemRouters`.
+
+---
+
+# Portfolio content modules
+
+These modules power https://barthez-kenwou.dev and the `/barthez-admin` CMS.
+Most list/get endpoints are public; mutations require verified bearer + domain
+permissions.
+
+## blog
+
+**Purpose.** Bilingual (FR/EN) portfolio blog posts: create, update, publish
+(`isPublished`), soft-delete, public listing and search.
+
+**Public entry points.**
+
+```ts
+import {
+  createBlogModule,
+  createDefaultBlogDeps,
+  createBlogRouter,
+} from '@/modules/blog';
+```
+
+Mounted at: `{API_PREFIX}/blogs`.
+
+| Method | Path           | Auth              |
+| ------ | -------------- | ----------------- |
+| GET    | `/search`      | Public            |
+| GET    | `/`            | Public            |
+| GET    | `/:slug`       | Public            |
+| POST   | `/`            | `blog:create`     |
+| PUT    | `/:id`         | `blog:update:own` |
+| PATCH  | `/:id/publish` | `blog:publish`    |
+| DELETE | `/:id`         | `blog:delete:own` |
+
+Fields include `titleFr`/`titleEn`, `excerptFr`/`excerptEn`,
+`contentFr`/`contentEn`, `image`, `category`, `date`, `readTime`, `author`,
+`tags`, and `isPublished`.
+
+---
+
+## projects
+
+**Purpose.** Portfolio case studies with bilingual copy, featured / published /
+confidential flags. Public lists default to published; `includeUnpublished=true`
+requires `project:read`. Confidential projects redact sensitive links on public
+reads.
+
+Mounted at: `{API_PREFIX}/projects`.
+
+| Method | Path          | Auth / notes                                    |
+| ------ | ------------- | ----------------------------------------------- |
+| GET    | `/`           | Public (published); `includeUnpublished` → auth |
+| GET    | `/:projectId` | Public (confidential fields redacted)           |
+| POST   | `/`           | `project:create`                                |
+| PUT    | `/:projectId` | `project:update:own`                            |
+| DELETE | `/:projectId` | `project:delete:own`                            |
+
+---
+
+## services
+
+**Purpose.** Offered services with bilingual titles/descriptions, feature lists,
+and EUR pricing (`priceEur` is source of truth).
+
+Mounted at: `{API_PREFIX}/services`. Public GET list/detail; admin mutations.
+
+---
+
+## skills
+
+**Purpose.** Skill matrix (`name`, `category`, `level` 0–100, `icon`,
+`sortOrder`) for the Skills page and CV aggregate.
+
+Mounted at: `{API_PREFIX}/skills`. Public GET; admin mutations.
+
+---
+
+## experiences
+
+**Purpose.** Professional experience entries (bilingual titles/companies, bullet
+descriptions, period) for About / CV.
+
+Mounted at: `{API_PREFIX}/experiences`. Public GET; admin mutations.
+
+---
+
+## education
+
+**Purpose.** Education entries (`degreeFr`/`degreeEn`, school, period, optional
+link) for the CV.
+
+Mounted at: `{API_PREFIX}/education`. Public GET; admin mutations.
+
+---
+
+## certifications
+
+**Purpose.** Certifications (`name`, `issuer`, `year`, optional `link`) for
+Skills and CV.
+
+Mounted at: `{API_PREFIX}/certifications`. Public GET; admin mutations.
+
+---
+
+## testimonials
+
+**Purpose.** Public testimonials with moderation. Visitors submit via
+`POST /public` or `POST /feedback` (pending). Admins approve/reject and manage
+publish status.
+
+Mounted at: `{API_PREFIX}/testimonials`.
+
+| Method | Path                      | Auth / notes                    |
+| ------ | ------------------------- | ------------------------------- |
+| GET    | `/`                       | Public approved; admins see all |
+| POST   | `/public`, `/feedback`    | Public form                     |
+| POST   | `/`                       | `testimonial:create`            |
+| GET    | `/:testimonialId`         | `testimonial:read`              |
+| PUT    | `/:testimonialId`         | `testimonial:update:own`        |
+| PATCH  | `/:testimonialId/approve` | `testimonial:update:any`        |
+| PATCH  | `/:testimonialId/reject`  | `testimonial:update:any`        |
+| DELETE | `/:testimonialId`         | `testimonial:delete:own`        |
+
+---
+
+## achievements
+
+**Purpose.** Highlight counters (`iconKey`, `value`, bilingual labels) shown on
+the Skills page.
+
+Mounted at: `{API_PREFIX}/achievements`. Public GET; admin mutations.
+
+---
+
+## references
+
+**Purpose.** Professional references (PII: name, role, company, email, phone).
+Direct list/get require `reference:read`. Also included in the public CV
+aggregate.
+
+Mounted at: `{API_PREFIX}/references`. Auth required for all routes.
+
+---
+
+## languages
+
+**Purpose.** Spoken languages (`language`, `proficiencyFr`/`proficiencyEn`) for
+the CV.
+
+Mounted at: `{API_PREFIX}/languages`. Public GET; admin mutations.
+
+---
+
+## contact-infos
+
+**Purpose.** Singleton public profile / contact card (`singletonKey`, default
+`"default"`).
+
+Mounted at: `{API_PREFIX}/contact-infos`.
+
+| Method | Path | Auth                      |
+| ------ | ---- | ------------------------- |
+| GET    | `/`  | Public (`?key=` optional) |
+| PUT    | `/`  | `contact_info:update:own` |
+| DELETE | `/`  | `contact_info:delete:own` |
+
+---
+
+## contact-responses
+
+**Purpose.** Inbound contact-form messages. Public submit; admin inbox for
+list/detail/status/notes.
+
+Mounted at: `{API_PREFIX}/contact-responses`.
+
+| Method      | Path                  | Auth                                 |
+| ----------- | --------------------- | ------------------------------------ |
+| POST        | `/`                   | Public                               |
+| GET         | `/`                   | `contact_response:read`              |
+| GET         | `/:contactResponseId` | `contact_response:read` (marks read) |
+| PATCH / PUT | `/:contactResponseId` | `contact_response:update:own`        |
+| DELETE      | `/:contactResponseId` | `contact_response:delete:own`        |
+
+Statuses: `new`, `read`, `archived`, `replied`.
+
+---
+
+## cv
+
+**Purpose.** Read-only public aggregate for the resume page / PDF: contact info,
+experiences, education, skills, featured published projects (confidential links
+redacted), certifications, languages, and references.
+
+**Public entry points.**
+
+```ts
+import { createCvModule, createDefaultCvDeps, createCvRouter } from '@/modules/cv';
+```
+
+Mounted at: `{API_PREFIX}/cv`.
+
+| Method | Path | Auth   |
+| ------ | ---- | ------ |
+| GET    | `/`  | Public |
+
+Loads soft-delete-aware Prisma aggregates (does not go through every domain
+module’s use cases).
 
 ---
 

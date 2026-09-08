@@ -1,6 +1,6 @@
 # Dependency Injection Container
 
-Composition root for the backend template.
+Composition root for the portfolio backend.
 
 ## Why a manual container?
 

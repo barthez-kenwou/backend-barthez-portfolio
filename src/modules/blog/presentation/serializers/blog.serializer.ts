@@ -1,25 +1,29 @@
 import type { BlogEntity, BlogListResult } from '../../domain/entities/blog.entity';
 
 /**
- * Maps domain blogs to the public API response shape.
+ * Maps domain blogs to the public API response shape (all bilingual fields).
  */
 export const BlogSerializer = {
   one(blog: BlogEntity) {
     return {
       id: blog.id,
-      title: blog.title,
       slug: blog.slug,
-      excerpt: blog.excerpt,
-      content: blog.content,
-      coverImage: blog.coverImage,
-      status: blog.status,
-      visibility: blog.visibility,
-      authorId: blog.authorId,
+      titleFr: blog.titleFr,
+      titleEn: blog.titleEn,
+      excerptFr: blog.excerptFr,
+      excerptEn: blog.excerptEn,
+      contentFr: blog.contentFr,
+      contentEn: blog.contentEn,
+      image: blog.image,
+      category: blog.category,
+      date: blog.date,
+      readTime: blog.readTime,
       author: blog.author,
+      tags: blog.tags,
+      isPublished: blog.isPublished,
       views: blog.views,
-      likes: blog.likes,
-      shares: blog.shares,
-      publishedAt: blog.publishedAt,
+      authorId: blog.authorId ?? null,
+      authorUser: blog.authorUser,
       createdAt: blog.createdAt,
       updatedAt: blog.updatedAt,
     };

@@ -11,9 +11,9 @@ every clone and every registry pull shares the same signing material.
 
 ## Decision
 
-- Generate PEMs with `npm run keys:generate` (`scripts/generate-jwt-keys.sh`)
-  into gitignored `keys/*.pem` at the **repository root** (single source of
-  truth).
+- Generate PEMs with `npm run keys:generate`
+  (`infra/scripts/generate-jwt-keys.sh`) into gitignored `keys/*.pem` at the
+  **repository root** (single source of truth).
 - Default env paths: `keys/jwt-access-*.pem` and `keys/jwt-refresh-*.pem`.
 - Dockerfile creates an empty `/app/keys` directory and **never** `COPY`s PEMs.
 - Compose mounts `./keys:/app/keys:ro`.

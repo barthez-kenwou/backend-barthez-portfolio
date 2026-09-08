@@ -1,0 +1,28 @@
+// Singleton public contact / profile info (matches frontend IContactInfo)
+
+model ContactInfo {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  /// Ensures a single profile document (upsert by this key)
+  singletonKey  String    @unique @default("default")
+  name          String
+  handle        String
+  titleFr       String
+  titleEn       String
+  subtitleFr    String
+  subtitleEn    String
+  email         String
+  phone         String
+  whatsappLink  String
+  location      String
+  website       String
+  repository    String
+  github        String
+  linkedin      String
+  facebook      String
+  photoUrl      String?
+  yearsExperience Int?
+  tags          String[]  @default([])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}

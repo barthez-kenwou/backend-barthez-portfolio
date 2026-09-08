@@ -1,19 +1,22 @@
 openapi: 3.0.3
 info:
-  title: 'Backend Init API'
-  description: "Production-ready Express + TypeScript modular monolith template.\n\nFeatures: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC user admin,\nfile uploads (MinIO / S3), Redis caching, BullMQ jobs, and operator surfaces.\n\n**Authentication:** send `Authorization: Bearer <access_token>` on protected routes.\nRefresh tokens use an HTTP-only cookie; `/auth/refresh` also accepts `refreshToken` in JSON.\n\n**Base paths:** domain APIs under `/api/v1`. System endpoints (`/health`, `/csrf-token`,\n`/metrics`, CSP report URI, Bull Board) are at the application root.\n\n**Operator UIs:** `/api-docs`, `/api-docs.json`, `/metrics`, and `/admin/queues` require\nHTTP Basic (`ADMIN_BASIC_*`, fallback `SWAGGER_*`) outside tests and are not published\nthrough the sample Nginx public surface.\n\n**Identity vs admin:** `GET /api/v1/auth/me` is the self snapshot (roles + permissions).\nUser administration lives under `/api/v1/users`."
+  title: 'Barthez Kenwou Portfolio API'
+  description: "Backend for https://barthez-kenwou.dev — public portfolio content and\n`/barthez-admin` CMS (projects, blogs, skills, CV, contact, testimonials).\n\nPlatform: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC, MinIO/S3 uploads,\nRedis, BullMQ, Flagsmith, audit, and operator surfaces.\n\n**Authentication:** `Authorization: Bearer <access_token>` on protected routes.\nRefresh tokens use an HTTP-only cookie; `/auth/refresh` also accepts `refreshToken` in JSON.\n\n**Base paths:** domain APIs under `/api/v1`. System endpoints (`/health`, `/csrf-token`,\n`/metrics`, CSP report URI, Bull Board) are at the application root.\n\n**Public vs admin:** most list/get endpoints are public (published filters).\nMutations require verified admin permissions. Contact form and testimonial feedback are public POSTs."
   version: 1.0.0
   contact:
     name: 'Barthez Kenwou'
-    email: kenwoubarthez@gmail.com
-    url: 'https://github.com/barthez-kenwou/backend-init'
+    email: contact@barthez-kenwou.dev
+    url: 'https://barthez-kenwou.dev'
   license:
-    name: MIT
-    url: 'https://opensource.org/licenses/MIT'
+    name: UNLICENSED
+    url: 'https://barthez-kenwou.dev'
 servers:
   -
     url: 'http://localhost:3000'
     description: 'Local development'
+  -
+    url: 'https://api.barthez-kenwou.dev'
+    description: 'Production (when deployed)'
 tags:
   -
     name: Authentication
@@ -26,13 +29,52 @@ tags:
     description: 'Self-service profile and admin user lifecycle (invite, activate, unlock, export, GDPR delete)'
   -
     name: Blogs
-    description: 'Reference blog domain used to validate the modular template'
+    description: 'Bilingual portfolio blog posts (FR/EN) with publish flag'
+  -
+    name: Projects
+    description: 'Portfolio case studies with featured / published / confidential flags'
+  -
+    name: Services
+    description: 'Offered services and pricing (EUR source of truth)'
+  -
+    name: Skills
+    description: 'Skill matrix (name, category, level, icon)'
+  -
+    name: Experiences
+    description: 'Professional experiences for CV and About'
+  -
+    name: Education
+    description: 'Education entries for CV'
+  -
+    name: Certifications
+    description: 'Certifications for Skills page and CV'
+  -
+    name: Testimonials
+    description: 'Public testimonials + feedback form with moderation'
+  -
+    name: Achievements
+    description: 'Highlight counters shown on the Skills page'
+  -
+    name: References
+    description: 'Professional references (PII — admin / CV aggregate)'
+  -
+    name: Languages
+    description: 'Spoken languages for the CV'
+  -
+    name: ContactInfos
+    description: 'Singleton public profile / contact card'
+  -
+    name: ContactResponses
+    description: 'Inbound contact-form messages (public POST, admin inbox)'
+  -
+    name: CV
+    description: 'Aggregated CV payload for the public resume page / PDF'
   -
     name: Files
     description: 'Presigned object-storage URLs for large uploads/downloads'
   -
     name: System
-    description: 'Health, CSRF, Prometheus metrics, CSP reports, audit list/detail/export, and Bull Board'
+    description: 'Health, CSRF, metrics, CSP, audit, admin dashboard counts, and Bull Board'
 components:
   securitySchemes:
     bearerAuth:
@@ -82,42 +124,44 @@ components:
           format: date-time
     Blog:
       type: object
+      description: 'Bilingual portfolio blog post (FR/EN) with publish flag'
       properties:
         id:
           type: string
-        title:
-          type: string
         slug:
           type: string
-        excerpt:
+        titleFr:
           type: string
-          nullable: true
-        content:
+        titleEn:
           type: string
-        coverImage:
+        excerptFr:
           type: string
-          nullable: true
-        status:
+        excerptEn:
           type: string
-          enum:
-            - DRAFT
-            - REVIEW
-            - PUBLISHED
-            - ARCHIVED
-        visibility:
+        contentFr:
           type: string
-          enum:
-            - PUBLIC
-            - PRIVATE
-            - MEMBERS_ONLY
+        contentEn:
+          type: string
+        image:
+          type: string
+        category:
+          type: string
+        date:
+          type: string
+          format: date-time
+        readTime:
+          type: string
+        author:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        isPublished:
+          type: boolean
         authorId:
           type: string
-        views:
-          type: integer
-        likes:
-          type: integer
-        shares:
-          type: integer
+          nullable: true
         publishedAt:
           type: string
           format: date-time
@@ -1818,7 +1862,7 @@ paths:
       tags:
         - Blogs
       summary: 'Search published blogs'
-      description: 'Mongo `contains` search over published public posts. Cap 100 results.'
+      description: 'Search over published posts (`isPublished=true`). Cap 100 results. Bilingual fields are searchable.'
       parameters:
         -
           name: q
@@ -1860,7 +1904,7 @@ paths:
       tags:
         - Blogs
       summary: 'List blog posts'
-      description: 'Returns a paginated list of blog posts (public listing). Limit capped at 100.'
+      description: 'Paginated public listing of published bilingual posts. Limit capped at 100.'
       parameters:
         -
           name: page
@@ -1895,7 +1939,7 @@ paths:
       tags:
         - Blogs
       summary: 'Create blog post'
-      description: 'Creates a blog post. Requires authentication and `blog:create`.'
+      description: 'Creates an unpublished bilingual post. Requires authentication and `blog:create`.'
       security:
         -
           bearerAuth: []
@@ -1906,20 +1950,71 @@ paths:
             schema:
               type: object
               required:
-                - title
-                - content
+                - titleFr
+                - titleEn
+                - excerptFr
+                - excerptEn
+                - contentFr
+                - contentEn
+                - image
+                - category
+                - date
+                - readTime
+                - author
               properties:
-                title:
+                slug:
                   type: string
-                content:
+                  minLength: 1
+                  maxLength: 220
+                  description: 'Optional URL slug; generated from titleEn when omitted'
+                  pattern: '^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$'
+                titleFr:
                   type: string
-                excerpt:
+                  minLength: 1
+                  maxLength: 200
+                titleEn:
                   type: string
-                coverImage:
+                  minLength: 1
+                  maxLength: 200
+                excerptFr:
                   type: string
-                visibility:
+                  minLength: 1
+                  maxLength: 500
+                excerptEn:
                   type: string
-                  enum: [PUBLIC, PRIVATE, MEMBERS_ONLY]
+                  minLength: 1
+                  maxLength: 500
+                contentFr:
+                  type: string
+                  minLength: 10
+                  maxLength: 50000
+                contentEn:
+                  type: string
+                  minLength: 10
+                  maxLength: 50000
+                image:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                category:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                date:
+                  type: string
+                  format: date-time
+                readTime:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                author:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                tags:
+                  type: array
+                  maxItems: 30
+                  items: {type: string, minLength: 1, maxLength: 50}
       responses:
         '201':
           description: 'Blog created'
@@ -1942,7 +2037,7 @@ paths:
       tags:
         - Blogs
       summary: 'Get blog by slug'
-      description: 'Returns a single blog post identified by its URL slug.'
+      description: 'Returns a single published blog post by URL slug.'
       parameters:
         -
           name: slug
@@ -1950,6 +2045,9 @@ paths:
           required: true
           schema:
             type: string
+            minLength: 1
+            maxLength: 220
+            pattern: '^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$'
           example: getting-started-with-nodejs
       responses:
         '200':
@@ -1969,7 +2067,7 @@ paths:
       tags:
         - Blogs
       summary: 'Update blog post'
-      description: 'Partial update of an existing blog. All body fields are optional. Requires `blog:update:own` (or elevated permission).'
+      description: 'Partial update. All body fields optional. Requires `blog:update:own` (or `:any`).'
       security:
         -
           bearerAuth: []
@@ -1991,25 +2089,62 @@ paths:
               type: object
               minProperties: 1
               properties:
-                title:
+                slug:
                   type: string
-                  minLength: 3
+                  minLength: 1
+                  maxLength: 220
+                  description: 'Optional URL slug; generated from titleEn when omitted'
+                  pattern: '^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$'
+                titleFr:
+                  type: string
+                  minLength: 1
                   maxLength: 200
-                content:
+                titleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                excerptFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                excerptEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                contentFr:
                   type: string
                   minLength: 10
                   maxLength: 50000
-                excerpt:
+                contentEn:
                   type: string
-                  maxLength: 500
-                  nullable: true
-                coverImage:
+                  minLength: 10
+                  maxLength: 50000
+                image:
                   type: string
-                  format: uri
-                  nullable: true
-                visibility:
+                  minLength: 1
+                  maxLength: 2000
+                category:
                   type: string
-                  enum: [PUBLIC, PRIVATE, MEMBERS_ONLY]
+                  minLength: 1
+                  maxLength: 100
+                date:
+                  type: string
+                  format: date-time
+                readTime:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                author:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                tags:
+                  type: array
+                  maxItems: 30
+                  items: {type: string, minLength: 1, maxLength: 50}
+                isPublished:
+                  type: boolean
+                  description: 'Publish flag (also set by PATCH /publish)'
       responses:
         '200':
           description: 'Blog updated'
@@ -2033,7 +2168,7 @@ paths:
       tags:
         - Blogs
       summary: 'Delete blog post'
-      description: 'Deletes a blog post. Requires `blog:delete:own`.'
+      description: 'Soft-deletes a blog post. Requires `blog:delete:own` (or `:any`).'
       security:
         -
           bearerAuth: []
@@ -2044,6 +2179,9 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
       responses:
         '200':
           description: 'Blog deleted'
@@ -2064,7 +2202,7 @@ paths:
       tags:
         - Blogs
       summary: 'Publish blog post'
-      description: 'Transitions a blog to published status. Requires `blog:publish`.'
+      description: 'Sets `isPublished=true`. Requires `blog:publish`.'
       security:
         -
           bearerAuth: []
@@ -2075,6 +2213,9 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
       responses:
         '200':
           description: 'Blog published'
@@ -2092,6 +2233,2976 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/v1/cv:
+    get:
+      tags:
+        - CV
+      summary: 'Get public CV aggregate'
+      description: 'Read-only aggregate of contact info, experiences, education, skills, featured published projects (confidential links redacted), certifications, languages, and references. Soft-delete aware. No authentication required.'
+      responses:
+        '200':
+          description: 'CV aggregate'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/contact-responses:
+    post:
+      tags:
+        - ContactResponses
+      summary: 'Submit contact form'
+      description: 'Public unauthenticated contact-form submission.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - subject
+                - message
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                  maxLength: 300
+                message:
+                  type: string
+                  maxLength: 10000
+      responses:
+        '201':
+          description: 'Contact message submitted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags:
+        - ContactResponses
+      summary: 'List contact responses'
+      description: 'Admin inbox. Requires `contact_response:read`. Optional `status` filter. Limit ≤ 100.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - new
+              - read
+              - archived
+              - replied
+      responses:
+        '200':
+          description: 'Contact responses list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/contact-responses/{contactResponseId}':
+    get:
+      tags:
+        - ContactResponses
+      summary: 'Get contact response by id'
+      description: 'Requires `contact_response:read`. Viewing a `new` message auto-marks it as `read`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: contactResponseId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Contact response detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - ContactResponses
+      summary: 'Update contact response'
+      description: 'Requires `contact_response:update:own` or `contact_response:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: contactResponseId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                  minLength: 1
+                  maxLength: 300
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 10000
+                status:
+                  type: string
+                  enum: [new, read, archived, replied]
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+      responses:
+        '200':
+          description: 'Contact response updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - ContactResponses
+      summary: 'Update contact response (PUT)'
+      description: 'Same as PATCH. Requires `contact_response:update:own` or `:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: contactResponseId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                  minLength: 1
+                  maxLength: 300
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 10000
+                status:
+                  type: string
+                  enum: [new, read, archived, replied]
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+      responses:
+        '200':
+          description: 'Contact response updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - ContactResponses
+      summary: 'Soft-delete contact response'
+      description: 'Requires `contact_response:delete:own` or `contact_response:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: contactResponseId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Contact response deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/contact-infos:
+    get:
+      tags:
+        - ContactInfos
+      summary: 'Get contact info'
+      description: 'Public singleton profile / contact card. Optional `?key=` (default "default").'
+      parameters:
+        -
+          name: key
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+          description: 'Singleton key (default "default")'
+      responses:
+        '200':
+          description: 'Contact info'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - ContactInfos
+      summary: 'Upsert contact info'
+      description: 'Admin upsert. Requires `contact_info:update:own` or `contact_info:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - handle
+                - titleFr
+                - titleEn
+                - subtitleFr
+                - subtitleEn
+                - email
+                - phone
+                - whatsappLink
+                - location
+                - website
+                - repository
+                - github
+                - linkedin
+                - facebook
+              properties:
+                singletonKey:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  description: 'Defaults to "default" when omitted'
+                name:
+                  type: string
+                  maxLength: 200
+                handle:
+                  type: string
+                  maxLength: 100
+                titleFr:
+                  type: string
+                  maxLength: 300
+                titleEn:
+                  type: string
+                  maxLength: 300
+                subtitleFr:
+                  type: string
+                  maxLength: 500
+                subtitleEn:
+                  type: string
+                  maxLength: 500
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  maxLength: 50
+                whatsappLink:
+                  type: string
+                  maxLength: 500
+                location:
+                  type: string
+                  maxLength: 200
+                website:
+                  type: string
+                  maxLength: 500
+                repository:
+                  type: string
+                  maxLength: 500
+                github:
+                  type: string
+                  maxLength: 500
+                linkedin:
+                  type: string
+                  maxLength: 500
+                facebook:
+                  type: string
+                  maxLength: 500
+                photoUrl:
+                  type: string
+                  nullable: true
+                  maxLength: 1000
+                yearsExperience:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                  maximum: 80
+                tags:
+                  type: array
+                  items: {type: string, maxLength: 100}
+      responses:
+        '200':
+          description: 'Contact info upserted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:
+        - ContactInfos
+      summary: 'Soft-delete contact info'
+      description: 'Requires `contact_info:delete:own` or `contact_info:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: key
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+          description: 'Singleton key (default "default")'
+      responses:
+        '200':
+          description: 'Contact info deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/education:
+    get:
+      tags:
+        - Education
+      summary: 'List education entries'
+      description: 'Public paginated list for CV. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Education list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Education
+      summary: 'Create education entry'
+      description: 'Requires `education:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - degreeFr
+                - degreeEn
+                - school
+                - period
+              properties:
+                degreeFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                degreeEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                school:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                period:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                link:
+                  type: string
+                  nullable: true
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Education created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/education/{educationId}':
+    get:
+      tags:
+        - Education
+      summary: 'Get education by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: educationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Education detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Education
+      summary: 'Update education entry'
+      description: 'Requires `education:update:own` (owner) or `education:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: educationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                degreeFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                degreeEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                school:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                period:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                link:
+                  type: string
+                  nullable: true
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Education updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Education
+      summary: 'Soft-delete education entry'
+      description: 'Requires `education:delete:own` (owner) or `education:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: educationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Education deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/languages:
+    get:
+      tags:
+        - Languages
+      summary: 'List languages'
+      description: 'Public spoken-language list for the CV. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Languages list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Languages
+      summary: 'Create language'
+      description: 'Requires `language:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - language
+                - proficiencyFr
+                - proficiencyEn
+              properties:
+                language:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                proficiencyFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                proficiencyEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Language created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/languages/{languageId}':
+    get:
+      tags:
+        - Languages
+      summary: 'Get language by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: languageId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Language detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Languages
+      summary: 'Update language'
+      description: 'Requires `language:update:own` (owner) or `language:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: languageId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                language:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                proficiencyFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                proficiencyEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Language updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Languages
+      summary: 'Soft-delete language'
+      description: 'Requires `language:delete:own` (owner) or `language:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: languageId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Language deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/references:
+    get:
+      tags:
+        - References
+      summary: 'List references'
+      description: 'Paginated list of professional references (PII). Requires `reference:read`. Also included in the public CV aggregate. Limit ≤ 100.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'References list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - References
+      summary: 'Create reference'
+      description: 'Requires `reference:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - roleFr
+                - roleEn
+                - company
+                - email
+                - phone
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                roleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                roleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                company:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                phone:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Reference created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/references/{referenceId}':
+    get:
+      tags:
+        - References
+      summary: 'Get reference by id'
+      description: 'Requires `reference:read` (PII).'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: referenceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Reference detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - References
+      summary: 'Update reference'
+      description: 'Requires `reference:update:own` (owner) or `reference:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: referenceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                roleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                roleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                company:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                phone:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Reference updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - References
+      summary: 'Soft-delete reference'
+      description: 'Requires `reference:delete:own` (owner) or `reference:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: referenceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Reference deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/achievements:
+    get:
+      tags:
+        - Achievements
+      summary: 'List achievements'
+      description: 'Public highlight counters for the Skills page. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Achievements list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Achievements
+      summary: 'Create achievement'
+      description: 'Requires `achievement:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iconKey
+                - value
+                - labelFr
+                - labelEn
+              properties:
+                iconKey:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                value:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                labelFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                labelEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Achievement created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/achievements/{achievementId}':
+    get:
+      tags:
+        - Achievements
+      summary: 'Get achievement by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: achievementId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Achievement detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Achievements
+      summary: 'Update achievement'
+      description: 'Requires `achievement:update:own` (owner) or `achievement:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: achievementId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                iconKey:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                value:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                labelFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                labelEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Achievement updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Achievements
+      summary: 'Soft-delete achievement'
+      description: 'Requires `achievement:delete:own` (owner) or `achievement:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: achievementId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Achievement deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/testimonials:
+    get:
+      tags:
+        - Testimonials
+      summary: 'List testimonials'
+      description: 'Public list returns approved/published items. Authenticated admins may filter by `status` / `isPublished` and see the full moderation queue. Limit ≤ 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+        -
+          name: isPublished
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 'Testimonials list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Testimonials
+      summary: 'Create testimonial (admin)'
+      description: 'Requires `testimonial:create`. Prefer `/public` or `/feedback` for visitor submissions.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - textFr
+                - textEn
+                - nameFr
+                - nameEn
+                - roleFr
+                - roleEn
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                textFr:
+                  type: string
+                  maxLength: 5000
+                textEn:
+                  type: string
+                  maxLength: 5000
+                nameFr:
+                  type: string
+                  maxLength: 200
+                nameEn:
+                  type: string
+                  maxLength: 200
+                roleFr:
+                  type: string
+                  maxLength: 200
+                roleEn:
+                  type: string
+                  maxLength: 200
+                company:
+                  type: string
+                  nullable: true
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                isPublished:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [pending, approved, rejected]
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Testimonial created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/testimonials/public:
+    post:
+      tags:
+        - Testimonials
+      summary: 'Submit public testimonial'
+      description: 'Unauthenticated feedback form. Creates a pending testimonial for moderation.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - textFr
+                - textEn
+                - nameFr
+                - nameEn
+                - roleFr
+                - roleEn
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                textFr:
+                  type: string
+                  maxLength: 5000
+                textEn:
+                  type: string
+                  maxLength: 5000
+                nameFr:
+                  type: string
+                  maxLength: 200
+                nameEn:
+                  type: string
+                  maxLength: 200
+                roleFr:
+                  type: string
+                  maxLength: 200
+                roleEn:
+                  type: string
+                  maxLength: 200
+                company:
+                  type: string
+                  nullable: true
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+      responses:
+        '201':
+          description: 'Testimonial submitted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/testimonials/feedback:
+    post:
+      tags:
+        - Testimonials
+      summary: 'Submit feedback (alias)'
+      description: 'Same handler as `POST /testimonials/public`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - textFr
+                - textEn
+                - nameFr
+                - nameEn
+                - roleFr
+                - roleEn
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                textFr:
+                  type: string
+                  maxLength: 5000
+                textEn:
+                  type: string
+                  maxLength: 5000
+                nameFr:
+                  type: string
+                  maxLength: 200
+                nameEn:
+                  type: string
+                  maxLength: 200
+                roleFr:
+                  type: string
+                  maxLength: 200
+                roleEn:
+                  type: string
+                  maxLength: 200
+                company:
+                  type: string
+                  nullable: true
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+      responses:
+        '201':
+          description: 'Testimonial submitted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  '/api/v1/testimonials/{testimonialId}':
+    get:
+      tags:
+        - Testimonials
+      summary: 'Get testimonial by id'
+      description: 'Requires `testimonial:read`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Testimonial detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Testimonials
+      summary: 'Update testimonial'
+      description: 'Requires `testimonial:update:own` (owner) or `testimonial:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                textFr:
+                  type: string
+                  maxLength: 5000
+                textEn:
+                  type: string
+                  maxLength: 5000
+                nameFr:
+                  type: string
+                  maxLength: 200
+                nameEn:
+                  type: string
+                  maxLength: 200
+                roleFr:
+                  type: string
+                  maxLength: 200
+                roleEn:
+                  type: string
+                  maxLength: 200
+                company:
+                  type: string
+                  nullable: true
+                  maxLength: 200
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                isPublished:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [pending, approved, rejected]
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Testimonial updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Testimonials
+      summary: 'Soft-delete testimonial'
+      description: 'Requires `testimonial:delete:own` (owner) or `testimonial:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Testimonial deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/api/v1/testimonials/{testimonialId}/approve':
+    patch:
+      tags:
+        - Testimonials
+      summary: 'Approve testimonial'
+      description: 'Requires `testimonial:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Testimonial approved'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/api/v1/testimonials/{testimonialId}/reject':
+    patch:
+      tags:
+        - Testimonials
+      summary: 'Reject testimonial'
+      description: 'Requires `testimonial:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Testimonial rejected'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/certifications:
+    get:
+      tags:
+        - Certifications
+      summary: 'List certifications'
+      description: 'Public paginated list for Skills / CV. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Certifications list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Certifications
+      summary: 'Create certification'
+      description: 'Requires `certification:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - issuer
+                - year
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                issuer:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                year:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+                link:
+                  type: string
+                  nullable: true
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Certification created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/certifications/{certificationId}':
+    get:
+      tags:
+        - Certifications
+      summary: 'Get certification by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: certificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Certification detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Certifications
+      summary: 'Update certification'
+      description: 'Requires `certification:update:own` (owner) or `certification:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: certificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                issuer:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                year:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+                link:
+                  type: string
+                  nullable: true
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Certification updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Certifications
+      summary: 'Soft-delete certification'
+      description: 'Requires `certification:delete:own` (owner) or `certification:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: certificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Certification deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/experiences:
+    get:
+      tags:
+        - Experiences
+      summary: 'List experiences'
+      description: 'Public paginated list for CV / About. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Experiences list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Experiences
+      summary: 'Create experience'
+      description: 'Requires `experience:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titleFr
+                - titleEn
+                - companyFr
+                - companyEn
+                - period
+                - descriptionFr
+                - descriptionEn
+              properties:
+                titleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                titleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                companyFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                companyEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                period:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                descriptionFr:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                descriptionEn:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Experience created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/experiences/{experienceId}':
+    get:
+      tags:
+        - Experiences
+      summary: 'Get experience by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Experience detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Experiences
+      summary: 'Update experience'
+      description: 'Requires `experience:update:own` (owner) or `experience:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                titleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                titleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                companyFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                companyEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                period:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                descriptionFr:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                descriptionEn:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Experience updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Experiences
+      summary: 'Soft-delete experience'
+      description: 'Requires `experience:delete:own` (owner) or `experience:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Experience deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/skills:
+    get:
+      tags:
+        - Skills
+      summary: 'List skills'
+      description: 'Public paginated skill matrix. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Skills list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Skills
+      summary: 'Create skill'
+      description: 'Requires `skill:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - category
+                - level
+                - icon
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                category:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                level:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                icon:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: 'Skill created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/skills/{skillId}':
+    get:
+      tags:
+        - Skills
+      summary: 'Get skill by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Skill detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Skills
+      summary: 'Update skill'
+      description: 'Requires `skill:update:own` (owner) or `skill:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                category:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                level:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                icon:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                sortOrder:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: 'Skill updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Skills
+      summary: 'Soft-delete skill'
+      description: 'Requires `skill:delete:own` (owner) or `skill:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Skill deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/services:
+    get:
+      tags:
+        - Services
+      summary: 'List services'
+      description: 'Public paginated list. Limit capped at 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 'Services list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Services
+      summary: 'Create service'
+      description: 'Requires `service:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iconKey
+                - titleFr
+                - titleEn
+                - descFr
+                - descEn
+                - featuresFr
+                - featuresEn
+                - priceEur
+                - priceFr
+                - priceEn
+              properties:
+                iconKey:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                titleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                titleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                descFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+                descEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+                featuresFr:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                featuresEn:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                priceEur:
+                  type: number
+                  minimum: 0
+                  description: 'EUR source of truth for pricing'
+                hourly:
+                  type: boolean
+                priceFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                priceEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                isPublished:
+                  type: boolean
+      responses:
+        '201':
+          description: 'Service created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/services/{serviceId}':
+    get:
+      tags:
+        - Services
+      summary: 'Get service by id'
+      description: 'Public detail.'
+      parameters:
+        -
+          name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Service detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Services
+      summary: 'Update service'
+      description: 'Requires `service:update:own` (owner) or `service:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                iconKey:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                titleFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                titleEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                descFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+                descEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+                featuresFr:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                featuresEn:
+                  type: array
+                  items: {type: string, maxLength: 1000}
+                priceEur:
+                  type: number
+                  minimum: 0
+                  description: 'EUR source of truth for pricing'
+                hourly:
+                  type: boolean
+                priceFr:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                priceEn:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                isPublished:
+                  type: boolean
+      responses:
+        '200':
+          description: 'Service updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Services
+      summary: 'Soft-delete service'
+      description: 'Requires `service:delete:own` (owner) or `service:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Service deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/projects:
+    get:
+      tags:
+        - Projects
+      summary: 'List projects'
+      description: 'Public list of published projects by default. `includeUnpublished=true` requires bearer + `project:read`. Optional filters: `isPublished`, `isFeatured`, `category`. Limit ≤ 100.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: isPublished
+          in: query
+          schema:
+            type: boolean
+        -
+          name: isFeatured
+          in: query
+          schema:
+            type: boolean
+        -
+          name: category
+          in: query
+          schema:
+            type: string
+            maxLength: 120
+        -
+          name: includeUnpublished
+          in: query
+          schema:
+            type: boolean
+          description: 'When true, requires authentication and `project:read`'
+      responses:
+        '200':
+          description: 'Projects list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Projects
+      summary: 'Create project'
+      description: 'Requires `project:create`. Bilingual case-study fields.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titleFr
+                - titleEn
+                - descriptionFr
+                - descriptionEn
+                - problemFr
+                - problemEn
+                - solutionFr
+                - solutionEn
+                - impactFr
+                - impactEn
+                - techStack
+                - images
+                - preview
+                - category
+                - status
+                - complexity
+                - role
+                - duration
+                - date
+              properties:
+                titleFr:
+                  type: string
+                  minLength: 2
+                  maxLength: 300
+                titleEn:
+                  type: string
+                  minLength: 2
+                  maxLength: 300
+                descriptionFr:
+                  type: string
+                  maxLength: 5000
+                descriptionEn:
+                  type: string
+                  maxLength: 5000
+                problemFr:
+                  type: string
+                  maxLength: 10000
+                problemEn:
+                  type: string
+                  maxLength: 10000
+                solutionFr:
+                  type: array
+                  items: {type: string}
+                solutionEn:
+                  type: array
+                  items: {type: string}
+                impactFr:
+                  type: array
+                  items: {type: string}
+                impactEn:
+                  type: array
+                  items: {type: string}
+                techStack:
+                  description: 'Object or array describing the stack'
+                  oneOf: [{type: object, additionalProperties: true}, {type: array}]
+                images:
+                  type: array
+                  minItems: 1
+                  items: {type: string}
+                preview:
+                  type: string
+                  maxLength: 2000
+                category:
+                  type: string
+                  maxLength: 120
+                status:
+                  type: string
+                  maxLength: 80
+                complexity:
+                  type: string
+                  maxLength: 80
+                role:
+                  type: string
+                  maxLength: 200
+                duration:
+                  type: string
+                  maxLength: 120
+                date:
+                  type: string
+                  maxLength: 80
+                isFeatured:
+                  type: boolean
+                isPublished:
+                  type: boolean
+                confidential:
+                  type: boolean
+                  description: 'When true, public responses redact github/demo (and similar) links'
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                github:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                demo:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                fullDescriptionFr:
+                  type: string
+                  nullable: true
+                fullDescriptionEn:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: 'Project created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/projects/{projectId}':
+    get:
+      tags:
+        - Projects
+      summary: 'Get project by id'
+      description: 'Public detail for published projects. Confidential projects redact sensitive links (e.g. github, demo) for unauthenticated / non-privileged callers.'
+      parameters:
+        -
+          name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Project detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Projects
+      summary: 'Update project'
+      description: 'Requires `project:update:own` (owner) or `project:update:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                titleFr:
+                  type: string
+                  minLength: 2
+                  maxLength: 300
+                titleEn:
+                  type: string
+                  minLength: 2
+                  maxLength: 300
+                descriptionFr:
+                  type: string
+                  maxLength: 5000
+                descriptionEn:
+                  type: string
+                  maxLength: 5000
+                problemFr:
+                  type: string
+                  maxLength: 10000
+                problemEn:
+                  type: string
+                  maxLength: 10000
+                solutionFr:
+                  type: array
+                  items: {type: string}
+                solutionEn:
+                  type: array
+                  items: {type: string}
+                impactFr:
+                  type: array
+                  items: {type: string}
+                impactEn:
+                  type: array
+                  items: {type: string}
+                techStack:
+                  description: 'Object or array describing the stack'
+                  oneOf: [{type: object, additionalProperties: true}, {type: array}]
+                images:
+                  type: array
+                  minItems: 1
+                  items: {type: string}
+                preview:
+                  type: string
+                  maxLength: 2000
+                category:
+                  type: string
+                  maxLength: 120
+                status:
+                  type: string
+                  maxLength: 80
+                complexity:
+                  type: string
+                  maxLength: 80
+                role:
+                  type: string
+                  maxLength: 200
+                duration:
+                  type: string
+                  maxLength: 120
+                date:
+                  type: string
+                  maxLength: 80
+                isFeatured:
+                  type: boolean
+                isPublished:
+                  type: boolean
+                confidential:
+                  type: boolean
+                  description: 'When true, public responses redact github/demo (and similar) links'
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                github:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                demo:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                fullDescriptionFr:
+                  type: string
+                  nullable: true
+                fullDescriptionEn:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: 'Project updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Projects
+      summary: 'Soft-delete project'
+      description: 'Requires `project:delete:own` (owner) or `project:delete:any`.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Project deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /health:
     get:
       tags:
@@ -2198,6 +5309,28 @@ paths:
       responses:
         '204':
           description: 'Report accepted (no content)'
+  /api/v1/admin/dashboard:
+    get:
+      tags:
+        - System
+      summary: 'Admin dashboard counts'
+      description: 'Aggregate operator stats: published projects, published blogs, new contact responses, and pending testimonials. Requires JWT + verified active user with admin/super-admin role or `audit:read`.'
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Dashboard counts'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - {$ref: '#/components/schemas/ApiResponse'}
+                  - {type: object, properties: {data: {type: object, properties: {publishedProjects: {type: integer}, publishedBlogs: {type: integer}, newContactResponses: {type: integer}, pendingTestimonials: {type: integer}}}}}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /api/v1/admin/audit:
     get:
       tags:

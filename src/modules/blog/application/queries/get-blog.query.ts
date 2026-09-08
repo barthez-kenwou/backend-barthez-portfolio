@@ -12,7 +12,7 @@ export type GetBlogQueryDeps = {
 };
 
 /**
- * Loads a public published blog by slug (cached).
+ * Loads a published blog by slug (isPublished=true, cached).
  */
 export class GetBlogQuery {
   constructor(private readonly deps: GetBlogQueryDeps) {}

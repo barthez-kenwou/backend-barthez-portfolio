@@ -1,8 +1,8 @@
 # OpenAPI Documentation
 
-HTTP contracts for Backend Init are described with **OpenAPI 3** and served
-locally by Swagger UI when enabled. All operation summaries and descriptions are
-written in **English**.
+HTTP contracts for Barthez Kenwou Portfolio Backend are described with **OpenAPI
+3** and served locally by Swagger UI when enabled. All operation summaries and
+descriptions are written in **English**.
 
 ## Live UI
 

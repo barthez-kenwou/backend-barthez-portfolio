@@ -1,6 +1,7 @@
 # Deployment
 
-Run and operate Backend Init in Docker and production environments.
+Run and operate Barthez Kenwou Portfolio Backend in Docker and production
+environments.
 
 ## Documents
 

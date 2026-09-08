@@ -1,6 +1,7 @@
 # Architecture Decision Records
 
-This folder records significant technical decisions for Backend Init.
+This folder records significant technical decisions for Barthez Kenwou Portfolio
+Backend.
 
 ## Format
 

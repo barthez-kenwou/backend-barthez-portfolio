@@ -3,9 +3,6 @@
  * Infrastructure maps persistence rows to and from this shape.
  */
 
-export type ArticleStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
-export type Visibility = 'PUBLIC' | 'PRIVATE' | 'MEMBERS_ONLY';
-
 export type BlogAuthorSummary = {
   id: string;
   firstName: string;
@@ -15,43 +12,61 @@ export type BlogAuthorSummary = {
 
 export type BlogEntity = {
   id: string;
-  title: string;
   slug: string;
-  excerpt?: string | null;
-  content: string;
-  coverImage?: string | null;
-  status: ArticleStatus;
-  visibility: Visibility;
-  authorId: string;
-  author?: BlogAuthorSummary;
+  titleFr: string;
+  titleEn: string;
+  excerptFr: string;
+  excerptEn: string;
+  contentFr: string;
+  contentEn: string;
+  image: string;
+  category: string;
+  date: Date;
+  readTime: string;
+  author: string;
+  tags: string[];
+  isPublished: boolean;
   views: number;
-  likes: number;
-  shares: number;
-  publishedAt?: Date | null;
-  scheduledAt?: Date | null;
+  authorId?: string | null;
+  authorUser?: BlogAuthorSummary;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
 };
 
 export type CreateBlogInput = {
-  title: string;
-  content: string;
-  excerpt?: string;
-  coverImage?: string;
-  visibility?: Visibility;
-  authorId: string;
   slug: string;
+  titleFr: string;
+  titleEn: string;
+  excerptFr: string;
+  excerptEn: string;
+  contentFr: string;
+  contentEn: string;
+  image: string;
+  category: string;
+  date: Date;
+  readTime: string;
+  author: string;
+  tags?: string[];
+  authorId?: string | null;
+  isPublished?: boolean;
 };
 
 export type UpdateBlogInput = Partial<{
-  title: string;
-  content: string;
-  excerpt: string;
-  coverImage: string;
-  visibility: Visibility;
-  status: ArticleStatus;
-  publishedAt: Date | null;
+  slug: string;
+  titleFr: string;
+  titleEn: string;
+  excerptFr: string;
+  excerptEn: string;
+  contentFr: string;
+  contentEn: string;
+  image: string;
+  category: string;
+  date: Date;
+  readTime: string;
+  author: string;
+  tags: string[];
+  isPublished: boolean;
   deletedAt: Date | null;
 }>;
 

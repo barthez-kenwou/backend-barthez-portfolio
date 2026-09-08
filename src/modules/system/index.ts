@@ -6,6 +6,7 @@ import { setupBullBoard } from './presentation/routes/admin-queues.routes';
 import { createAuditRoutes } from './presentation/routes/audit.routes';
 import { createCspRoutes } from './presentation/routes/csp.routes';
 import { createCsrfRoutes } from './presentation/routes/csrf.routes';
+import { createDashboardRoutes } from './presentation/routes/dashboard.routes';
 import { createHealthRoutes } from './presentation/routes/health.routes';
 
 export type SystemRouters = {
@@ -14,6 +15,7 @@ export type SystemRouters = {
   csp: Router;
   metrics: Router;
   audit: Router;
+  dashboard: Router;
   setupBullBoard: (app: Express) => void;
 };
 
@@ -27,6 +29,7 @@ export function createSystemRouters(): SystemRouters {
     csp: createCspRoutes(),
     metrics: metricsRouter,
     audit: createAuditRoutes(),
+    dashboard: createDashboardRoutes(),
     setupBullBoard,
   };
 }
@@ -35,5 +38,6 @@ export { default, setupBullBoard } from './presentation/routes/admin-queues.rout
 export { createAuditRoutes } from './presentation/routes/audit.routes';
 export { createCspRoutes } from './presentation/routes/csp.routes';
 export { createCsrfRoutes } from './presentation/routes/csrf.routes';
+export { createDashboardRoutes } from './presentation/routes/dashboard.routes';
 export { createHealthRoutes } from './presentation/routes/health.routes';
 export { default as metricsRouter } from '@/shared/infrastructure/metrics/metrics';

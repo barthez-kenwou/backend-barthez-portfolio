@@ -1,14 +1,9 @@
 import type { Blog as PrismaBlog, User } from '@prisma/client';
 
-import type {
-  ArticleStatus,
-  BlogAuthorSummary,
-  BlogEntity,
-  Visibility,
-} from '../../domain/entities/blog.entity';
+import type { BlogAuthorSummary, BlogEntity } from '../../domain/entities/blog.entity';
 
 type PrismaBlogWithAuthor = PrismaBlog & {
-  author?: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'> | null;
+  authorUser?: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'> | null;
 };
 
 /**
@@ -16,31 +11,34 @@ type PrismaBlogWithAuthor = PrismaBlog & {
  */
 export const BlogMapper = {
   toDomain(row: PrismaBlogWithAuthor): BlogEntity {
-    const author: BlogAuthorSummary | undefined = row.author
+    const authorUser: BlogAuthorSummary | undefined = row.authorUser
       ? {
-          id: row.author.id,
-          firstName: row.author.firstName,
-          lastName: row.author.lastName,
-          avatarUrl: row.author.avatarUrl,
+          id: row.authorUser.id,
+          firstName: row.authorUser.firstName,
+          lastName: row.authorUser.lastName,
+          avatarUrl: row.authorUser.avatarUrl,
         }
       : undefined;
 
     return {
       id: row.id,
-      title: row.title,
       slug: row.slug,
-      excerpt: row.excerpt,
-      content: row.content,
-      coverImage: row.coverImage,
-      status: row.status as ArticleStatus,
-      visibility: row.visibility as Visibility,
-      authorId: row.authorId,
-      author,
+      titleFr: row.titleFr,
+      titleEn: row.titleEn,
+      excerptFr: row.excerptFr,
+      excerptEn: row.excerptEn,
+      contentFr: row.contentFr,
+      contentEn: row.contentEn,
+      image: row.image,
+      category: row.category,
+      date: row.date,
+      readTime: row.readTime,
+      author: row.author,
+      tags: row.tags ?? [],
+      isPublished: row.isPublished,
       views: row.views,
-      likes: row.likes,
-      shares: row.shares,
-      publishedAt: row.publishedAt,
-      scheduledAt: row.scheduledAt,
+      authorId: row.authorId,
+      authorUser,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       deletedAt: row.deletedAt,

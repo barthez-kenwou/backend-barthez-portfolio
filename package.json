@@ -1,13 +1,14 @@
 {
-  "name": "@barthez-kenwou/backend-init",
+  "name": "@barthez-kenwou/backend-barthez-portfolio",
   "version": "1.0.0",
-  "description": "Production-ready Express + TypeScript backend template with JWT auth, OAuth 2.0, MongoDB, Redis, MinIO, and observability tooling.",
+  "description": "Backend API for barthez-kenwou.dev — portfolio CMS (projects, blogs, skills, CV, contact), JWT auth, MongoDB, Redis, MinIO, and observability.",
   "keywords": [
+    "barthez-kenwou",
+    "portfolio",
     "express",
     "typescript",
     "backend",
-    "template",
-    "starter",
+    "cms",
     "mongodb",
     "prisma",
     "jwt",
@@ -18,25 +19,25 @@
     "openapi",
     "rest-api"
   ],
-  "homepage": "https://github.com/barthez-kenwou/backend-init#readme",
+  "homepage": "https://barthez-kenwou.dev",
   "bugs": {
-    "url": "https://github.com/barthez-kenwou/backend-init/issues"
+    "url": "https://github.com/barthez-kenwou/backend-barthez-portfolio/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/barthez-kenwou/backend-init.git"
+    "url": "git+https://github.com/barthez-kenwou/backend-barthez-portfolio.git"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "author": {
     "name": "Barthez Kenwou",
-    "email": "kenwoubarthez@gmail.com",
+    "email": "contact@barthez-kenwou.dev",
     "url": "https://github.com/barthez-kenwou",
     "website": "https://barthez-kenwou.dev/"
   },
   "contributors": [
     {
       "name": "Barthez Kenwou",
-      "email": "kenwoubarthez@gmail.com"
+      "email": "contact@barthez-kenwou.dev"
     }
   ],
   "main": "dist/index.js",
@@ -67,15 +68,15 @@
     "test:integration": "vitest run --project integration",
     "test:integration:live": "RUN_LIVE_INFRA=1 vitest run --project integration",
     "test:e2e": "vitest run --project e2e",
-    "test:e2e:live": "node scripts/e2e-all-routes.mjs",
-    "test:load": "bash scripts/run-load-tests.sh",
+    "test:e2e:live": "node infra/scripts/e2e-all-routes.mjs",
+    "test:load": "bash infra/scripts/run-load-tests.sh",
     "test:load:smoke": "k6 run tests/load/k6/scenarios/01-public-health.js",
     "test:contract": "vitest run --project contract",
     "test:coverage": "vitest run --coverage",
     "test:docs": "swagger-cli validate docs/api/openapi.yaml",
     "test:ci": "vitest run --project unit --project integration --project e2e --project contract --coverage",
     "validate": "npm run lint:ci && npm run type-check && npm run test:ci && npm run test:docs",
-    "docker:build": "docker build -f infra/docker/Dockerfile -t backend-init:local .",
+    "docker:build": "docker build -f infra/docker/Dockerfile -t backend-barthez-portfolio:local .",
     "docker:up": "docker compose up -d",
     "docker:rebuild": "docker compose build --no-cache backend && docker compose up -d backend",
     "docker:tools": "docker compose --profile tools up -d",
@@ -84,12 +85,14 @@
     "prisma:generate": "prisma generate --schema prisma/",
     "prisma:format": "prisma format --schema prisma/",
     "prisma:push": "prisma db push --schema prisma/",
-    "prisma:push:local": "DATABASE_URL=\"mongodb://admin:secret123@127.0.0.1:27017/appDB?directConnection=true&authSource=admin\" prisma db push --schema prisma/",
-    "prisma:studio": "DATABASE_URL=\"mongodb://admin:secret123@127.0.0.1:27017/appDB?directConnection=true&authSource=admin\" prisma studio --schema prisma/ --port 5555",
+    "prisma:push:local": "DATABASE_URL=\"mongodb://admin:secret123@127.0.0.1:27017/portfolioDB?directConnection=true&authSource=admin\" prisma db push --schema prisma/",
+    "prisma:studio": "DATABASE_URL=\"mongodb://admin:secret123@127.0.0.1:27017/portfolioDB?directConnection=true&authSource=admin\" prisma studio --schema prisma/ --port 5555",
     "prisma:seed": "ts-node -r tsconfig-paths/register --project prisma/tsconfig.json prisma/seed.ts",
     "generate:openapi": "node docs/api/openapi.config.js",
-    "keys:generate": "bash scripts/generate-jwt-keys.sh",
-    "scaffold:module": "node scripts/scaffold/module.mjs",
+    "keys:generate": "bash infra/scripts/generate-jwt-keys.sh",
+    "scaffold:module": "node infra/scripts/scaffold/module.mjs",
+    "bootstrap:admin": "tsx -r tsconfig-paths/register infra/scripts/bootstrap-admin.ts",
+    "test:routes:portfolio": "python3 infra/scripts/test-portfolio-routes.py",
     "postinstall": "npm run prisma:generate",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=10 --fix",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=10",

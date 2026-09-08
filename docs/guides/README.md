@@ -1,6 +1,6 @@
 # Guides
 
-Task-oriented recipes for common Backend Init extensions.
+Task-oriented recipes for common Barthez Kenwou Portfolio Backend extensions.
 
 ## Documents
 

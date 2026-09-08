@@ -14,38 +14,72 @@ describe('CreateBlogCommand', () => {
     blogRepository = {
       create: vi.fn().mockImplementation(async (input) =>
         buildBlogEntity({
-          title: input.title,
-          content: input.content,
+          titleFr: input.titleFr,
+          titleEn: input.titleEn,
           slug: input.slug,
           authorId: input.authorId,
+          author: input.author,
         }),
       ),
       update: vi.fn(),
       findById: vi.fn(),
       findPublicBySlug: vi.fn(),
       listPublic: vi.fn(),
+      findPublicByIds: vi.fn(),
     };
 
     cache = { invalidatePattern: vi.fn().mockResolvedValue(undefined) };
     command = new CreateBlogCommand({ blogRepository, cache });
   });
 
-  it('creates a draft with a slugified unique slug and invalidates cache', async () => {
+  it('creates an unpublished post with slugify(titleEn)+timestamp and invalidates cache', async () => {
     const blog = await command.execute({
-      title: 'Hello World!',
-      content: 'Content long enough',
+      titleFr: 'Bonjour le monde !',
+      titleEn: 'Hello World!',
+      excerptFr: 'Extrait FR',
+      excerptEn: 'Excerpt EN',
+      contentFr: 'Contenu FR assez long',
+      contentEn: 'Content EN long enough',
+      image: 'https://cdn.example.com/a.jpg',
+      category: 'engineering',
+      date: new Date('2026-01-15T00:00:00.000Z'),
+      readTime: '4 min',
+      author: 'Barthez',
       authorId: 'user_1',
     });
 
     expect(blogRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'Hello World!',
+        titleEn: 'Hello World!',
+        titleFr: 'Bonjour le monde !',
         authorId: 'user_1',
-        visibility: 'PUBLIC',
+        author: 'Barthez',
         slug: expect.stringMatching(/^hello-world-/),
       }),
     );
     expect(cache.invalidatePattern).toHaveBeenCalledWith('blogs:*');
-    expect(blog.title).toBe('Hello World!');
+    expect(blog.titleEn).toBe('Hello World!');
+  });
+
+  it('uses an explicit slug from the body when provided', async () => {
+    await command.execute({
+      slug: 'custom-slug',
+      titleFr: 'Titre',
+      titleEn: 'Title',
+      excerptFr: 'Extrait FR',
+      excerptEn: 'Excerpt EN',
+      contentFr: 'Contenu FR assez long',
+      contentEn: 'Content EN long enough',
+      image: 'https://cdn.example.com/a.jpg',
+      category: 'engineering',
+      date: '2026-01-15T00:00:00.000Z',
+      readTime: '4 min',
+      author: 'Barthez',
+      authorId: 'user_1',
+    });
+
+    expect(blogRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: 'custom-slug' }),
+    );
   });
 });

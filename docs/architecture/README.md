@@ -1,7 +1,7 @@
 # Architecture
 
-System design for Backend Init: modular monolith, layer boundaries, and
-extension points.
+System design for Barthez Kenwou Portfolio Backend: modular monolith, layer
+boundaries, and extension points.
 
 ## Documents
 

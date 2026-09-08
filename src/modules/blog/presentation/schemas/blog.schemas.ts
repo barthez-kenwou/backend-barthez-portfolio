@@ -1,50 +1,121 @@
 import { body, param, query } from 'express-validator';
 
-const VISIBILITY = ['PUBLIC', 'PRIVATE', 'MEMBERS_ONLY'] as const;
-
-const titleRule = (opts: { optional?: boolean } = {}) => {
-  const chain = opts.optional ? body('title').optional() : body('title');
+const bilingualString = (
+  field: string,
+  opts: { optional?: boolean; min?: number; max?: number; label?: string } = {},
+) => {
+  const label = opts.label ?? field;
+  const min = opts.min ?? 1;
+  const max = opts.max ?? 500;
+  const chain = opts.optional ? body(field).optional() : body(field);
   return chain
     .trim()
     .notEmpty()
-    .withMessage('Title is required')
+    .withMessage(`${label} is required`)
     .isString()
-    .withMessage('Title must be a string')
-    .isLength({ min: 3, max: 200 })
-    .withMessage('Title must be between 3 and 200 characters')
-    .escape();
+    .withMessage(`${label} must be a string`)
+    .isLength({ min, max })
+    .withMessage(`${label} must be between ${min} and ${max} characters`);
 };
 
-const contentRule = (opts: { optional?: boolean } = {}) => {
-  const chain = opts.optional ? body('content').optional() : body('content');
+const contentRule = (field: string, opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body(field).optional() : body(field);
   return chain
     .trim()
     .notEmpty()
-    .withMessage('Content is required')
+    .withMessage(`${field} is required`)
     .isString()
-    .withMessage('Content must be a string')
+    .withMessage(`${field} must be a string`)
     .isLength({ min: 10, max: 50_000 })
-    .withMessage('Content must be between 10 and 50 000 characters');
+    .withMessage(`${field} must be between 10 and 50 000 characters`);
 };
 
-const optionalExcerpt = body('excerpt')
-  .optional({ values: 'null' })
+const optionalSlug = body('slug')
+  .optional()
   .trim()
   .isString()
-  .withMessage('Excerpt must be a string')
-  .isLength({ max: 500 })
-  .withMessage('Excerpt must be at most 500 characters');
+  .withMessage('Slug must be a string')
+  .isLength({ min: 1, max: 220 })
+  .withMessage('Slug must be between 1 and 220 characters')
+  .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i)
+  .withMessage('Slug must be URL-safe (letters, numbers, hyphens)');
 
-const optionalCoverImage = body('coverImage')
-  .optional({ values: 'null' })
-  .trim()
-  .isURL()
-  .withMessage('coverImage must be a valid URL');
+const imageRule = (opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body('image').optional() : body('image');
+  return chain
+    .trim()
+    .notEmpty()
+    .withMessage('Image is required')
+    .isString()
+    .withMessage('Image must be a string')
+    .isLength({ min: 1, max: 2000 })
+    .withMessage('Image must be at most 2000 characters');
+};
 
-const optionalVisibility = body('visibility')
+const categoryRule = (opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body('category').optional() : body('category');
+  return chain
+    .trim()
+    .notEmpty()
+    .withMessage('Category is required')
+    .isString()
+    .withMessage('Category must be a string')
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Category must be between 1 and 100 characters');
+};
+
+const dateRule = (opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body('date').optional() : body('date');
+  return chain
+    .notEmpty()
+    .withMessage('Date is required')
+    .isISO8601()
+    .withMessage('Date must be a valid ISO 8601 datetime')
+    .toDate();
+};
+
+const readTimeRule = (opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body('readTime').optional() : body('readTime');
+  return chain
+    .trim()
+    .notEmpty()
+    .withMessage('readTime is required')
+    .isString()
+    .withMessage('readTime must be a string')
+    .isLength({ min: 1, max: 50 })
+    .withMessage('readTime must be at most 50 characters');
+};
+
+const authorRule = (opts: { optional?: boolean } = {}) => {
+  const chain = opts.optional ? body('author').optional() : body('author');
+  return chain
+    .trim()
+    .notEmpty()
+    .withMessage('Author is required')
+    .isString()
+    .withMessage('Author must be a string')
+    .isLength({ min: 1, max: 120 })
+    .withMessage('Author must be at most 120 characters');
+};
+
+const tagsRule = body('tags')
   .optional()
-  .isIn([...VISIBILITY])
-  .withMessage(`visibility must be one of: ${VISIBILITY.join(', ')}`);
+  .isArray({ max: 30 })
+  .withMessage('tags must be an array of at most 30 items');
+
+const tagsItemRule = body('tags.*')
+  .optional()
+  .trim()
+  .isString()
+  .withMessage('Each tag must be a string')
+  .isLength({ min: 1, max: 50 })
+  .withMessage('Each tag must be between 1 and 50 characters');
+
+const optionalIsPublished = body('isPublished')
+  .optional()
+  .isBoolean()
+  .withMessage('isPublished must be a boolean')
+  .toBoolean();
 
 const blogIdParam = param('id')
   .trim()
@@ -80,15 +151,40 @@ const searchQueryRule = query('q')
 export const blogSchemas = {
   search: [searchQueryRule],
 
-  create: [titleRule(), contentRule(), optionalExcerpt, optionalCoverImage, optionalVisibility],
+  create: [
+    optionalSlug,
+    bilingualString('titleFr', { max: 200, label: 'titleFr' }),
+    bilingualString('titleEn', { max: 200, label: 'titleEn' }),
+    bilingualString('excerptFr', { max: 500, label: 'excerptFr' }),
+    bilingualString('excerptEn', { max: 500, label: 'excerptEn' }),
+    contentRule('contentFr'),
+    contentRule('contentEn'),
+    imageRule(),
+    categoryRule(),
+    dateRule(),
+    readTimeRule(),
+    authorRule(),
+    tagsRule,
+    tagsItemRule,
+  ],
 
   update: [
     blogIdParam,
-    titleRule({ optional: true }),
-    contentRule({ optional: true }),
-    optionalExcerpt,
-    optionalCoverImage,
-    optionalVisibility,
+    optionalSlug,
+    bilingualString('titleFr', { optional: true, max: 200, label: 'titleFr' }),
+    bilingualString('titleEn', { optional: true, max: 200, label: 'titleEn' }),
+    bilingualString('excerptFr', { optional: true, max: 500, label: 'excerptFr' }),
+    bilingualString('excerptEn', { optional: true, max: 500, label: 'excerptEn' }),
+    contentRule('contentFr', { optional: true }),
+    contentRule('contentEn', { optional: true }),
+    imageRule({ optional: true }),
+    categoryRule({ optional: true }),
+    dateRule({ optional: true }),
+    readTimeRule({ optional: true }),
+    authorRule({ optional: true }),
+    tagsRule,
+    tagsItemRule,
+    optionalIsPublished,
   ],
 
   getBySlug: [blogSlugParam],

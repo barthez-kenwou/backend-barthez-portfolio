@@ -40,7 +40,10 @@ prisma/*.db-journal
 coverage/
 .nyc_output/
 
-# Misc local notes (keep out of the template repo)
+# Local scratch (seed dumps, one-off experiments)
+.tmp/
+
+# Misc local notes (keep out of the repo)
 TECHNICAL_ANALYSIS.md
 ISSUES_QUICK_REFERENCE.md
 OAUTH_README.md

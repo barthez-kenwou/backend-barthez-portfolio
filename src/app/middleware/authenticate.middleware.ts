@@ -19,6 +19,57 @@ import { asyncHandler } from '@/shared/utils/http/responses/helpers';
 const accountDirectory = new PrismaUserRepository();
 
 /**
+ * Attach `req.user` when a Bearer token is present; otherwise continue as anonymous.
+ * Use on public routes that enrich behavior for authenticated admins.
+ */
+export const optionalAuthenticate = asyncHandler(
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      next();
+      return;
+    }
+
+    const accessToken = authHeader.slice(7).trim();
+    if (!accessToken) {
+      next();
+      return;
+    }
+
+    try {
+      const decoded = jwtService.verifyAccessToken(accessToken);
+      if (!decoded.jti || (await blacklistService.isRevoked(decoded.jti))) {
+        next();
+        return;
+      }
+
+      const [account, authContext] = await Promise.all([
+        accountDirectory.findById(decoded.id),
+        rbacService.getUserAuthContext(decoded.id),
+      ]);
+
+      if (!account) {
+        next();
+        return;
+      }
+
+      req.user = {
+        ...decoded,
+        isActive: account.isActive,
+        isVerified: account.isVerified,
+        permissions: authContext.permissions,
+        roles: authContext.roles,
+      };
+      setRequestContextUserId(decoded.id);
+    } catch {
+      // Invalid token on optional routes → treat as anonymous.
+    }
+
+    next();
+  },
+);
+
+/**
  * Require a valid, non-revoked Bearer access token and attach `req.user`
  * with live account flags + RBAC (one user + one RBAC load per request).
  */

@@ -24,13 +24,15 @@ export class MongoSearchAdapter implements SearchPort {
       const where = {
         AND: [
           prismaNotDeleted,
-          { status: 'PUBLISHED' as const },
-          { visibility: 'PUBLIC' as const },
+          { isPublished: true },
           {
             OR: [
-              { title: { contains: term } },
-              { excerpt: { contains: term } },
-              { content: { contains: term } },
+              { titleFr: { contains: term } },
+              { titleEn: { contains: term } },
+              { excerptFr: { contains: term } },
+              { excerptEn: { contains: term } },
+              { contentFr: { contains: term } },
+              { contentEn: { contains: term } },
             ],
           },
         ],
@@ -42,7 +44,7 @@ export class MongoSearchAdapter implements SearchPort {
           select: { id: true },
           skip,
           take: limit,
-          orderBy: { publishedAt: 'desc' },
+          orderBy: { date: 'desc' },
         }),
         prisma.blog.count({ where }),
       ]);

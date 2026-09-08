@@ -1,12 +1,13 @@
-# Backend Init Documentation
+# Barthez Kenwou Portfolio Backend Documentation
 
-This documentation explains how **Backend Init** is structured, how to extend
-it, and how to run it in development and production. It is written for engineers
-who will fork the template, replace the sample domain, and ship a real API.
+This documentation explains how the **Barthez Kenwou Portfolio Backend** is
+structured, how to operate it, and how to extend it. The API serves
+[barthez-kenwou.dev](https://barthez-kenwou.dev) — public portfolio content and
+the `/barthez-admin` CMS (projects, blogs, skills, CV, contact, testimonials).
 
 ## Documentation philosophy
 
-Good template documentation does three jobs:
+Good project documentation does three jobs:
 
 1. **Orient** — show where code lives and why, so a new contributor is
    productive in under an hour.
@@ -25,7 +26,7 @@ tree is the cross-cutting narrative.
 | ------------------- | ------------------------------------------------------------------------------------- |
 | First run           | [Getting started](./development/getting-started.md)                                   |
 | Architecture        | [Overview](./architecture/overview.md)                                                |
-| Extend the template | [Extending](./architecture/extending.md)                                              |
+| Extend the codebase | [Extending](./architecture/extending.md)                                              |
 | Ship to production  | [Production](./deployment/production.md) + [GitHub → VPS](./deployment/github-vps.md) |
 | HTTP contract       | [OpenAPI](./api/README.md)                                                            |
 
@@ -37,8 +38,11 @@ tree is the cross-cutting narrative.
   dependency flow
 - [Platform kernel](./architecture/platform-kernel.md) — bootstrap, audit,
   flags, uploads, process roles
-- [Modules catalog](./architecture/modules.md) — auth, users, rbac, oauth, blog,
-  files, backup, notifications, system
+- [Modules catalog](./architecture/modules.md) — platform (auth, users, rbac,
+  oauth, files, backup, notifications, system) and portfolio content (blog,
+  projects, services, skills, experiences, education, certifications,
+  testimonials, achievements, references, languages, contact-infos,
+  contact-responses, cv)
 - [Dependency rules](./architecture/dependency-rules.md) — what is allowed, what
   is forbidden
 - [Extending](./architecture/extending.md) — add a module end to end
@@ -94,7 +98,7 @@ tree is the cross-cutting narrative.
 | [SECURITY.md](../SECURITY.md)               | Vulnerability reporting          |
 | [CHANGELOG.md](../CHANGELOG.md)             | Release history                  |
 | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | Community standards              |
-| [LICENSE](../LICENSE)                       | MIT                              |
+| [LICENSE](../LICENSE)                       | Project license                  |
 
 ## Conventions used in these docs
 

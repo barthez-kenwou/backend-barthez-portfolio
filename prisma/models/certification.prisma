@@ -1,0 +1,18 @@
+// Certifications (matches frontend Icertifications)
+
+model Certification {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  issuer    String
+  year      String
+  link      String?
+  sortOrder Int       @default(0)
+  ownerId   String?   @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([year])
+  @@index([sortOrder])
+  @@index([deletedAt])
+}

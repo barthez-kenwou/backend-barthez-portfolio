@@ -7,7 +7,7 @@ const keyFromMaterial = (keyMaterial: string): Buffer => {
   if (/^[0-9a-f]{64}$/i.test(trimmed)) {
     return Buffer.from(trimmed, 'hex');
   }
-  return scryptSync(trimmed, 'backend-init-secret-box', 32);
+  return scryptSync(trimmed, 'portfolio-api-secret-box', 32);
 };
 
 /**

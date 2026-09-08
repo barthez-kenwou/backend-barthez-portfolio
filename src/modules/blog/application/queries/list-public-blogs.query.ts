@@ -11,7 +11,7 @@ export type ListPublicBlogsQueryDeps = {
 };
 
 /**
- * Returns a paginated list of PUBLISHED + PUBLIC blogs (cached).
+ * Returns a paginated list of published blogs (isPublished=true, cached).
  */
 export class ListPublicBlogsQuery {
   constructor(private readonly deps: ListPublicBlogsQueryDeps) {}

@@ -1,40 +1,30 @@
-// Blog reference domain model
-
-enum ArticleStatus {
-  DRAFT
-  REVIEW
-  PUBLISHED
-  ARCHIVED
-}
-
-enum Visibility {
-  PUBLIC
-  PRIVATE
-  MEMBERS_ONLY
-}
+// Portfolio bilingual blog posts (matches frontend IBlog)
 
 model Blog {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  slug        String        @unique
-  excerpt     String?
-  content     String
-  coverImage  String?
-  status      ArticleStatus @default(DRAFT)
-  visibility  Visibility    @default(PUBLIC)
-  authorId    String        @db.ObjectId
-  author      User          @relation(fields: [authorId], references: [id])
-  views       Int           @default(0)
-  likes       Int           @default(0)
-  shares      Int           @default(0)
-  publishedAt DateTime?
-  scheduledAt DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String    @unique
+  titleFr     String
+  titleEn     String
+  excerptFr   String
+  excerptEn   String
+  contentFr   String
+  contentEn   String
+  image       String
+  category    String
+  date        DateTime
+  readTime    String
+  author      String
+  tags        String[]
+  isPublished Boolean   @default(false)
+  views       Int       @default(0)
+  authorId    String?   @db.ObjectId
+  authorUser  User?     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  @@index([status, visibility])
+  @@index([isPublished, date])
+  @@index([category])
   @@index([authorId])
-  @@index([createdAt, publishedAt])
   @@index([deletedAt])
 }

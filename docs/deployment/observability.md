@@ -1,7 +1,7 @@
 # Observability
 
-Backend Init ships logging, metrics, and queue visibility suitable for a
-production-minded starter. Monitoring Compose assets live under
+Barthez Kenwou Portfolio Backend ships logging, metrics, and queue visibility
+suitable for a production-minded starter. Monitoring Compose assets live under
 `infra/monitoring/` and `infra/docker/docker-compose.monitoring.yml`.
 
 ## Logs

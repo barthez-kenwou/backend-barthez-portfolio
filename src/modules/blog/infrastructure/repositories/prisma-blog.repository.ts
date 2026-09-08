@@ -1,5 +1,3 @@
-import type { ArticleStatus, Visibility } from '@prisma/client';
-
 import { prismaNotDeleted } from '@/shared/infrastructure/database/prisma-soft-delete';
 import prisma from '@/shared/infrastructure/database/prisma.client';
 
@@ -12,7 +10,7 @@ import type {
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import { BlogMapper } from '../persistence/blog.mapper';
 
-const authorSelect = {
+const authorUserSelect = {
   id: true,
   firstName: true,
   lastName: true,
@@ -22,21 +20,30 @@ const authorSelect = {
 /**
  * Prisma-backed BlogRepositoryPort.
  * Soft-deleted blogs are excluded via prismaNotDeleted (Mongo unset-safe).
+ * Public surfaces require isPublished=true.
  */
 export class PrismaBlogRepository implements BlogRepositoryPort {
   async create(data: CreateBlogInput): Promise<BlogEntity> {
     const blog = await prisma.blog.create({
       data: {
-        title: data.title,
         slug: data.slug,
-        content: data.content,
-        excerpt: data.excerpt,
-        coverImage: data.coverImage,
-        visibility: (data.visibility ?? 'PUBLIC') as Visibility,
-        authorId: data.authorId,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn,
+        excerptFr: data.excerptFr,
+        excerptEn: data.excerptEn,
+        contentFr: data.contentFr,
+        contentEn: data.contentEn,
+        image: data.image,
+        category: data.category,
+        date: data.date,
+        readTime: data.readTime,
+        author: data.author,
+        tags: data.tags ?? [],
+        authorId: data.authorId ?? null,
+        isPublished: data.isPublished ?? false,
         deletedAt: null,
       },
-      include: { author: { select: authorSelect } },
+      include: { authorUser: { select: authorUserSelect } },
     });
     return BlogMapper.toDomain(blog);
   }
@@ -44,7 +51,7 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
   async findById(id: string): Promise<BlogEntity | null> {
     const blog = await prisma.blog.findFirst({
       where: { id, ...prismaNotDeleted },
-      include: { author: { select: authorSelect } },
+      include: { authorUser: { select: authorUserSelect } },
     });
     return blog ? BlogMapper.toDomain(blog) : null;
   }
@@ -53,11 +60,10 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
     const blog = await prisma.blog.findFirst({
       where: {
         slug,
-        status: 'PUBLISHED',
-        visibility: 'PUBLIC',
+        isPublished: true,
         ...prismaNotDeleted,
       },
-      include: { author: { select: authorSelect } },
+      include: { authorUser: { select: authorUserSelect } },
     });
     return blog ? BlogMapper.toDomain(blog) : null;
   }
@@ -65,8 +71,7 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
   async listPublic(page: number, limit: number): Promise<BlogListResult> {
     const skip = (page - 1) * limit;
     const where = {
-      status: 'PUBLISHED' as ArticleStatus,
-      visibility: 'PUBLIC' as Visibility,
+      isPublished: true,
       ...prismaNotDeleted,
     };
 
@@ -75,8 +80,8 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
         where,
         skip,
         take: limit,
-        orderBy: { publishedAt: 'desc' },
-        include: { author: { select: authorSelect } },
+        orderBy: { date: 'desc' },
+        include: { authorUser: { select: authorUserSelect } },
       }),
       prisma.blog.count({ where }),
     ]);
@@ -98,11 +103,10 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
     const rows = await prisma.blog.findMany({
       where: {
         id: { in: ids },
-        status: 'PUBLISHED',
-        visibility: 'PUBLIC',
+        isPublished: true,
         ...prismaNotDeleted,
       },
-      include: { author: { select: authorSelect } },
+      include: { authorUser: { select: authorUserSelect } },
     });
 
     const byId = new Map(rows.map((row) => [row.id, BlogMapper.toDomain(row)]));
@@ -113,16 +117,23 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
     const updated = await prisma.blog.update({
       where: { id },
       data: {
-        ...(data.title !== undefined ? { title: data.title } : {}),
-        ...(data.content !== undefined ? { content: data.content } : {}),
-        ...(data.excerpt !== undefined ? { excerpt: data.excerpt } : {}),
-        ...(data.coverImage !== undefined ? { coverImage: data.coverImage } : {}),
-        ...(data.visibility !== undefined ? { visibility: data.visibility as Visibility } : {}),
-        ...(data.status !== undefined ? { status: data.status as ArticleStatus } : {}),
-        ...(data.publishedAt !== undefined ? { publishedAt: data.publishedAt } : {}),
+        ...(data.slug !== undefined ? { slug: data.slug } : {}),
+        ...(data.titleFr !== undefined ? { titleFr: data.titleFr } : {}),
+        ...(data.titleEn !== undefined ? { titleEn: data.titleEn } : {}),
+        ...(data.excerptFr !== undefined ? { excerptFr: data.excerptFr } : {}),
+        ...(data.excerptEn !== undefined ? { excerptEn: data.excerptEn } : {}),
+        ...(data.contentFr !== undefined ? { contentFr: data.contentFr } : {}),
+        ...(data.contentEn !== undefined ? { contentEn: data.contentEn } : {}),
+        ...(data.image !== undefined ? { image: data.image } : {}),
+        ...(data.category !== undefined ? { category: data.category } : {}),
+        ...(data.date !== undefined ? { date: data.date } : {}),
+        ...(data.readTime !== undefined ? { readTime: data.readTime } : {}),
+        ...(data.author !== undefined ? { author: data.author } : {}),
+        ...(data.tags !== undefined ? { tags: data.tags } : {}),
+        ...(data.isPublished !== undefined ? { isPublished: data.isPublished } : {}),
         ...(data.deletedAt !== undefined ? { deletedAt: data.deletedAt } : {}),
       },
-      include: { author: { select: authorSelect } },
+      include: { authorUser: { select: authorUserSelect } },
     });
     return BlogMapper.toDomain(updated);
   }

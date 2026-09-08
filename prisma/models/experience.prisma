@@ -1,0 +1,20 @@
+// Professional experiences (matches frontend IExperience)
+
+model Experience {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  titleFr        String
+  titleEn        String
+  companyFr      String
+  companyEn      String
+  period         String
+  descriptionFr  String[]
+  descriptionEn  String[]
+  sortOrder      Int       @default(0)
+  ownerId        String?   @db.ObjectId
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@index([sortOrder])
+  @@index([deletedAt])
+}

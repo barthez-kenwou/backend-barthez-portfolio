@@ -5,10 +5,10 @@
 
 ## Context
 
-Backend Init is an open-source starter for teams that need a production-shaped
-Express API quickly. Microservices would force network boundaries, duplicated
-auth, distributed tracing, and heavier ops before most forks have product-market
-fit.
+Barthez Kenwou Portfolio Backend is the portfolio backend for teams that need a
+production-shaped Express API quickly. Microservices would force network
+boundaries, duplicated auth, distributed tracing, and heavier ops before most
+forks have product-market fit.
 
 A classic layered folder dump (`controllers/`, `services/` only) scales poorly:
 domains blur, tests couple to infrastructure, and extracting a feature later

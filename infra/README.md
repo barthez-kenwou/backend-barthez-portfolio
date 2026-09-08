@@ -10,7 +10,7 @@ of truth remains under `src/`.
 | `docker/docker-compose.deploy.yml`       | CD pull-image stack (GHCR → VPS)           |
 | `docker/docker-compose.prod.example.yml` | Hardened example (no MailHog, split roles) |
 | `nginx/default.conf`                     | Edge routes: `/health*`, `/api/` only      |
-| `scripts/`                               | Mongo init, MinIO init, start/stop helpers |
+| `scripts/`                               | Stack helpers, JWT keys, scaffold, live QA |
 | `monitoring/clamav/`                     | Clamd config mounted into Compose          |
 
 Docs: [Docker](../docs/deployment/docker.md) ·

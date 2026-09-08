@@ -1,5 +1,5 @@
 /**
- * TypeScript compiler configuration for the modular backend template.
+ * TypeScript compiler configuration for the modular portfolio backend.
  */
 {
   "compilerOptions": {

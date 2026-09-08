@@ -1,16 +1,17 @@
 # Architecture Overview
 
-Backend Init is an **open-source Express + TypeScript modular monolith**: one
-deployable process, clear bounded contexts, and dependency rules that keep
-domains replaceable.
+Barthez Kenwou Portfolio Backend is an **Express + TypeScript modular monolith
+for [barthez-kenwou.dev](https://barthez-kenwou.dev)**: one deployable process
+serving public portfolio content and the `/barthez-admin` CMS, with clear
+bounded contexts and dependency rules that keep domains maintainable.
 
 It is intentionally not a microservice mesh. Modules share a process, a Prisma
-schema, Redis, and object storage — but they communicate through **ports**
-(interfaces) rather than reaching into each other’s infrastructure.
+(MongoDB) schema, Redis, and object storage — but they communicate through
+**ports** (interfaces) rather than reaching into each other’s infrastructure.
 
 ## Why a modular monolith
 
-| Goal              | How this template approaches it                               |
+| Goal              | How this backend approaches it                                |
 | ----------------- | ------------------------------------------------------------- |
 | Fast delivery     | One repo, one Docker Compose stack, one CI pipeline           |
 | Clear ownership   | Each feature lives under `src/modules/<name>/`                |
@@ -85,7 +86,7 @@ src/
 │   ├── middleware/      # Cross-cutting Express middleware
 │   ├── routes/          # Mounts module routers under /api/v1
 │   └── app.ts           # Express factory + explicit bootstrapApplication
-├── modules/             # Bounded contexts (auth, users, blog, …)
+├── modules/             # Bounded contexts (platform + portfolio content)
 ├── shared/              # Cross-module infrastructure & utils
 │   ├── constants/
 │   ├── domain/          # AppError and shared domain primitives

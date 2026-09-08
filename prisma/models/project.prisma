@@ -1,0 +1,79 @@
+// Portfolio project case studies (matches frontend IProject)
+
+model Project {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  titleFr              String
+  titleEn              String
+  descriptionFr        String
+  descriptionEn        String
+  fullDescriptionFr    String?
+  fullDescriptionEn    String?
+  problemFr            String
+  problemEn            String
+  solutionFr           String[]
+  solutionEn           String[]
+  solutionsFr          String[]  @default([])
+  solutionsEn          String[]  @default([])
+  challengesFr         String[]  @default([])
+  challengesEn         String[]  @default([])
+  impactFr             String[]
+  impactEn             String[]
+  resultsFr            String[]  @default([])
+  resultsEn            String[]  @default([])
+  metrics              Json?
+  techStack            Json
+  architecture         String[]  @default([])
+  testing              String[]  @default([])
+  images               String[]
+  preview              String
+  videoDemo            String?
+  category             String
+  status               String
+  complexity           String
+  role                 String
+  teamSize             Int?
+  duration             String
+  date                 String
+  github               String?
+  demo                 String?
+  caseStudy            String?
+  documentation        String?
+  businessContextFr    String?
+  businessContextEn    String?
+  isFeatured           Boolean   @default(false)
+  isPublished          Boolean   @default(false)
+  confidential         Boolean   @default(false)
+  responsibilitiesFr   String[]  @default([])
+  responsibilitiesEn   String[]  @default([])
+  videos               Json?
+  gallery              Json?
+  diagrams             Json?
+  resources            Json?
+  milestones           Json?
+  scopeFr              String[]  @default([])
+  scopeEn              String[]  @default([])
+  nonGoalsFr           String[]  @default([])
+  nonGoalsEn           String[]  @default([])
+  decisions            Json?
+  securityFr           String[]  @default([])
+  securityEn           String[]  @default([])
+  infraFr              String[]  @default([])
+  infraEn              String[]  @default([])
+  externalLinks        Json?
+  testimonial          Json?
+  lessonsFr            String[]  @default([])
+  lessonsEn            String[]  @default([])
+  beforeAfter          Json?
+  sortOrder            Int       @default(0)
+  ownerId              String?   @db.ObjectId
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+
+  @@index([isPublished, isFeatured])
+  @@index([category])
+  @@index([status])
+  @@index([sortOrder])
+  @@index([deletedAt])
+  @@index([createdAt])
+}

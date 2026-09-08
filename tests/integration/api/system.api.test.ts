@@ -22,7 +22,7 @@ describe('System API', () => {
   it('GET /api-docs.json returns OpenAPI document', async () => {
     const response = await request(app).get('/api-docs.json').expect(200);
     expect(response.body).toHaveProperty('openapi');
-    expect(response.body.info.title).toBe('Backend Init API');
+    expect(response.body.info.title).toBe('Barthez Kenwou Portfolio API');
   });
 
   it('GET /metrics returns Prometheus metrics', async () => {

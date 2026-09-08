@@ -1,5 +1,5 @@
 /**
- * Shared k6 helpers for backend-init load tests.
+ * Shared k6 helpers for backend-barthez-portfolio load tests.
  * BASE_URL defaults to http://127.0.0.1:3000
  */
 import { check, sleep } from 'k6';

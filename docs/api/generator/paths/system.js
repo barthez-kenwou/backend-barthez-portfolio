@@ -171,6 +171,47 @@ module.exports = {
       },
     },
   },
+  '/api/v1/admin/dashboard': {
+    get: {
+      tags: ['System'],
+      summary: 'Admin dashboard counts',
+      description:
+        'Aggregate operator stats: published projects, published blogs, new contact responses, ' +
+        'and pending testimonials. Requires JWT + verified active user with admin/super-admin ' +
+        'role or `audit:read`.',
+      security: bearer,
+      responses: {
+        200: {
+          description: 'Dashboard counts',
+          content: {
+            'application/json': {
+              schema: {
+                allOf: [
+                  { $ref: '#/components/schemas/ApiResponse' },
+                  {
+                    type: 'object',
+                    properties: {
+                      data: {
+                        type: 'object',
+                        properties: {
+                          publishedProjects: { type: 'integer' },
+                          publishedBlogs: { type: 'integer' },
+                          newContactResponses: { type: 'integer' },
+                          pendingTestimonials: { type: 'integer' },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+      },
+    },
+  },
   '/api/v1/admin/audit': {
     get: {
       tags: ['System'],

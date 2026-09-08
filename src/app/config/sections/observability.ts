@@ -12,7 +12,6 @@ export const observabilityConfig = {
   lokiHost: fromEnv.get('LOKI_HOST').default('http://loki:3100').asString(),
   /**
    * Reserved flag: when true, an optional OTEL exporter may be started by ops.
-   * The template does not initialize the Node SDK by default.
    */
   otelEnabled: fromEnv.get('OTEL_ENABLED').default('false').asBool(),
 } as const;

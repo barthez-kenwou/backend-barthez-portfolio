@@ -1,7 +1,7 @@
 # Production
 
-Checklist for running Backend Init beyond local Compose. Adjust to your cloud
-and compliance needs.
+Checklist for running Barthez Kenwou Portfolio Backend beyond local Compose.
+Adjust to your cloud and compliance needs.
 
 ## Continuous delivery (GHCR → VPS)
 

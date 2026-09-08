@@ -1,14 +1,70 @@
 /**
  * Blogs paths — /api/v1/blogs
+ * Bilingual (FR/EN) portfolio posts with `isPublished`.
  */
 const { okContent, bearer, mongoObjectId } = require('../helpers');
+
+const createBody = {
+  type: 'object',
+  required: [
+    'titleFr',
+    'titleEn',
+    'excerptFr',
+    'excerptEn',
+    'contentFr',
+    'contentEn',
+    'image',
+    'category',
+    'date',
+    'readTime',
+    'author',
+  ],
+  properties: {
+    slug: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 220,
+      description: 'Optional URL slug; generated from titleEn when omitted',
+      pattern: '^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$',
+    },
+    titleFr: { type: 'string', minLength: 1, maxLength: 200 },
+    titleEn: { type: 'string', minLength: 1, maxLength: 200 },
+    excerptFr: { type: 'string', minLength: 1, maxLength: 500 },
+    excerptEn: { type: 'string', minLength: 1, maxLength: 500 },
+    contentFr: { type: 'string', minLength: 10, maxLength: 50000 },
+    contentEn: { type: 'string', minLength: 10, maxLength: 50000 },
+    image: { type: 'string', minLength: 1, maxLength: 2000 },
+    category: { type: 'string', minLength: 1, maxLength: 100 },
+    date: { type: 'string', format: 'date-time' },
+    readTime: { type: 'string', minLength: 1, maxLength: 50 },
+    author: { type: 'string', minLength: 1, maxLength: 120 },
+    tags: {
+      type: 'array',
+      maxItems: 30,
+      items: { type: 'string', minLength: 1, maxLength: 50 },
+    },
+  },
+};
+
+const updateBody = {
+  type: 'object',
+  minProperties: 1,
+  properties: {
+    ...createBody.properties,
+    isPublished: {
+      type: 'boolean',
+      description: 'Publish flag (also set by PATCH /publish)',
+    },
+  },
+};
 
 module.exports = {
   '/api/v1/blogs/search': {
     get: {
       tags: ['Blogs'],
       summary: 'Search published blogs',
-      description: 'Mongo `contains` search over published public posts. Cap 100 results.',
+      description:
+        'Search over published posts (`isPublished=true`). Cap 100 results. Bilingual fields are searchable.',
       parameters: [
         {
           name: 'q',
@@ -35,13 +91,9 @@ module.exports = {
     get: {
       tags: ['Blogs'],
       summary: 'List blog posts',
-      description: 'Returns a paginated list of blog posts (public listing). Limit capped at 100.',
+      description: 'Paginated public listing of published bilingual posts. Limit capped at 100.',
       parameters: [
-        {
-          name: 'page',
-          in: 'query',
-          schema: { type: 'integer', minimum: 1, default: 1 },
-        },
+        { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
         {
           name: 'limit',
           in: 'query',
@@ -74,28 +126,12 @@ module.exports = {
     post: {
       tags: ['Blogs'],
       summary: 'Create blog post',
-      description: 'Creates a blog post. Requires authentication and `blog:create`.',
+      description:
+        'Creates an unpublished bilingual post. Requires authentication and `blog:create`.',
       security: bearer,
       requestBody: {
         required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              required: ['title', 'content'],
-              properties: {
-                title: { type: 'string' },
-                content: { type: 'string' },
-                excerpt: { type: 'string' },
-                coverImage: { type: 'string' },
-                visibility: {
-                  type: 'string',
-                  enum: ['PUBLIC', 'PRIVATE', 'MEMBERS_ONLY'],
-                },
-              },
-            },
-          },
-        },
+        content: { 'application/json': { schema: createBody } },
       },
       responses: {
         201: okContent('#/components/schemas/Blog', 'Blog created'),
@@ -110,13 +146,18 @@ module.exports = {
     get: {
       tags: ['Blogs'],
       summary: 'Get blog by slug',
-      description: 'Returns a single blog post identified by its URL slug.',
+      description: 'Returns a single published blog post by URL slug.',
       parameters: [
         {
           name: 'slug',
           in: 'path',
           required: true,
-          schema: { type: 'string' },
+          schema: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 220,
+            pattern: '^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$',
+          },
           example: 'getting-started-with-nodejs',
         },
       ],
@@ -132,7 +173,7 @@ module.exports = {
       tags: ['Blogs'],
       summary: 'Update blog post',
       description:
-        'Partial update of an existing blog. All body fields are optional. Requires `blog:update:own` (or elevated permission).',
+        'Partial update. All body fields optional. Requires `blog:update:own` (or `:any`).',
       security: bearer,
       parameters: [
         {
@@ -144,24 +185,7 @@ module.exports = {
       ],
       requestBody: {
         required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              minProperties: 1,
-              properties: {
-                title: { type: 'string', minLength: 3, maxLength: 200 },
-                content: { type: 'string', minLength: 10, maxLength: 50000 },
-                excerpt: { type: 'string', maxLength: 500, nullable: true },
-                coverImage: { type: 'string', format: 'uri', nullable: true },
-                visibility: {
-                  type: 'string',
-                  enum: ['PUBLIC', 'PRIVATE', 'MEMBERS_ONLY'],
-                },
-              },
-            },
-          },
-        },
+        content: { 'application/json': { schema: updateBody } },
       },
       responses: {
         200: okContent('#/components/schemas/Blog', 'Blog updated'),
@@ -175,14 +199,14 @@ module.exports = {
     delete: {
       tags: ['Blogs'],
       summary: 'Delete blog post',
-      description: 'Deletes a blog post. Requires `blog:delete:own`.',
+      description: 'Soft-deletes a blog post. Requires `blog:delete:own` (or `:any`).',
       security: bearer,
       parameters: [
         {
           name: 'id',
           in: 'path',
           required: true,
-          schema: { type: 'string' },
+          schema: mongoObjectId,
         },
       ],
       responses: {
@@ -198,14 +222,14 @@ module.exports = {
     patch: {
       tags: ['Blogs'],
       summary: 'Publish blog post',
-      description: 'Transitions a blog to published status. Requires `blog:publish`.',
+      description: 'Sets `isPublished=true`. Requires `blog:publish`.',
       security: bearer,
       parameters: [
         {
           name: 'id',
           in: 'path',
           required: true,
-          schema: { type: 'string' },
+          schema: mongoObjectId,
         },
       ],
       responses: {

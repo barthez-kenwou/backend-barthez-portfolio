@@ -1,5 +1,5 @@
 /**
- * OpenAPI 3.0.3 generator for Backend Init.
+ * OpenAPI 3.0.3 generator for Barthez Kenwou Portfolio Backend.
  *
  * Source of truth for the consolidated spec. Run:
  *   node docs/api/openapi.config.js

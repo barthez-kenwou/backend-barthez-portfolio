@@ -1,6 +1,7 @@
 # Testing
 
-Backend Init uses **Vitest** multi-project suites, path aliases, and Supertest.
+Barthez Kenwou Portfolio Backend uses **Vitest** multi-project suites, path
+aliases, and Supertest.
 
 See also: [`tests/README.md`](../../tests/README.md) and
 [`.github/WORKFLOWS.md`](../../.github/WORKFLOWS.md).

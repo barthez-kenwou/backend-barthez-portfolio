@@ -5,16 +5,18 @@
 | Version                                 | Supported        |
 | --------------------------------------- | ---------------- |
 | `1.x` (default branch / latest release) | Yes              |
-| Older tags / forks                      | Best effort only |
+| Older tags                              | Best effort only |
 
-Backend Init is a template. Consumers are responsible for hardening deployments,
-rotating secrets, and applying dependency updates in their own forks.
+Barthez Kenwou Portfolio Backend powers
+[barthez-kenwou.dev](https://barthez-kenwou.dev). Operators are responsible for
+hardening deployments, rotating secrets, and applying dependency updates.
 
 ## Reporting a vulnerability
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Please email **kenwoubarthez@gmail.com** with:
+Please email **contact@barthez-kenwou.dev** (or **kenwoubarthez@gmail.com**)
+with:
 
 1. A clear description of the issue and impact
 2. Steps to reproduce or a proof of concept
@@ -29,10 +31,9 @@ is available.
 
 In scope for this repository:
 
-- Authentication / authorization bypass in template modules
-- Remote code execution or injection in sample endpoints
-- Insecure defaults that would harm typical production deployments of the
-  template
+- Authentication / authorization bypass in API modules
+- Remote code execution or injection in HTTP endpoints
+- Insecure defaults that would harm typical production deployments
 - Secrets accidentally committed in tracked files
 
 Out of scope:
@@ -43,13 +44,13 @@ Out of scope:
 - Vulnerabilities solely in third-party dependencies — prefer upstream
   reporting; we still appreciate a heads-up with CVE links
 
-## Secure use of the template
+## Secure operation
 
 - Mount JWT keys and inject secrets at runtime
   ([docs/deployment/production.md](./docs/deployment/production.md))
 - Disable or protect Swagger and Bull Board in public environments
 - Keep `STORAGE_PROVIDER`, upload validation, and ClamAV configured for
   untrusted uploads
-- Run `npm audit` / Dependabot (or equivalent) on your fork
+- Run `npm audit` / Dependabot (or equivalent) regularly
 
-Thank you for helping keep Backend Init and its downstream users safer.
+Thank you for helping keep the portfolio backend and its operators safer.

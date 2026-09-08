@@ -59,7 +59,7 @@ export async function bootstrapApplication(
 
   if (config.observability.otelEnabled) {
     log.warn(
-      'OTEL_ENABLED=true but the OpenTelemetry Node SDK is not wired in this template — tracing stays ALS/traceparent-only until you integrate an exporter',
+      'OTEL_ENABLED=true but the OpenTelemetry Node SDK is not wired in this backend — tracing stays ALS/traceparent-only until you integrate an exporter',
     );
   }
 

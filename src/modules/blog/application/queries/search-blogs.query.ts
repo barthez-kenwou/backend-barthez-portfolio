@@ -15,7 +15,7 @@ export type SearchBlogsQueryDeps = {
 };
 
 /**
- * Full-text-ish search over published public blogs via SearchPort.
+ * Full-text-ish search over published blogs (isPublished=true) via SearchPort.
  */
 export class SearchBlogsQuery {
   constructor(private readonly deps: SearchBlogsQueryDeps) {}

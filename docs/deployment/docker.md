@@ -1,7 +1,7 @@
 # Docker
 
-Infrastructure for Backend Init lives primarily under `infra/docker/`, included
-from the repository root:
+Infrastructure for Barthez Kenwou Portfolio Backend lives primarily under
+`infra/docker/`, included from the repository root:
 
 ```yaml
 # docker-compose.yml (root)

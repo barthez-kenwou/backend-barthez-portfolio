@@ -54,13 +54,38 @@ export function createBlogController(deps: BlogControllerDeps) {
   });
 
   const create = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    const { title, content, excerpt, coverImage, visibility } = req.body;
+    const {
+      slug,
+      titleFr,
+      titleEn,
+      excerptFr,
+      excerptEn,
+      contentFr,
+      contentEn,
+      image,
+      category,
+      date,
+      readTime,
+      author,
+      tags,
+      isPublished,
+    } = req.body;
+
     const blog = await deps.createBlog.execute({
-      title,
-      content,
-      excerpt,
-      coverImage,
-      visibility,
+      slug,
+      titleFr,
+      titleEn,
+      excerptFr,
+      excerptEn,
+      contentFr,
+      contentEn,
+      image,
+      category,
+      date,
+      readTime,
+      author,
+      tags,
+      isPublished,
       authorId: req.user!.id,
     });
     return response.created(req, res, BlogSerializer.one(blog), 'Blog created successfully');
@@ -68,22 +93,47 @@ export function createBlogController(deps: BlogControllerDeps) {
 
   const update = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const canUpdateAny = await deps.rbac.hasPermission(req.user!.id, 'blog:update:any');
-    const { title, content, excerpt, coverImage, visibility } = req.body;
+    const {
+      slug,
+      titleFr,
+      titleEn,
+      excerptFr,
+      excerptEn,
+      contentFr,
+      contentEn,
+      image,
+      category,
+      date,
+      readTime,
+      author,
+      tags,
+      isPublished,
+    } = req.body;
+
     const blog = await deps.updateBlog.execute({
       id: req.params.id,
       authorId: req.user!.id,
       isAdmin: canUpdateAny,
-      title,
-      content,
-      excerpt,
-      coverImage,
-      visibility,
+      slug,
+      titleFr,
+      titleEn,
+      excerptFr,
+      excerptEn,
+      contentFr,
+      contentEn,
+      image,
+      category,
+      date,
+      readTime,
+      author,
+      tags,
+      isPublished,
     });
     return response.ok(req, res, BlogSerializer.one(blog), 'Blog updated successfully');
   });
 
   const publish = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    // Elevation for others' posts: blog:update:any (blog:publish is also held by authors).
+    // Elevation for others' posts / ownerless posts: blog:update:any.
     const canPublishAny = await deps.rbac.hasPermission(req.user!.id, 'blog:update:any');
     const blog = await deps.publishBlog.execute({
       id: req.params.id,

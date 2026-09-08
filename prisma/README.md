@@ -1,7 +1,8 @@
 # Prisma
 
-MongoDB models for Backend Init. Prisma does **not** run SQL migrations against
-Mongo — use `db push` (and `prisma generate`) in development.
+MongoDB models for the Barthez Kenwou Portfolio Backend
+([barthez-kenwou.dev](https://barthez-kenwou.dev)). Prisma does **not** run SQL
+migrations against Mongo — use `db push` (and `prisma generate`) in development.
 
 ```text
 prisma/
@@ -11,9 +12,25 @@ prisma/
 │   ├── auth.prisma        # RefreshToken, blacklist
 │   ├── oauth.prisma       # OAuthAccount
 │   ├── rbac.prisma        # Role, Permission, UserRole, RolePermission
-│   ├── blog.prisma        # Reference domain; author has no onDelete cascade
-│   └── audit.prisma       # AuditLog indexes
-├── seed.ts                # rbacService.seedSystemRolesAndPermissions()
+│   ├── audit.prisma       # AuditLog indexes
+│   ├── blog.prisma        # Bilingual portfolio posts; author has no onDelete cascade
+│   ├── project.prisma     # Case studies (featured / published / confidential)
+│   ├── service.prisma     # Offered services + EUR pricing
+│   ├── skill.prisma       # Skill matrix
+│   ├── experience.prisma  # Professional experiences
+│   ├── education.prisma   # Education entries
+│   ├── certification.prisma
+│   ├── testimonial.prisma # Public feedback + moderation status
+│   ├── achievement.prisma # Highlight counters
+│   ├── reference.prisma   # Professional references (PII)
+│   ├── language.prisma    # Spoken languages
+│   ├── contact-info.prisma    # Singleton profile / contact card
+│   └── contact-response.prisma # Contact-form inbox
+├── seed.ts                # RBAC + portfolio content from frontend mocks
+├── seed/
+│   ├── portfolio-content.ts
+│   ├── README.md
+│   └── data/              # blogs.json, projects.json, smaller-domains.json
 └── README.md
 ```
 
@@ -26,8 +43,16 @@ npm run prisma:seed
 npm run prisma:studio      # localhost:5555, dev only
 ```
 
-Seed only creates system roles and permissions. Application bootstrap also seeds
-RBAC at process start (skipped in tests).
+`prisma:seed` loads:
+
+1. System RBAC roles and permissions (including portfolio domain permissions)
+2. Full portfolio CMS content from frontend mocks (skills, projects, blogs,
+   services, experiences, education, certifications, testimonials, achievements,
+   languages, references, contact info, demo contact responses)
+
+Re-running the seed **replaces** portfolio collections; users and auth tokens
+are preserved. Application bootstrap also re-seeds RBAC at process start
+(skipped in tests).
 
 ## TOTP
 
@@ -39,6 +64,11 @@ RBAC at process start (skipped in tests).
 `Blog.author` references `User` **without** cascade. GDPR hard-delete anonymizes
 PII first; if blogs remain, the user row is kept as a stub so posts stay valid.
 See `prisma-users.repository.ts`.
+
+## Soft delete
+
+Portfolio content models use soft-delete (`deletedAt` / related helpers). The
+public CV aggregate and list queries filter soft-deleted rows.
 
 ## Indexes — never silent-push to production
 

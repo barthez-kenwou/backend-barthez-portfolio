@@ -314,7 +314,7 @@ export class PrismaUsersRepository implements UsersRepositoryPort {
 
     await prisma.blog.updateMany({
       where: { authorId: userId, ...prismaNotDeleted },
-      data: { deletedAt: new Date(), visibility: 'PRIVATE', status: 'ARCHIVED' },
+      data: { deletedAt: new Date(), isPublished: false },
     });
 
     const remainingBlogs = await prisma.blog.count({ where: { authorId: userId } });

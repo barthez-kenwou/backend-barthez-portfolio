@@ -1,9 +1,10 @@
 import type { AuditPort } from '@/shared/infrastructure/audit';
 
-import { BlogForbiddenError, BlogNotFoundError } from '../../domain/errors/blog.errors';
+import { BlogNotFoundError } from '../../domain/errors/blog.errors';
 import type { BlogRepositoryPort } from '../../domain/repositories/blog.repository';
 import type { DeleteBlogDto } from '../dto/blog.dto';
 import type { BlogCachePort } from '../services/blog-cache.port';
+import { assertBlogOwnership } from './blog-ownership';
 
 export type DeleteBlogCommandDeps = {
   blogRepository: BlogRepositoryPort;
@@ -12,7 +13,7 @@ export type DeleteBlogCommandDeps = {
 };
 
 /**
- * Soft-deletes a blog (sets deletedAt) when the caller is the author or an admin.
+ * Soft-deletes a blog (sets deletedAt) when the caller owns it or has :any elevation.
  */
 export class DeleteBlogCommand {
   constructor(private readonly deps: DeleteBlogCommandDeps) {}
@@ -23,9 +24,7 @@ export class DeleteBlogCommand {
       throw new BlogNotFoundError();
     }
 
-    if (!input.isAdmin && blog.authorId !== input.authorId) {
-      throw new BlogForbiddenError('You can only delete your own blogs');
-    }
+    assertBlogOwnership(blog, input.authorId, input.isAdmin, 'delete');
 
     await this.deps.blogRepository.update(input.id, { deletedAt: new Date() });
     await this.deps.cache?.invalidate(`blogs:slug:${blog.slug}`);

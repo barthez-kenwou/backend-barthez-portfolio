@@ -1,0 +1,1275 @@
+{
+  "achievements": [
+    {
+      "sortOrder": 0,
+      "iconKey": "clock",
+      "value": "3+",
+      "labelFr": "Années d'expérience",
+      "labelEn": "Years of experience"
+    },
+    {
+      "sortOrder": 1,
+      "iconKey": "rocket",
+      "value": "20+",
+      "labelFr": "Projets réalisés",
+      "labelEn": "Completed projects"
+    },
+    {
+      "sortOrder": 2,
+      "iconKey": "target",
+      "value": "99.9%",
+      "labelFr": "Taux de disponibilité",
+      "labelEn": "Uptime rate"
+    },
+    {
+      "sortOrder": 3,
+      "iconKey": "trophy",
+      "value": "5+",
+      "labelFr": "Certifications",
+      "labelEn": "Certifications"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Kubernetes Administrator",
+      "issuer": "Udemy",
+      "year": "2026"
+    },
+    {
+      "name": "AWS Solutions Architect Associate",
+      "issuer": "Udemy",
+      "year": "2026"
+    },
+    {
+      "name": "AWS Cloud Practitioner",
+      "issuer": "Udemy",
+      "year": "2026"
+    },
+    {
+      "name": "Docker Certified Associate",
+      "issuer": "Udemy.",
+      "year": "2025"
+    },
+    {
+      "name": "Full Stack Development",
+      "issuer": "IT Engenineering Factory",
+      "year": "2025",
+      "link": "https://credsverse.com/credentials/cc4d79b0-24b1-4270-bb66-f106886acba3"
+    }
+  ],
+  "education": [
+    {
+      "degreeFr": "Formation en DevOps & AWS Cloud ",
+      "degreeEn": "DevOps & AWS Cloud Training",
+      "school": "FreeCodeCamp & Udemy",
+      "period": "2026"
+    },
+    {
+      "degreeFr": "Licence en Informatique",
+      "degreeEn": "Bachelor in Computer Science",
+      "school": "Université Yaoundé 1",
+      "period": "2026"
+    },
+    {
+      "degreeFr": "Formation en development web Full-Stack",
+      "degreeEn": "Full-Stack development training",
+      "school": "IT Engineering Factory",
+      "period": "2025",
+      "link": "https://credsverse.com/credentials/cc4d79b0-24b1-4270-bb66-f106886acba3"
+    },
+    {
+      "degreeFr": "Baccalauréat Scientifique",
+      "degreeEn": "Bachelor in Computer Science",
+      "school": "Lycée Classique de Dschang",
+      "period": "2022"
+    }
+  ],
+  "experiences": [
+    {
+      "titleFr": "Ingénieur DevOps & Cloud Architect AWS | Expert Full Stack JS",
+      "titleEn": "DevOps & AWS Cloud Architect | Full Stack JS Expert",
+      "companyFr": "Freelance",
+      "companyEn": "Freelance",
+      "period": "Jan 2026 - now",
+      "descriptionFr": [
+        "Développement d'applications full stack et mobiles (React, Node.js, Next.js, Express, React Native) avec APIs REST/GraphQL, authentification JWT/OAuth2 et bases de données PostgreSQL, MongoDB et DynamoDB.",
+        "Implémentation de stratégies DevSecOps et renforcement de la sécurité des infrastructures et applications (SAST, DAST, SCA, SBOM, hardening Linux, IAM, SSL/TLS, WAF, audits de vulnérabilités), avec pratique du pentesting, de la réponse aux incidents et alignement ISO 27001 / RGPD.",
+        "Conception et déploiement de plus de 10 architectures cloud AWS scalables, sécurisées et hautement disponibles (uptime > 99.9%).",
+        "Mise en place d'architectures serverless et microservices, avec automatisation CI/CD complète (GitHub Actions, AWS CodePipeline, IaC, conteneurisation) réduisant le temps de déploiement de 60% et permettant des mises en production zero-downtime.",
+        "Déploiement de solutions de monitoring et d'observabilité (Prometheus, Grafana, CloudWatch, Datadog, ELK, Docker, Kubernetes) ayant réduit le MTTR de 40%.",
+        "Administration de serveurs Linux en production (Ubuntu, Proxmox), virtualisation et orchestration (KVM, Docker, Kubernetes), avec automatisation via Bash, Python et Ansible.",
+        "Conseil technique auprès de clients internationaux sur l'architecture, la scalabilité, la migration cloud et l'optimisation des coûts, avec des gains de 30% à 50% selon les projets."
+      ],
+      "descriptionEn": [
+        "Built full-stack and mobile applications (React, Node.js, Next.js, Express, React Native) with REST/GraphQL APIs, JWT/OAuth2 authentication, and PostgreSQL, MongoDB, and DynamoDB databases.",
+        "Implemented DevSecOps strategies and strengthened infrastructure and application security (SAST, DAST, SCA, SBOM, Linux hardening, IAM, SSL/TLS, WAF, vulnerability audits), with hands-on experience in pentesting, incident response, and alignment with ISO 27001 and GDPR requirements.",
+        "Designed and deployed over 10 scalable, secure, and highly available AWS cloud architectures (uptime > 99.9%).",
+        "Implemented serverless and microservices architectures with fully automated CI/CD pipelines (GitHub Actions, AWS CodePipeline, IaC, containerization), reducing deployment time by 60% and enabling zero-downtime releases.",
+        "Set up monitoring and observability platforms (Prometheus, Grafana, CloudWatch, Datadog, ELK, Docker, Kubernetes), reducing MTTR by 40%.",
+        "Managed Linux production servers (Ubuntu, Proxmox), virtualization and orchestration stacks (KVM, Docker, Kubernetes), with automation using Bash, Python, and Ansible.",
+        "Provided technical consulting for international clients on architecture, scalability, cloud migration, and cost optimization, achieving 30% to 50% savings depending on the project."
+      ]
+    },
+    {
+      "titleFr": "Développeur Full Stack | Architecte de Solutions SaaS",
+      "titleEn": "Full Stack Developer | SaaS Solutions Architect",
+      "companyFr": "ZENORA",
+      "companyEn": "ZENORA",
+      "period": "Jan 2026 - now",
+      "descriptionFr": [
+        "Architecture et développement d'applications personnalisées hautement disponibles, avec une stack moderne.",
+        "Intégration d'APIs RESTful pour des échanges de données sécurisés et performants, avec gestion des taux de requêtes et caching (Redis).",
+        "Mise en place de systèmes d'authentification et d'autorisation sécurisés (JWT, OAuth2, RBAC) et conformes aux standards RGPD.",
+        "Déploiement et maintenance d'infrastructures cloud (AWS, VPS sécurisés) avec automatisation des processus de déploiement (CI/CD, Kubernetes, Docker, monitoring, ...).",
+        "Optimisation des performances frontend (lazy loading, code splitting, SSR avec Next.js) et backend (indexation, requêtes optimisées, caching).",
+        "Conception d'architectures monolithiques et microservices selon les besoins projets, avec documentation technique complète.",
+        "Collaboration avec les équipes produit et design pour livrer des solutions user-centric et alignées sur les objectifs business."
+      ],
+      "descriptionEn": [
+        "Architecture and development of highly available customs applications using a modern stack.",
+        "Integration of RESTful APIs for secure and high-performance data exchange, with rate limiting and caching (Redis).",
+        "Implementation of secure authentication and authorization systems (JWT, OAuth2, RBAC) compliant with GDPR standards.",
+        "Deployment and maintenance of cloud infrastructures (AWS, secured VPS) with automated deployment processes (CI/CD, Docker, Nginx).",
+        "Performance optimization for frontend (lazy loading, code splitting, SSR with Next.js) and backend (indexing, optimized queries, caching).",
+        "Design of monolithic and microservices architectures based on project needs, with comprehensive technical documentation.",
+        "Collaboration with product and design teams to deliver user-centric solutions aligned with business goals."
+      ]
+    },
+    {
+      "titleFr": "Formateur & Responsable Pédagogique | Full Stack JS & DevOps",
+      "titleEn": "Lead Trainer & Curriculum Manager | Full Stack JS & DevOps",
+      "companyFr": "IT Engineering Factory / WorketYamo",
+      "companyEn": "IT Engineering Factory / WorketYamo",
+      "period": "Fev 2026 - Juin 2026",
+      "descriptionFr": [
+        "Conception et animation de formations complètes (0 à expert) en développement Full Stack JS (HTML/CSS, JavaScript, TypeScript, React, Node.js, Express, Git, Docker, AWS) et DevOps, avec un taux de placement professionnel de 85%.",
+        "Accompagnement de plus de 20 apprenants de zéro à développeur Full Stack compétent, incluant : fondamentaux du web, algorithmes, frontend (React, TailwindCSS), backend (Node.js, Express, API REST/GraphQL), bases de données, déploiement (Linux, AWS), et bonnes pratiques de sécurité.",
+        "Organisation de séminaires techniques (IA, Web, WordPress, Marketing Digital) et ateliers pratiques pour monter en compétences les équipes et les apprenants.",
+        "Responsable de la planification, structuration et pilotage des activités administratives et marketing liées aux formations (gestion des inscriptions, communication, partenariats).",
+        "Création de supports pédagogiques (cours, labs, projets pratiques) et évaluation continue des apprenants pour garantir l'acquisition des compétences.",
+        "Mentorat et suivi personnalisé pour l'insertion professionnelle (CV, Portfolio, entretien, veille technologique, bonnes pratiques, mindset développeur, ...)."
+      ],
+      "descriptionEn": [
+        "Design and delivery of comprehensive training programs (from beginner to expert) in Full Stack JS (HTML/CSS, JavaScript, TypeScript, React, Node.js, Express, Git, Docker, AWS) and DevOps, with an 85% professional placement rate.",
+        "Coaching of over 20 learners from zero to competent Full Stack developers, covering: web fundamentals, algorithms, frontend (React, TailwindCSS), backend (Node.js, Express, REST/GraphQL APIs), databases, deployment (Linux, AWS), and security best practices.",
+        "Organization of technical seminars (AI, Web, WordPress, Digital Marketing) and hands-on workshops to upskill teams and learners.",
+        "Responsible for planning, structuring, and managing administrative and marketing activities related to training (enrollment, communication, partnerships).",
+        "Creation of educational materials (courses, labs, practical projects) and continuous assessment of learners to ensure skill acquisition.",
+        "Personalized mentoring and support for professional integration (resume, portfolio, interview, tech watch, bests pratices, developer mindset, ...)."
+      ]
+    },
+    {
+      "titleFr": "Ingénieur DevOps & Développeur Full Stack",
+      "titleEn": "DevOps Engineer & Full Stack Developer",
+      "companyFr": "Global Technology & Associates - GTA",
+      "companyEn": "Global Technology & Associates - GTA",
+      "period": "Mars 2025 - Dec 2026",
+      "descriptionFr": [
+        "Architecture et déploiement d'infrastructures cloud AWS pour startups et PME.",
+        "Développement d'applications full stack (React, Node.js, TypeScript) avec intégration d'APIs externes et de services AWS.",
+        "Mise en place de pipelines CI/CD automatisés (GitHub Actions, AWS CodePipeline) pour des déploiements continus et sécurisés.",
+        "Optimisation des performances, de la sécurité et des coûts des applications et infrastructures (audit, patching, WAF, IAM), avec une réduction cloud moyenne de 30 à 35%.",
+        "Pilotage de projets variés (WordPress, applications sur mesure, intégration d'IA) dans un contexte de prestation de services.",
+        "Collaboration en environnement Agile/SCRUM avec des équipes pluridisciplinaires.",
+        "Animation de webinaires techniques, partage de connaissances et mentorat de développeurs juniors."
+      ],
+      "descriptionEn": [
+        "Architected and deployed AWS cloud infrastructures for startups and SMEs.",
+        "Developed full-stack applications (React, Node.js, TypeScript) with external API integrations and AWS services.",
+        "Implemented automated CI/CD pipelines (GitHub Actions, AWS CodePipeline) for secure and continuous deployments.",
+        "Optimized application and infrastructure performance, security, and cloud costs (audit, patching, WAF, IAM), achieving an average cost reduction of 30% to 35%.",
+        "Delivered a diverse portfolio of projects (WordPress, custom applications, AI integration) in a service delivery environment.",
+        "Collaborated with cross-functional teams in Agile/SCRUM settings.",
+        "Led technical webinars, knowledge sharing, and mentoring for junior developers."
+      ]
+    },
+    {
+      "titleFr": "Formateur IT",
+      "titleEn": "IT Trainer",
+      "companyFr": "Global Technology & Associates Academy - GTA Academy",
+      "companyEn": "Global Technology & Associates Academy - GTA Academy",
+      "period": "Juin 2025 - Dec 2025",
+      "descriptionFr": [
+        "Structuration et planification de cursus de formation en Developpement full stack, Cybersécurité, Design, Marketing Digital...",
+        "Accompagnement pratique de jeunes en initiation au design graphique et au marketing digital, avec réalisation de projets concrets.",
+        "Création de supports pédagogiques et organisation d'ateliers pour renforcer les compétences techniques et créatives des apprenants.",
+        "Collaboration avec les équipes pour adapter les formations aux besoins du marché et aux tendances technologiques.",
+        "Organisation de wébinaires de formations"
+      ],
+      "descriptionEn": [
+        "Structuring and planning training curricula in Full Stack Development, Cybersecurity, Design, Digital Marketing, etc.",
+        "Practical support for youth in graphic design and digital marketing initiation, including the completion of concrete projects.",
+        "Creation of educational materials and organization of workshops to strengthen learners' technical and creative skills.",
+        "Collaboration with teams to adapt training programs to market needs and technological trends.",
+        "Organization of training webinars"
+      ]
+    },
+    {
+      "titleFr": "Développeur Backend | Solutions Agriclim",
+      "titleEn": "Backend Developer | Agriclim Solutions",
+      "companyFr": "Startup ReAtech",
+      "companyEn": "Startup ReAtech",
+      "period": "Avril 2025",
+      "descriptionFr": [
+        "Conception et développement d'APIs RESTful (Node.js/Express) pour une plateforme d'agriculture intelligente, intégrant des modèles d'IA pour la prédiction climatique et l'optimisation des récoltes.",
+        "Gestion et optimisation de bases de données MongoDB et PostgreSQL pour le stockage et l'analyse de données agricoles.",
+        "Intégration de cartes interactives (Mapbox, Leaflet) et de services externes pour la visualisation et l'analyse des données géospatiales.",
+        "Collaboration avec l'équipe frontend pour l'intégration d'APIs",
+        "Déploiement et maintenance de l'infrastructure backend sur serveur Linux sécurisé."
+      ],
+      "descriptionEn": [
+        "Design and development of RESTful APIs (Node.js/Express) for a smart agriculture platform, integrating AI models for climate prediction and crop optimization.",
+        "Management and optimization of MongoDB and PostgreSQL databases for storing and analyzing agricultural data.",
+        "Integration of interactive maps (Mapbox, Leaflet) and external services for geospatial data visualization and analysis.",
+        "Collaboration with the frontend team for API integration.",
+        "Deployment and maintenance of backend infrastructure on a secured Linux server."
+      ]
+    },
+    {
+      "titleFr": "Expert Technique Polyvalent | Projets Divers & Innovation",
+      "titleEn": "Versatile Technical Expert | Diverse Projects & Innovation",
+      "companyFr": "Projets Divers",
+      "companyEn": "Various Projects",
+      "period": "2024 - Fev 2025",
+      "descriptionFr": [
+        "Intervention sur une 'diversité de projets' pour résoudre des problèmes techniques complexes et innover : refonte de designs Figma, développement backend (Java Spring Boot, FastAPI), frontend (React, Next.js), mobile (React Native) et restructuration de code selon les principes `Clean Code/SOLID`",
+        "Déploiement et sécurisation d'applications sur `VPS`(Nginx, Docker, firewall, ...) et `AWS`(EC2, S3, RDS, Lambda), avec automatisation des processus (CI/CD, Terraform, Ansible, Bash Scripts).",
+        "Conception et optimisation d'architectures backend",
+        "Amélioration de projets existants (refactoring, clean code, performance)",
+        "Exploration et expérimentation de nouvelles technologies (IA, blockchain, 3D)",
+        "Réalisation de projets personnels et techniques pour montée en compétences continue"
+      ],
+      "descriptionEn": [
+        "Worked on a `wide range of projects` to solve complex technical challenges and innovate: Figma design overhaul, backend development (Java Spring Boot, FastAPI), frontend (React, Next.js), mobile (React Native) and code restructuring following `Clean Code/SOLID` principles.",
+        "Deployment and securing of applications on `VPS` (Nginx, Docker, firewall) and `AWS` (EC2, S3, RDS, Lambda), with process automation (CI/CD, Terraform, Ansible, Bash Scripts).",
+        "Backend architecture design",
+        "Refactoring and performance optimization of existing projects",
+        "Exploration of emerging technologies (AI, blockchain, 3D)",
+        "Continuous learning through hands-on projects and labs"
+      ]
+    },
+    {
+      "titleFr": "Développeur Full-Stack JS | Formation par la Pratique",
+      "titleEn": "Full-Stack JS Developer | Hands-on Training",
+      "companyFr": "WorketYamo",
+      "companyEn": "WorketYamo",
+      "period": "Sept 2024 - Dec 2025",
+      "descriptionFr": [
+        "Développement d'applications Frontend/Backend/FullStack (React, TypeScript, Node.js, Express) dans le cadre d'une formation intensive",
+        "Conception et intégration d'APIs REST/GraphQL pour des applications web et mobiles, avec gestion des bases de données (MongoDB, PostgreSQL).",
+        "Réalisation de projets pratiques (plateformes web, sites ecommerces,...) plus de __plus de 10 projets pratiques__",
+        "Maîtrise des outils de 'design UI/UX' (Figma, Canva) et intégration de maquettes en code frontend réactif et accessible.",
+        "Adoption des bonnes pratiques de 'clean code', tests unitaires, et collaboration en équipe (Git, GitHub, Scrum).",
+        "Participation à des projets collaboratifs et revues de code",
+        "Déploiement d'applications sur des serveurs Linux et cloud (AWS, VPS), avec configuration de la sécurité et de la scalabilité."
+      ],
+      "descriptionEn": [
+        "Frontend / Backend / FullStack Application Development(React, TypeScript, Node.js, Express) as part of an intensive training program",
+        "Design and integration of REST / GraphQL APIs for web and mobile applications, including database management(MongoDB, PostgreSQL)",
+        "Completion of practical projects(web platforms, e- commerce sites, etc.)-over 10 hands - on projects",
+        "Proficiency in UI / UX design tools(Figma, Canva) and conversion of mockups into responsive, accessible frontend code",
+        "Implementation of clean code best practices, unit testing, and team collaboration(Git, GitHub, Scrum)",
+        "Participation in collaborative projects and code reviews",
+        "Deployment of applications on Linux servers and cloud platforms(AWS, VPS), including security and scalability configuration"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "sortOrder": 0,
+      "iconKey": "cloud",
+      "titleFr": "Architecture Cloud AWS",
+      "titleEn": "AWS Cloud Architecture",
+      "descFr": "Conception et mise en place d'infrastructures cloud robustes, scalables et sécurisées sur Amazon Web Services.",
+      "descEn": "Design and implementation of robust, scalable and secure cloud infrastructures on Amazon Web Services.",
+      "featuresFr": [
+        "Design d'architecture multi-AZ et multi-région",
+        "Migration cloud et modernisation d'applications",
+        "Optimisation des coûts AWS (FinOps)",
+        "Architecture serverless avec Lambda, API Gateway",
+        "Infrastructure hautement disponible (99.99%)"
+      ],
+      "featuresEn": [
+        "Multi-AZ and multi-region architecture design",
+        "Cloud migration and application modernization",
+        "AWS cost optimization (FinOps)",
+        "Serverless architecture with Lambda, API Gateway",
+        "Highly available infrastructure (99.99%)"
+      ],
+      "priceEur": 500,
+      "hourly": false,
+      "priceFr": "À partir de 500€",
+      "priceEn": "Starting at €500"
+    },
+    {
+      "sortOrder": 1,
+      "iconKey": "server",
+      "titleFr": "DevOps & CI/CD",
+      "titleEn": "DevOps & CI/CD",
+      "descFr": "Automatisation complète de vos pipelines de développement et déploiement pour une livraison continue et fiable.",
+      "descEn": "Complete automation of your development and deployment pipelines for continuous and reliable delivery.",
+      "featuresFr": [
+        "Mise en place de pipelines CI/CD (GitHub Actions, GitLab CI)",
+        "Containerisation avec Docker et orchestration Kubernetes",
+        "Infrastructure as Code avec Terraform/CloudFormation",
+        "Monitoring et alerting (Prometheus, Grafana)",
+        "Gestion des secrets et sécurité DevSecOps"
+      ],
+      "featuresEn": [
+        "CI/CD pipeline setup (GitHub Actions, GitLab CI)",
+        "Containerization with Docker and Kubernetes orchestration",
+        "Infrastructure as Code with Terraform/CloudFormation",
+        "Monitoring and alerting (Prometheus, Grafana)",
+        "Secrets management and DevSecOps security"
+      ],
+      "priceEur": 400,
+      "hourly": false,
+      "priceFr": "À partir de 400€",
+      "priceEn": "Starting at €400"
+    },
+    {
+      "sortOrder": 2,
+      "iconKey": "code",
+      "titleFr": "Développement Full Stack",
+      "titleEn": "Full Stack Development",
+      "descFr": "Création d'applications web modernes, performantes et maintenables avec les technologies les plus récentes.",
+      "descEn": "Creation of modern, performant and maintainable web applications with the latest technologies.",
+      "featuresFr": [
+        "Applications React/Next.js avec TypeScript",
+        "APIs RESTful et GraphQL avec Node.js/NestJS",
+        "Bases de données SQL et NoSQL optimisées",
+        "Authentification sécurisée (OAuth, JWT)",
+        "Tests automatisés et documentation"
+      ],
+      "featuresEn": [
+        "React/Next.js applications with TypeScript",
+        "RESTful and GraphQL APIs with Node.js/NestJS",
+        "Optimized SQL and NoSQL databases",
+        "Secure authentication (OAuth, JWT)",
+        "Automated tests and documentation"
+      ],
+      "priceEur": 300,
+      "hourly": false,
+      "priceFr": "À partir de 300€",
+      "priceEn": "Starting at €300"
+    },
+    {
+      "sortOrder": 3,
+      "iconKey": "shield",
+      "titleFr": "Audit & Sécurité",
+      "titleEn": "Audit & Security",
+      "descFr": "Analyse approfondie de votre infrastructure et applications pour identifier et corriger les vulnérabilités.",
+      "descEn": "In-depth analysis of your infrastructure and applications to identify and fix vulnerabilities.",
+      "featuresFr": [
+        "Audit de sécurité AWS (IAM, VPC, S3)",
+        "Tests de pénétration et analyse de vulnérabilités",
+        "Mise en conformité RGPD/SOC2",
+        "Recommandations et plan d'action",
+        "Formation équipe sécurité"
+      ],
+      "featuresEn": [
+        "AWS security audit (IAM, VPC, S3)",
+        "Penetration testing and vulnerability analysis",
+        "GDPR/SOC2 compliance",
+        "Recommendations and action plan",
+        "Security team training"
+      ],
+      "priceEur": 600,
+      "hourly": false,
+      "priceFr": "À partir de 600€",
+      "priceEn": "Starting at €600"
+    },
+    {
+      "sortOrder": 4,
+      "iconKey": "bolt",
+      "titleFr": "Optimisation Performance",
+      "titleEn": "Performance Optimization",
+      "descFr": "Amélioration des performances de vos applications et réduction des temps de réponse.",
+      "descEn": "Improvement of your application performance and reduction of response times.",
+      "featuresFr": [
+        "Analyse et profiling des performances",
+        "Optimisation des requêtes base de données",
+        "Mise en cache (Redis, CloudFront CDN)",
+        "Load balancing et auto-scaling",
+        "Optimisation frontend (bundle, lazy loading)"
+      ],
+      "featuresEn": [
+        "Performance analysis and profiling",
+        "Database query optimization",
+        "Caching (Redis, CloudFront CDN)",
+        "Load balancing and auto-scaling",
+        "Frontend optimization (bundle, lazy loading)"
+      ],
+      "priceEur": 350,
+      "hourly": false,
+      "priceFr": "À partir de 350€",
+      "priceEn": "Starting at €350"
+    },
+    {
+      "sortOrder": 5,
+      "iconKey": "academic",
+      "titleFr": "Consulting & Formation",
+      "titleEn": "Consulting & Training",
+      "descFr": "Accompagnement personnalisé et formation de vos équipes aux meilleures pratiques cloud et DevOps.",
+      "descEn": "Personalized support and training for your teams on cloud and DevOps best practices.",
+      "featuresFr": [
+        "Consulting architecture technique",
+        "Formation AWS pour développeurs",
+        "Workshops DevOps et CI/CD",
+        "Revue de code et bonnes pratiques",
+        "Accompagnement équipe technique"
+      ],
+      "featuresEn": [
+        "Technical architecture consulting",
+        "AWS training for developers",
+        "DevOps and CI/CD workshops",
+        "Code review and best practices",
+        "Technical team support"
+      ],
+      "priceEur": 100,
+      "hourly": true,
+      "priceFr": "À partir de 100€/h",
+      "priceEn": "Starting at €100/h"
+    }
+  ],
+  "skills": [
+    {
+      "name": "AWS EC2",
+      "category": "cloud",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS Lambda",
+      "category": "cloud",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS S3",
+      "category": "cloud",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS RDS",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS CloudFormation",
+      "category": "cloud",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS ECS/EKS",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "API Gateway",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "CloudWatch",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "Route 53",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS IAM",
+      "category": "cloud",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS VPC",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS CloudFront",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS ELB / ALB",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS DynamoDB",
+      "category": "cloud",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS Secrets Manager",
+      "category": "cloud",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "AWS SNS/SQS",
+      "category": "cloud",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+    },
+    {
+      "name": "Docker",
+      "category": "devops",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "devops",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-plain.svg"
+    },
+    {
+      "name": "Terraform",
+      "category": "devops",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/terraform/terraform-original.svg"
+    },
+    {
+      "name": "Ansible",
+      "category": "devops",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ansible/ansible-original.svg"
+    },
+    {
+      "name": "Argo",
+      "category": "devops",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/argocd/argocd-original.svg"
+    },
+    {
+      "name": "GitHub Actions",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.simpleicons.org/githubactions/2088FF"
+    },
+    {
+      "name": "GitLab CI",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/gitlab/gitlab-original.svg"
+    },
+    {
+      "name": "Grafana",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/grafana/grafana-original.svg"
+    },
+    {
+      "name": "Prometheus",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prometheus/prometheus-original.svg"
+    },
+    {
+      "name": "ELK",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.simpleicons.org/elastic/005571"
+    },
+    {
+      "name": "Metabase",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.simpleicons.org/metabase/509EE3"
+    },
+    {
+      "name": "Helm",
+      "category": "devops",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/helm/helm-original.svg"
+    },
+    {
+      "name": "Nginx",
+      "category": "devops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nginx/nginx-original.svg"
+    },
+    {
+      "name": "Caddy",
+      "category": "devops",
+      "level": 80,
+      "icon": "https://cdn.simpleicons.org/caddy/00ADD8"
+    },
+    {
+      "name": "Sonarqube",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sonarqube/sonarqube-original.svg"
+    },
+    {
+      "name": "Gitleaks",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg"
+    },
+    {
+      "name": "OWASP ZAP",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kalilinux/kalilinux-original.svg"
+    },
+    {
+      "name": "Trivy",
+      "category": "devsecops",
+      "level": 70,
+      "icon": "https://cdn.simpleicons.org/trivy/4E9BCD"
+    },
+    {
+      "name": "Grype",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg"
+    },
+    {
+      "name": "Cosign",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ssh/ssh-original.svg"
+    },
+    {
+      "name": "Slack",
+      "category": "devsecops",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/slack/slack-original.svg"
+    },
+    {
+      "name": "Keycloak",
+      "category": "devsecops",
+      "level": 80,
+      "icon": "https://cdn.simpleicons.org/keycloak/4E9BCD"
+    },
+    {
+      "name": "Vault (HashiCorp)",
+      "category": "devsecops",
+      "level": 75,
+      "icon": "https://cdn.simpleicons.org/vault/4E9BCD"
+    },
+    {
+      "name": "Snyk",
+      "category": "devsecops",
+      "level": 80,
+      "icon": "https://cdn.simpleicons.org/snyk/4E9BCD"
+    },
+    {
+      "name": "Kafka",
+      "category": "devops",
+      "level": 60,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/apachekafka/apachekafka-original.svg"
+    },
+    {
+      "name": "RabbitMQ",
+      "category": "devops",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rabbitmq/rabbitmq-original.svg"
+    },
+    {
+      "name": "Loki",
+      "category": "devops",
+      "level": 80,
+      "icon": "https://cdn.simpleicons.org/grafana/F46800"
+    },
+    {
+      "name": "OpenTelemetry",
+      "category": "devops",
+      "level": 75,
+      "icon": "https://cdn.simpleicons.org/opentelemetry/000000"
+    },
+    {
+      "name": "Node.js",
+      "category": "backend",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg"
+    },
+    {
+      "name": "Express JS",
+      "category": "backend",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg"
+    },
+    {
+      "name": "REST API",
+      "category": "backend",
+      "level": 85,
+      "icon": "https://cdn.simpleicons.org/swagger/85EA2D"
+    },
+    {
+      "name": "Fast API",
+      "category": "backend",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg"
+    },
+    {
+      "name": "Supabase",
+      "category": "backend",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg"
+    },
+    {
+      "name": "Python",
+      "category": "backend",
+      "level": 45,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+    },
+    {
+      "name": "WebSockets",
+      "category": "backend",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/socketio/socketio-original.svg"
+    },
+    {
+      "name": "Microservices",
+      "category": "backend",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-plain.svg"
+    },
+    {
+      "name": "gRPC",
+      "category": "backend",
+      "level": 70,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/grpc/grpc-plain.svg"
+    },
+    {
+      "name": "Auth (JWT/OAuth)",
+      "category": "backend",
+      "level": 90,
+      "icon": "https://cdn.simpleicons.org/jsonwebtokens/000000"
+    },
+    {
+      "name": "React",
+      "category": "frontend",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg"
+    },
+    {
+      "name": "Next.js",
+      "category": "frontend",
+      "level": 50,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg"
+    },
+    {
+      "name": "React Native",
+      "category": "frontend",
+      "level": 65,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg"
+    },
+    {
+      "name": "TypeScript",
+      "category": "frontend",
+      "level": 70,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg"
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "frontend",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+    },
+    {
+      "name": "Shadcn UI",
+      "category": "frontend",
+      "level": 65,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+    },
+    {
+      "name": "Wordpress",
+      "category": "frontend",
+      "level": 70,
+      "icon": "https://cdn.simpleicons.org/wordpress/21759B"
+    },
+    {
+      "name": "Zustand",
+      "category": "frontend",
+      "level": 75,
+      "icon": "https://cdn.simpleicons.org/react/61DAFB"
+    },
+    {
+      "name": "Framer Motion",
+      "category": "frontend",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/framermotion/framermotion-original.svg"
+    },
+    {
+      "name": "SEO (Next.js)",
+      "category": "frontend",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg"
+    },
+    {
+      "name": "PWA",
+      "category": "frontend",
+      "level": 70,
+      "icon": "https://cdn.simpleicons.org/pwa/5A0FC8"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "database",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"
+    },
+    {
+      "name": "MongoDB",
+      "category": "database",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg"
+    },
+    {
+      "name": "Redis",
+      "category": "database",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redis/redis-original.svg"
+    },
+    {
+      "name": "Prisma",
+      "category": "database",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg"
+    },
+    {
+      "name": "MySQL",
+      "category": "database",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"
+    },
+    {
+      "name": "Harbor",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/harbor/harbor-original.svg"
+    },
+    {
+      "name": "Docker Hub",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg"
+    },
+    {
+      "name": "Git",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg"
+    },
+    {
+      "name": "GHCR",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg"
+    },
+    {
+      "name": "Linux",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg"
+    },
+    {
+      "name": "Scrum",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.simpleicons.org/scrumalliance/009ADA"
+    },
+    {
+      "name": "Agile",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg"
+    },
+    {
+      "name": "IA & Vibe Coding",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+    },
+    {
+      "name": "DDD",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.simpleicons.org/databricks/FF3621"
+    },
+    {
+      "name": "CLEAN CODE",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg"
+    },
+    {
+      "name": "VS Code",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg"
+    },
+    {
+      "name": "Postman",
+      "category": "tools",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg"
+    },
+    {
+      "name": "Insomnia",
+      "category": "tools",
+      "level": 85,
+      "icon": "https://cdn.simpleicons.org/insomnia/5849BE"
+    },
+    {
+      "name": "Figma",
+      "category": "tools",
+      "level": 75,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg"
+    },
+    {
+      "name": "Trello",
+      "category": "tools",
+      "level": 95,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-original.svg"
+    },
+    {
+      "name": "Notion",
+      "category": "tools",
+      "level": 90,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg"
+    },
+    {
+      "name": "CI/CD Design",
+      "category": "architecture",
+      "level": 90,
+      "icon": "https://cdn.simpleicons.org/githubactions/2088FF"
+    },
+    {
+      "name": "Blue/Green Deployment",
+      "category": "architecture",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-plain.svg"
+    },
+    {
+      "name": "Canary Deployment",
+      "category": "architecture",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg"
+    },
+    {
+      "name": "System Design",
+      "category": "architecture",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/graphql/graphql-plain.svg"
+    },
+    {
+      "name": "Scalability",
+      "category": "architecture",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-plain.svg"
+    },
+    {
+      "name": "High Availability",
+      "category": "architecture",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nginx/nginx-original.svg"
+    },
+    {
+      "name": "Caching Strategies",
+      "category": "architecture",
+      "level": 85,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redis/redis-original.svg"
+    },
+    {
+      "name": "Message Queues",
+      "category": "architecture",
+      "level": 80,
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rabbitmq/rabbitmq-original.svg"
+    },
+    {
+      "name": "Communication",
+      "category": "softSkills",
+      "level": 95,
+      "icon": "lucide"
+    },
+    {
+      "name": "Problem Solving",
+      "category": "softSkills",
+      "level": 95,
+      "icon": "lucide"
+    },
+    {
+      "name": "Team Leadership",
+      "category": "softSkills",
+      "level": 90,
+      "icon": "lucide"
+    },
+    {
+      "name": "Adaptability",
+      "category": "softSkills",
+      "level": 95,
+      "icon": "lucide"
+    },
+    {
+      "name": "Time Management",
+      "category": "softSkills",
+      "level": 90,
+      "icon": "lucide"
+    },
+    {
+      "name": "Critical Thinking",
+      "category": "softSkills",
+      "level": 90,
+      "icon": "lucide"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "nameFr": "Nehemie SIGHE",
+      "nameEn": "Nehemie SIGHE",
+      "roleFr": "CTO, ZENORA",
+      "roleEn": "CTO, ZENORA",
+      "textFr": "Sur le projet ERP SaaS NEXUS, Barthez a démontré une excellente maîtrise de l'architecture logicielle, aussi bien sur la conception du système que sur l'architecture de la base de données, le backend et le frontend. Son attention portée à la scalabilité, aux performances et à la sécurité nous permet de construire une plateforme solide répondant à des standards élevés.",
+      "textEn": "On the NEXUS SaaS ERP project, Barthez demonstrated strong software architecture expertise across system design, database architecture, backend, and frontend. His focus on scalability, performance, and security has helped us build a robust platform aligned with high engineering standards.",
+      "rating": 5,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 2,
+      "nameFr": "Herman MOUKAM",
+      "nameEn": "Herman MOUKAM",
+      "roleFr": "Développeur Full Stack & DevOps, ZENORA",
+      "roleEn": "Full Stack & DevOps Engineer, ZENORA",
+      "textFr": "Le pipeline DevSecOps conçu par Barthez reflète une véritable culture de la qualité et de la sécurité. Chaque étape de la chaîne de livraison a été pensée pour garantir des déploiements fiables tout en renforçant la sécurité des produits développés chez ZENORA.",
+      "textEn": "The DevSecOps pipeline designed by Barthez reflects a genuine engineering mindset focused on quality and security. Every stage of the delivery pipeline was carefully designed to ensure reliable deployments while strengthening the security of ZENORA's products.",
+      "rating": 5,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 3,
+      "nameFr": "Valery MENGUE",
+      "nameEn": "Valery MENGUE",
+      "roleFr": "Chef de Projet, ESOPA",
+      "roleEn": "Project Manager, ESOPA",
+      "textFr": "Le site web livré a dépassé nos attentes aussi bien sur le plan technique que visuel. Le projet a été réalisé dans les délais prévus avec un excellent niveau de qualité. Je recommande Barthez pour son professionnalisme et sa capacité à livrer des résultats.",
+      "textEn": "The delivered website exceeded our expectations both technically and visually. The project was completed on schedule with excellent quality. I highly recommend Barthez for his professionalism and ability to deliver outstanding results.",
+      "rating": 5,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 4,
+      "nameFr": "Arnold TCHIO",
+      "nameEn": "Arnold TCHIO",
+      "roleFr": "Responsable Communication, K&C Services",
+      "roleEn": "Communications Manager, K&C Services",
+      "textFr": "Le résultat final correspondait parfaitement à notre vision. Le design est moderne, créatif et soigné, les performances SEO sont excellentes et le projet a été livré rapidement malgré plusieurs ajustements demandés en cours de réalisation. Une collaboration très satisfaisante.",
+      "textEn": "The final result perfectly matched our vision. The design is modern, creative, and polished, SEO performance is outstanding, and the project was delivered quickly despite several requested revisions throughout development. A very satisfying collaboration.",
+      "rating": 5,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 5,
+      "nameFr": "Gilles TANKO",
+      "nameEn": "Gilles TANKO",
+      "roleFr": "CEO, GTA Global Technologies & Associates",
+      "roleEn": "CEO, GTA Global Technologies & Associates",
+      "textFr": "Le site web réalisé pour notre entreprise est allé bien au-delà de nos attentes. La qualité du travail, le professionnalisme et l'attention portée aux détails ont permis d'obtenir un résultat dont nous sommes particulièrement fiers.",
+      "textEn": "The website developed for our company went far beyond our expectations. The quality of the work, professionalism, and attention to detail resulted in a product we are truly proud of.",
+      "rating": 4,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 6,
+      "nameFr": "Prince J. MABENGUE",
+      "nameEn": "Prince J. MABENGUE",
+      "roleFr": "Développeur Mobile",
+      "roleEn": "Mobile Developer",
+      "textFr": "Le travail réalisé sur la sécurisation et le monitoring de mon serveur VPS a été particulièrement impressionnant. Chaque aspect du durcissement système a été traité avec rigueur, ce qui m'a permis de gagner en confiance sur la stabilité et la sécurité de mon infrastructure.",
+      "textEn": "The work carried out on securing and monitoring my VPS was outstanding. Every aspect of system hardening was handled thoroughly, giving me complete confidence in the stability and security of my infrastructure.",
+      "rating": 5,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    },
+    {
+      "id": 7,
+      "nameFr": "Haruna Rashid YAKUBU",
+      "nameEn": "Haruna Rashid YAKUBU",
+      "roleFr": "CTO & Instructeur, IT Engineering Factory",
+      "roleEn": "CTO & Instructor, IT Engineering Factory",
+      "textFr": "Au cours de sa formation, Barthez a démontré de solides compétences en développement Full Stack ainsi qu'une excellente compréhension des pratiques DevOps et Cloud. Son évolution, sa rigueur et sa capacité d'apprentissage lui permettent aujourd'hui de travailler sur des projets techniques ambitieux.",
+      "textEn": "Throughout his training, Barthez demonstrated strong Full Stack development skills together with a solid understanding of DevOps and Cloud practices. His growth, discipline, and learning ability enable him to contribute confidently to ambitious engineering projects.",
+      "rating": 4,
+      "isPublished": true,
+      "status": "approved",
+      "source": "admin"
+    }
+  ],
+  "contactInfo": {
+    "name": "Barthez Kenwou",
+    "handle": "barthez-kenwou",
+    "titleFr": "Développeur Full Stack & Ingénieur DevOps",
+    "titleEn": "Full Stack Developer & DevOps Engineer",
+    "subtitleFr": "Spécialiste AWS Cloud",
+    "subtitleEn": "AWS Cloud Specialist",
+    "email": "kenwoubarthez@gmail.com",
+    "phone": "+237 655 646 688",
+    "whatsappLink": "https://wa.me/237655646688",
+    "location": "Yaounde - Cameroun",
+    "website": "barthez-kenwou.dev",
+    "repository": "https://github.com/barthez-kenwou?tab=repositories",
+    "github": "https://github.com/barthez-kenwou",
+    "linkedin": "https://linkedin.com/in/barthez-kenwou",
+    "facebook": "https://www.facebook.com/kenwou.barthez.gta"
+  },
+  "languages": [
+    {
+      "language": "Français",
+      "proficiencyFr": "Natif",
+      "proficiencyEn": "Native"
+    },
+    {
+      "language": "Anglais",
+      "proficiencyFr": "Professionnel technique",
+      "proficiencyEn": "Professional working"
+    }
+  ],
+  "references": [
+    {
+      "name": "Rashid Haruna",
+      "roleFr": "CTO & DevOps Engineer",
+      "roleEn": "CTO & DevOps Engineer",
+      "company": "IT Engineering Factory",
+      "email": "rashidharuna@gmail.com",
+      "phone": "+237 655 193 530"
+    },
+    {
+      "name": "Gilles Tanko",
+      "roleFr": "CEO & formateur Microsoft",
+      "roleEn": "CEO & Microsoft trainer",
+      "company": "GTA",
+      "email": "gilles.tanko@gta-it.com",
+      "phone": "+237 671 091 360"
+    },
+    {
+      "name": "Nehemie Sighe",
+      "roleFr": "CTO & Cloud Architecte",
+      "roleEn": "CTO & Cloud Architecte",
+      "company": "ZENORA",
+      "email": "nehemie.sighe@zenora360.com",
+      "phone": "+237 694 418 408"
+    }
+  ],
+  "contactResponses": [
+    {
+      "id": "msg_demo_1",
+      "name": "Amélie Kouam",
+      "email": "amelie.kouam@example.com",
+      "subject": "Demande de devis — infra AWS",
+      "message": "Bonjour Barthez,\n\nNous cherchons un accompagnement pour migrer notre monolithe vers ECS Fargate. Pouvez-vous proposer un cadrage sur 2 semaines ?\n\nCordialement,",
+      "status": "new",
+      "createdAt": "RELATIVE:-45m"
+    },
+    {
+      "id": "msg_demo_2",
+      "name": "Jean-Paul Mbarga",
+      "email": "jp.mbarga@startup.cm",
+      "subject": "Formation DevOps équipe",
+      "message": "Salut, on a une équipe de 6 et on voudrait une formation CI/CD GitHub Actions + Terraform. Dispo en présentiel Yaoundé ?",
+      "status": "read",
+      "createdAt": "RELATIVE:-26h",
+      "notes": "Relancer semaine prochaine"
+    },
+    {
+      "id": "msg_demo_3",
+      "name": "Sarah Chen",
+      "email": "sarah@northbridge.io",
+      "subject": "Partnership / case study",
+      "message": "Hi Barthez — loved the NEXUS write-up. Would you be open to a short technical interview for our engineering blog?",
+      "status": "replied",
+      "createdAt": "RELATIVE:-80h"
+    }
+  ],
+  "processSteps": [
+    {
+      "sortOrder": 0,
+      "iconKey": "chat",
+      "titleFr": "Découverte & Analyse",
+      "titleEn": "Discovery & Analysis",
+      "descFr": "Compréhension approfondie de vos besoins et définition des objectifs stratégiques.",
+      "descEn": "Deep understanding of your needs and definition of strategic goals."
+    },
+    {
+      "sortOrder": 1,
+      "iconKey": "bulb",
+      "titleFr": "Stratégie & Design",
+      "titleEn": "Strategy & Design",
+      "descFr": "Élaboration d’une solution sur mesure, architecture et planification détaillée.",
+      "descEn": "Development of a tailored solution, architecture and detailed planning."
+    },
+    {
+      "sortOrder": 2,
+      "iconKey": "terminal",
+      "titleFr": "Développement Agile",
+      "titleEn": "Agile Development",
+      "descFr": "Réalisation itérative avec un suivi constant et des retours réguliers.",
+      "descEn": "Iterative implementation with constant monitoring and regular feedback."
+    },
+    {
+      "sortOrder": 3,
+      "iconKey": "badge",
+      "titleFr": "Livraison & Optimisation",
+      "titleEn": "Delivery & Optimization",
+      "descFr": "Déploiement, tests rigoureux, formation et accompagnement continu.",
+      "descEn": "Deployment, rigorous testing, training and continuous support."
+    }
+  ],
+  "whyMe": [
+    {
+      "sortOrder": 0,
+      "iconKey": "check",
+      "textFr": "Expert certifié AWS avec +3 ans d'expérience",
+      "textEn": "AWS certified expert with 3+ years experience"
+    },
+    {
+      "sortOrder": 1,
+      "iconKey": "rocket",
+      "textFr": "Livraison rapide et code de qualité production",
+      "textEn": "Fast delivery and production-quality code"
+    },
+    {
+      "sortOrder": 2,
+      "iconKey": "users",
+      "textFr": "Communication claire et suivi régulier",
+      "textEn": "Clear communication and regular follow-up"
+    },
+    {
+      "sortOrder": 3,
+      "iconKey": "clock",
+      "textFr": "Disponible et réactif 7j/7",
+      "textEn": "Available and responsive 7 days a week"
+    }
+  ]
+}

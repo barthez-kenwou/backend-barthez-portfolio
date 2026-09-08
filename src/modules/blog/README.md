@@ -27,8 +27,9 @@ blog/
 | PATCH  | `/:id/publish` | `blog:publish`    |
 | DELETE | `/:id`         | `blog:delete:own` |
 
-Author on `Blog` has **no cascade**. GDPR user hard-delete keeps a stub author
-when posts exist.
+`authorId` is optional. When set, ownership checks require the actor to match
+(or hold `:any`). When null, only `:any` elevation may mutate. Display `author`
+is a free-form string. Publish sets `isPublished=true` (no CMS status enums).
 
 ## Dependency rules
 

@@ -19,7 +19,7 @@ import { blogSchemas } from '../schemas/blog.schemas';
 export function createBlogRoutes(controller: BlogController): Router {
   const blogs = Router();
 
-  /** GET /search — Full-text search over published public blogs. */
+  /** GET /search — Full-text search over published blogs (isPublished=true). */
   blogs.get(
     '/search',
     paginationMiddleware,

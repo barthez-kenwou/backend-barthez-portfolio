@@ -1,7 +1,7 @@
-# Contributing to Backend Init
+# Contributing to Barthez Kenwou Portfolio Backend
 
-Thank you for investing time in this template. Clear, small changes keep the
-modular architecture healthy for every fork.
+Thank you for investing time in this project. Clear, small changes keep the
+modular architecture healthy.
 
 ## Code of conduct
 

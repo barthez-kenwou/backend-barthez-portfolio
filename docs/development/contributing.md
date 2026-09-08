@@ -1,7 +1,7 @@
 # Contributing (docs)
 
-This page summarizes day-to-day contribution expectations for Backend Init. The
-authoritative project policy lives in the root
+This page summarizes day-to-day contribution expectations for Barthez Kenwou
+Portfolio Backend. The authoritative project policy lives in the root
 [CONTRIBUTING.md](../../CONTRIBUTING.md). Follow both.
 
 ## Branch strategy

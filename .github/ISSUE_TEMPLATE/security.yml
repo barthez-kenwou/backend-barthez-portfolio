@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         **Do not post exploit details or secrets here.**
-        For vulnerabilities, use [Security Advisories](https://github.com/barthez-kenwou/backend-init/security/advisories/new).
+        For vulnerabilities, use [Security Advisories](https://github.com/barthez-kenwou/backend-barthez-portfolio/security/advisories/new).
   - type: textarea
     id: summary
     attributes:

@@ -1,36 +1,33 @@
 /**
- * OpenAPI info, servers, and tags.
+ * OpenAPI info, servers, and tags for the barthez-kenwou.dev portfolio API.
  */
 const info = {
-  title: 'Backend Init API',
+  title: 'Barthez Kenwou Portfolio API',
   description: [
-    'Production-ready Express + TypeScript modular monolith template.',
+    'Backend for https://barthez-kenwou.dev — public portfolio content and',
+    '`/barthez-admin` CMS (projects, blogs, skills, CV, contact, testimonials).',
     '',
-    'Features: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC user admin,',
-    'file uploads (MinIO / S3), Redis caching, BullMQ jobs, and operator surfaces.',
+    'Platform: RS256 JWT auth (OTP + optional TOTP), OAuth 2.0, RBAC, MinIO/S3 uploads,',
+    'Redis, BullMQ, Flagsmith, audit, and operator surfaces.',
     '',
-    '**Authentication:** send `Authorization: Bearer <access_token>` on protected routes.',
+    '**Authentication:** `Authorization: Bearer <access_token>` on protected routes.',
     'Refresh tokens use an HTTP-only cookie; `/auth/refresh` also accepts `refreshToken` in JSON.',
     '',
     '**Base paths:** domain APIs under `/api/v1`. System endpoints (`/health`, `/csrf-token`,',
     '`/metrics`, CSP report URI, Bull Board) are at the application root.',
     '',
-    '**Operator UIs:** `/api-docs`, `/api-docs.json`, `/metrics`, and `/admin/queues` require',
-    'HTTP Basic (`ADMIN_BASIC_*`, fallback `SWAGGER_*`) outside tests and are not published',
-    'through the sample Nginx public surface.',
-    '',
-    '**Identity vs admin:** `GET /api/v1/auth/me` is the self snapshot (roles + permissions).',
-    'User administration lives under `/api/v1/users`.',
+    '**Public vs admin:** most list/get endpoints are public (published filters).',
+    'Mutations require verified admin permissions. Contact form and testimonial feedback are public POSTs.',
   ].join('\n'),
   version: '1.0.0',
   contact: {
     name: 'Barthez Kenwou',
-    email: 'kenwoubarthez@gmail.com',
-    url: 'https://github.com/barthez-kenwou/backend-init',
+    email: 'contact@barthez-kenwou.dev',
+    url: 'https://barthez-kenwou.dev',
   },
   license: {
-    name: 'MIT',
-    url: 'https://opensource.org/licenses/MIT',
+    name: 'UNLICENSED',
+    url: 'https://barthez-kenwou.dev',
   },
 };
 
@@ -38,6 +35,10 @@ const servers = [
   {
     url: 'http://localhost:3000',
     description: 'Local development',
+  },
+  {
+    url: 'https://api.barthez-kenwou.dev',
+    description: 'Production (when deployed)',
   },
 ];
 
@@ -59,7 +60,59 @@ const tags = [
   },
   {
     name: 'Blogs',
-    description: 'Reference blog domain used to validate the modular template',
+    description: 'Bilingual portfolio blog posts (FR/EN) with publish flag',
+  },
+  {
+    name: 'Projects',
+    description: 'Portfolio case studies with featured / published / confidential flags',
+  },
+  {
+    name: 'Services',
+    description: 'Offered services and pricing (EUR source of truth)',
+  },
+  {
+    name: 'Skills',
+    description: 'Skill matrix (name, category, level, icon)',
+  },
+  {
+    name: 'Experiences',
+    description: 'Professional experiences for CV and About',
+  },
+  {
+    name: 'Education',
+    description: 'Education entries for CV',
+  },
+  {
+    name: 'Certifications',
+    description: 'Certifications for Skills page and CV',
+  },
+  {
+    name: 'Testimonials',
+    description: 'Public testimonials + feedback form with moderation',
+  },
+  {
+    name: 'Achievements',
+    description: 'Highlight counters shown on the Skills page',
+  },
+  {
+    name: 'References',
+    description: 'Professional references (PII — admin / CV aggregate)',
+  },
+  {
+    name: 'Languages',
+    description: 'Spoken languages for the CV',
+  },
+  {
+    name: 'ContactInfos',
+    description: 'Singleton public profile / contact card',
+  },
+  {
+    name: 'ContactResponses',
+    description: 'Inbound contact-form messages (public POST, admin inbox)',
+  },
+  {
+    name: 'CV',
+    description: 'Aggregated CV payload for the public resume page / PDF',
   },
   {
     name: 'Files',
@@ -67,8 +120,7 @@ const tags = [
   },
   {
     name: 'System',
-    description:
-      'Health, CSRF, Prometheus metrics, CSP reports, audit list/detail/export, and Bull Board',
+    description: 'Health, CSRF, metrics, CSP, audit, admin dashboard counts, and Bull Board',
   },
 ];
 

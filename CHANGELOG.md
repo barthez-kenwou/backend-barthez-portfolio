@@ -8,6 +8,17 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Rebranded from generic backend template to **Barthez Kenwou Portfolio API**
+  (barthez-kenwou.dev): package identity, env defaults, OpenAPI, and docs.
+- Portfolio CMS domains: projects, blogs (bilingual), services, skills,
+  experiences, education, certifications, testimonials, achievements,
+  references, contact-infos (singleton), contact-responses, languages, CV
+  aggregate, and admin dashboard counts.
+- `prisma:seed` imports live frontend mock content (100 skills, 26 projects, 20
+  blogs, services, CV languages/references, etc.).
+
 ### Security
 
 - Feature flags: server SDK `flagsmith-nodejs`, boot-time load + periodic
@@ -152,5 +163,5 @@ and this project adheres to
 
 ### Added
 
-- Initial Express + TypeScript backend template with JWT auth, OAuth providers,
+- Initial Express + TypeScript portfolio backend with JWT auth, OAuth providers,
   MongoDB/Prisma, Redis, MinIO, OpenAPI, Vitest, and Docker Compose tooling.
