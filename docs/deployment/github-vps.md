@@ -30,6 +30,61 @@ deploy-vps.yml SSH → git pull (checkout) → compose pull/up
 
 Actions never inject the app `.env` into the image.
 
+## APP_NAME (any value)
+
+Compose names containers `${APP_NAME}-http` and `${APP_NAME}-worker`. Deploy
+healthcheck reads `APP_NAME` from the VPS `.env` — use whatever you want:
+
+```bash
+APP_NAME=barthez-portfolio-api
+# → containers: barthez-portfolio-api-http / barthez-portfolio-api-worker
+```
+
+## Object storage (MinIO local vs SeaweedFS / S3 in prod)
+
+The app speaks **S3 API** via the MinIO JS client. MinIO in Compose is only a
+local stand-in. In production you typically point the same env vars at
+**SeaweedFS S3** (or AWS S3) and **do not** start the bundled MinIO service.
+
+Deploy compose defaults: **no** MinIO container. Optional bundled MinIO:
+
+```bash
+COMPOSE_PROFILES=bundled-storage
+```
+
+### SeaweedFS example (recommended for your VPS)
+
+SeaweedFS S3 gateway must be reachable from the API container (host IP, Docker
+gateway, or shared network). Create buckets `app-uploads` and `backups` (or your
+chosen names) beforehand if auto-create is disabled.
+
+```bash
+# Keep STORAGE_PROVIDER=minio — uploads (avatars/presign) always use MINIO_* today.
+STORAGE_PROVIDER=minio
+
+MINIO_ENDPOINT=172.17.0.1          # or host.docker.internal / seaweed hostname
+MINIO_PORT=8333                   # your SeaweedFS S3 port
+MINIO_USE_SSL=false               # true if TLS on the S3 gateway
+MINIO_ACCESS_KEY=your-seaweed-access-key
+MINIO_SECRET_KEY=your-seaweed-secret-key
+MINIO_APP_BUCKET=app-uploads
+MINIO_BACKUP_BUCKET=backups
+MINIO_BASE_PATH=uploads/
+MINIO_PUBLIC_URL=https://files.barthez-kenwou.dev   # CDN / public base if any
+```
+
+Do **not** set `COMPOSE_PROFILES=bundled-storage` when using SeaweedFS.
+
+### Network note
+
+If SeaweedFS runs on the VPS host (not in this compose), the API container must
+reach it. Common options:
+
+- `MINIO_ENDPOINT` = host IP on `docker0` / LAN
+- attach SeaweedFS (or a reverse proxy) to `backend_network` / `web-proxy`
+- publish Seaweed S3 on localhost and use
+  `extra_hosts: host.docker.internal:host-gateway` (add if needed)
+
 ## Environment `production`
 
 **Settings → Environments → `production`**
@@ -106,28 +161,30 @@ docker compose -f infra/docker/docker-compose.deploy.yml \
 
 ### Nginx Proxy Manager
 
-1. Attach target to `web-proxy` (compose already joins `nginx`; or connect
-   `Backend-Init-http` manually).
-2. Proxy host → `BACKEND_NGINX:80` **or** `Backend-Init-http:3000`.
+1. Attach the target to `web-proxy` (compose already joins `nginx`; or connect
+   `${APP_NAME}-http` manually).
+2. Proxy host → `${NGINX_NAME}:80` **or** `${APP_NAME}-http:3000` (example:
+   `barthez-portfolio-api-http:3000`).
 3. Cloudflare SSL mode **Full** (not Flexible).
 4. Bot Fight may 403 `curl` to the public URL — use a browser or allowlist.
 
 ## Fail-closed production `.env` (minimum)
 
-| Variable                | Rule                               |
-| ----------------------- | ---------------------------------- |
-| `NODE_ENV`              | `production`                       |
-| `ADMIN_BASIC_PASSWORD`  | Non-empty, ≠ `admin`               |
-| `AUTH_ENCRYPTION_KEY`   | Non-empty                          |
-| `ALLOW_CSRF_PROTECTION` | `true`                             |
-| `COOKIE_SECURE`         | `true`                             |
-| `CLAMAV_REQUIRED`       | `true`                             |
-| `BACKUP_ENCRYPTION_KEY` | Non-placeholder                    |
-| `REDIS_TLS`             | `false` for Compose Redis (no TLS) |
-| `MINIO_USE_SSL`         | `false` for internal MinIO         |
-| `SMTP_*`                | Real provider (not `mailhog`)      |
-| `LOKI_ENABLED`          | `false` unless Loki is deployed    |
-| `SWAGGER_ENABLED`       | Prefer `false` on public hosts     |
+| Variable                | Rule                                                |
+| ----------------------- | --------------------------------------------------- |
+| `NODE_ENV`              | `production`                                        |
+| `ADMIN_BASIC_PASSWORD`  | Non-empty, ≠ `admin`                                |
+| `AUTH_ENCRYPTION_KEY`   | Non-empty                                           |
+| `ALLOW_CSRF_PROTECTION` | `true`                                              |
+| `COOKIE_SECURE`         | `true`                                              |
+| `CLAMAV_REQUIRED`       | `true`                                              |
+| `BACKUP_ENCRYPTION_KEY` | Non-placeholder                                     |
+| `REDIS_TLS`             | `false` for Compose Redis (no TLS)                  |
+| `MINIO_USE_SSL`         | `false` for plain Seaweed/MinIO on LAN              |
+| `MINIO_*`               | Point at SeaweedFS S3 (or enable `bundled-storage`) |
+| `SMTP_*`                | Real provider (not `mailhog`)                       |
+| `LOKI_ENABLED`          | `false` unless Loki is deployed                     |
+| `SWAGGER_ENABLED`       | Prefer `false` on public hosts                      |
 
 ## Related
 

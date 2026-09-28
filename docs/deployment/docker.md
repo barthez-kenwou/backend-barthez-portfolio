@@ -77,6 +77,9 @@ This is the file **GitHub Actions** runs on the VPS (pull pre-built GHCR image):
 - `IMAGE_REF` via `.env.image` (workflow-written)
 - Root `.env` only (`env_file: ../../.env`)
 - `backend-api` + `backend-worker` (`PROCESS_ROLE` split)
+- Containers named `${APP_NAME}-http` / `${APP_NAME}-worker` (any `APP_NAME`)
+- **No bundled MinIO by default** — point `MINIO_*` at SeaweedFS / S3. Optional:
+  `COMPOSE_PROFILES=bundled-storage` to start Compose MinIO.
 - External Docker network **`web-proxy`** for Nginx Proxy Manager (or similar)
 - Nginx **does not** publish host `:80` (edge proxy already owns 80/443)
 
@@ -88,7 +91,8 @@ docker compose -f infra/docker/docker-compose.deploy.yml \
   --env-file .env --env-file .env.image up -d
 ```
 
-Full secrets / Environments / NPM notes: [GitHub → VPS](./github-vps.md).
+Full secrets / Environments / NPM notes: [GitHub → VPS](./github-vps.md). Object
+storage swap: [Storage providers](../guides/storage-providers.md).
 
 Dockerfile `HEALTHCHECK` hits `http://localhost:3000/health/live` (process up).
 Use `/health/ready` for dependency probes (Mongo + Redis).

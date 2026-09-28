@@ -3,6 +3,10 @@
 # Single env source: repo-root `.env` (same as local / `.env.example`).
 # Paths are relative to this file under `infra/docker/`.
 #
+# Object storage:
+# - Default: no bundled MinIO. Point MINIO_* (or S3_*) at SeaweedFS / real S3.
+# - Optional bundled MinIO: set COMPOSE_PROFILES=bundled-storage in `.env`.
+#
 # From repo root (local smoke or VPS checkout):
 #   export IMAGE_REF=ghcr.io/owner/repo:sha-<fullsha>
 #   printf 'IMAGE_REF=%s\n' "$IMAGE_REF" > .env.image
@@ -21,15 +25,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      minio:
-        condition: service_healthy
       clamav:
         condition: service_healthy
     restart: unless-stopped
     environment:
       DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
       REDIS_PORT: '6379'
-      MINIO_PORT: '9000'
       CLAMAV_PORT: '3310'
       REDIS_PASSWORD: ''
       PROCESS_ROLE: api
@@ -62,15 +63,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      minio:
-        condition: service_healthy
       clamav:
         condition: service_healthy
     restart: unless-stopped
     environment:
       DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
       REDIS_PORT: '6379'
-      MINIO_PORT: '9000'
       CLAMAV_PORT: '3310'
       REDIS_PASSWORD: ''
       PROCESS_ROLE: worker
@@ -118,6 +116,7 @@ services:
       retries: 5
 
   minio:
+    profiles: [bundled-storage]
     image: minio/minio:RELEASE.2023-10-25T06-33-25Z
     container_name: ${MINIO_NAME:-minio_storage}
     restart: unless-stopped
@@ -136,6 +135,7 @@ services:
       retries: 5
 
   minio-init:
+    profiles: [bundled-storage]
     image: minio/mc:latest
     container_name: MINIO_INITIALIZER
     depends_on:
