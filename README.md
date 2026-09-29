@@ -12,6 +12,10 @@ and the `/barthez-admin` CMS back-office.
 Pairs with the frontend repo
 [`barthez-kenwou-porfolio`](https://github.com/barthez-kenwou/barthez-kenwou-porfolio).
 
+**Product & positioning case study** (stack choices, architecture tradeoffs,
+delivery context — not operator runbooks):
+[barthez-kenwou.dev/projects/…portfolio-0004](https://barthez-kenwou.dev/projects/barthez-kenwou-dev-technical-positioning-portfolio-0004)
+
 ---
 
 ## What this API serves
@@ -141,14 +145,15 @@ Full contract: [docs/api/openapi.yaml](./docs/api/openapi.yaml)
 
 ## Documentation map
 
-| Section               | Link                                                |
-| --------------------- | --------------------------------------------------- |
-| Documentation home    | [docs/README.md](./docs/README.md)                  |
-| Architecture & ADRs   | [docs/architecture/](./docs/architecture/README.md) |
-| Development / testing | [docs/development/](./docs/development/README.md)   |
-| Docker & production   | [docs/deployment/](./docs/deployment/README.md)     |
-| Guides                | [docs/guides/](./docs/guides/README.md)             |
-| OpenAPI               | [docs/api/](./docs/api/README.md)                   |
+| Section               | Link                                                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Case study (product)  | [Portfolio project page](https://barthez-kenwou.dev/projects/barthez-kenwou-dev-technical-positioning-portfolio-0004) |
+| Documentation home    | [docs/README.md](./docs/README.md)                                                                                    |
+| Architecture & ADRs   | [docs/architecture/](./docs/architecture/README.md)                                                                   |
+| Development / testing | [docs/development/](./docs/development/README.md)                                                                     |
+| Docker & production   | [docs/deployment/](./docs/deployment/README.md)                                                                       |
+| Guides                | [docs/guides/](./docs/guides/README.md)                                                                               |
+| OpenAPI               | [docs/api/](./docs/api/README.md)                                                                                     |
 
 ---
 
