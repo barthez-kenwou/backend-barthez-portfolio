@@ -4,7 +4,13 @@
 # Paths are relative to this file under `infra/docker/`.
 #
 # Object storage:
-# - Default: no bundled MinIO. Point MINIO_* (or S3_*) at SeaweedFS / real S3.
+# - Default: no bundled MinIO. Point MINIO_* at SeaweedFS / real S3.
+# - On this host, join `web-proxy` so API/worker can resolve `seaweed-s3:8333`
+#   (same network as Nginx Proxy Manager). Example:
+#     MINIO_ENDPOINT=seaweed-s3
+#     MINIO_PORT=8333
+#     MINIO_USE_SSL=false
+#     MINIO_PUBLIC_URL=https://s3.example.com
 # - Optional bundled MinIO: set COMPOSE_PROFILES=bundled-storage in `.env`.
 #
 # From repo root (local smoke or VPS checkout):
@@ -35,6 +41,9 @@ services:
       # Bundled Compose Redis has no AUTH — clear any leftover ACL vars from .env
       REDIS_USERNAME: ''
       REDIS_PASSWORD: ''
+      # In-container listen must match healthcheck + nginx upstream (backend:3000).
+      # Host/public PORT in .env is irrelevant behind the compose network.
+      PORT: '3000'
       PROCESS_ROLE: api
       NODE_ENV: production
     volumes:
@@ -43,6 +52,8 @@ services:
       backend_network:
         aliases:
           - backend
+      # Reach SeaweedFS S3 (seaweed-s3) / NPM on the shared edge network
+      web-proxy: {}
     healthcheck:
       test:
         [
@@ -74,6 +85,7 @@ services:
       CLAMAV_PORT: '3310'
       REDIS_USERNAME: ''
       REDIS_PASSWORD: ''
+      PORT: '3000'
       PROCESS_ROLE: worker
       NODE_ENV: production
     volumes:
@@ -82,6 +94,7 @@ services:
       disable: true
     networks:
       - backend_network
+      - web-proxy
 
   mongo:
     image: mongo:6.0-jammy
