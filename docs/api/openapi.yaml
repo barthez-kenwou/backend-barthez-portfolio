@@ -4284,7 +4284,7 @@ paths:
       tags:
         - Testimonials
       summary: 'Approve testimonial'
-      description: 'Requires `testimonial:update:any`.'
+      description: 'Requires `testimonial:update:any`. Approves + publishes. If `projectId` is set, also writes `Project.testimonial` for the case-study tab.'
       security:
         -
           bearerAuth: []
