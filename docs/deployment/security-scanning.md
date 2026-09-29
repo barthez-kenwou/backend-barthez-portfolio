@@ -47,6 +47,7 @@ Known **moderate** residual (tracked, not forced):
 | Package                     | Why kept                                                                                                                                                                               |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `stream-json` (via `minio`) | Fixed in 3.x but MinIO still imports the 1.x path layout; forcing 3.x breaks MinIO ESM imports. Ignored in `osv-scanner.toml` (`GHSA-528h-pc64-c93x`) to match npm audit high+ policy. |
+| `vitest` 3.x (dev)          | `GHSA-82fw-gwwq-j7x9` fixed only in Vitest **4.1.11+**. Major bump deferred; ignored in `osv-scanner.toml` (devDependency, not in production image).                                   |
 
 `file-type` is pinned to **≥22** (ESM, dynamic import + ambient shim under
 `src/types/shims/`) to clear GHSA-5v7r-6r5c-r473.

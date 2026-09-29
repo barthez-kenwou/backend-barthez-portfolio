@@ -32,6 +32,8 @@ services:
       DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
       REDIS_PORT: '6379'
       CLAMAV_PORT: '3310'
+      # Bundled Compose Redis has no AUTH — clear any leftover ACL vars from .env
+      REDIS_USERNAME: ''
       REDIS_PASSWORD: ''
       PROCESS_ROLE: api
       NODE_ENV: production
@@ -70,6 +72,7 @@ services:
       DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
       REDIS_PORT: '6379'
       CLAMAV_PORT: '3310'
+      REDIS_USERNAME: ''
       REDIS_PASSWORD: ''
       PROCESS_ROLE: worker
       NODE_ENV: production

@@ -62,15 +62,16 @@ chosen names) beforehand if auto-create is disabled.
 # Keep STORAGE_PROVIDER=minio — uploads (avatars/presign) always use MINIO_* today.
 STORAGE_PROVIDER=minio
 
-MINIO_ENDPOINT=172.17.0.1          # or host.docker.internal / seaweed hostname
-MINIO_PORT=8333                   # your SeaweedFS S3 port
-MINIO_USE_SSL=false               # true if TLS on the S3 gateway
+# Hostname only — never paste https:// into MINIO_ENDPOINT
+MINIO_ENDPOINT=s3.zenora360.com
+MINIO_PORT=443                    # public HTTPS; or 8333 if you hit Seaweed directly
+MINIO_USE_SSL=true
 MINIO_ACCESS_KEY=your-seaweed-access-key
 MINIO_SECRET_KEY=your-seaweed-secret-key
 MINIO_APP_BUCKET=app-uploads
 MINIO_BACKUP_BUCKET=backups
 MINIO_BASE_PATH=uploads/
-MINIO_PUBLIC_URL=https://files.barthez-kenwou.dev   # CDN / public base if any
+MINIO_PUBLIC_URL=https://s3.zenora360.com
 ```
 
 Do **not** set `COMPOSE_PROFILES=bundled-storage` when using SeaweedFS.

@@ -2,16 +2,22 @@ import fs from 'fs-extra';
 import { Client } from 'minio';
 
 import { envs } from '@/app/config';
+import { parseObjectStorageEndpoint } from '@/shared/infrastructure/storage/parse-object-storage-endpoint';
 import type {
   StorageProvider,
   UploadBufferParams,
   UploadFileParams,
 } from '@/shared/infrastructure/storage/storage.port';
 
-const client = new Client({
-  endPoint: envs.MINIO_ENDPOINT,
+const parsed = parseObjectStorageEndpoint(envs.MINIO_ENDPOINT, {
   port: envs.MINIO_PORT,
   useSSL: envs.MINIO_USE_SSL,
+});
+
+const client = new Client({
+  endPoint: parsed.endPoint,
+  port: parsed.port ?? envs.MINIO_PORT,
+  useSSL: parsed.useSSL ?? envs.MINIO_USE_SSL,
   accessKey: envs.MINIO_ACCESS_KEY,
   secretKey: envs.MINIO_SECRET_KEY,
 });
@@ -52,9 +58,11 @@ export class MinioStorageProvider implements StorageProvider {
       return `${envs.MINIO_PUBLIC_URL.replace(/\/$/, '')}/${bucket}/${key}`;
     }
 
-    const protocol = envs.MINIO_USE_SSL ? 'https' : 'http';
-    const host = envs.MINIO_ENDPOINT === 'minio' ? 'localhost' : envs.MINIO_ENDPOINT;
-    return `${protocol}://${host}:${envs.MINIO_PORT}/${bucket}/${key}`;
+    const useSSL = parsed.useSSL ?? envs.MINIO_USE_SSL;
+    const port = parsed.port ?? envs.MINIO_PORT;
+    const protocol = useSSL ? 'https' : 'http';
+    const host = parsed.endPoint === 'minio' ? 'localhost' : parsed.endPoint;
+    return `${protocol}://${host}:${port}/${bucket}/${key}`;
   }
 }
 

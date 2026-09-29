@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import { Client } from 'minio';
 
 import { envs } from '@/app/config';
+import { parseObjectStorageEndpoint } from '@/shared/infrastructure/storage/parse-object-storage-endpoint';
 import type {
   StorageProvider,
   UploadBufferParams,
@@ -15,10 +16,14 @@ export class S3StorageProvider implements StorageProvider {
   private readonly client: Client;
 
   constructor() {
-    this.client = new Client({
-      endPoint: envs.S3_ENDPOINT || envs.MINIO_ENDPOINT,
+    const parsed = parseObjectStorageEndpoint(envs.S3_ENDPOINT || envs.MINIO_ENDPOINT, {
       port: envs.S3_PORT || envs.MINIO_PORT,
       useSSL: envs.S3_USE_SSL ?? envs.MINIO_USE_SSL,
+    });
+    this.client = new Client({
+      endPoint: parsed.endPoint,
+      port: parsed.port ?? (envs.S3_PORT || envs.MINIO_PORT),
+      useSSL: parsed.useSSL ?? envs.S3_USE_SSL ?? envs.MINIO_USE_SSL,
       accessKey: envs.S3_ACCESS_KEY || envs.MINIO_ACCESS_KEY,
       secretKey: envs.S3_SECRET_KEY || envs.MINIO_SECRET_KEY,
       region: envs.S3_REGION || 'us-east-1',

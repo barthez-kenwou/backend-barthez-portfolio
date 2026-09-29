@@ -4,3 +4,7 @@
 [[IgnoredVulns]]
 id = "GHSA-528h-pc64-c93x"
 reason = "stream-json DoS via minio 1.x path; forcing 3.x breaks MinIO ESM imports. Tracked in docs/deployment/security-scanning.md."
+
+[[IgnoredVulns]]
+id = "GHSA-82fw-gwwq-j7x9"
+reason = "vitest/@vitest/mocker path traversal is DEV-only (test runner). Fix requires Vitest 4.1.11+ major bump; tracked for a dedicated vitest upgrade. Not shipped in production image."

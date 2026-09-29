@@ -57,15 +57,22 @@ MinIO is behind profile `bundled-storage` (off by default).
 
 ```bash
 STORAGE_PROVIDER=minio
-MINIO_ENDPOINT=<seaweed-s3-host>   # reachable FROM the API container
-MINIO_PORT=8333                    # your S3 API port
-MINIO_USE_SSL=false                # or true + TLS
+# SDK endpoint = hostname only (NO https://, NO trailing /).
+# Wrong:  MINIO_ENDPOINT=https://s3.example.com/
+# Right:  MINIO_ENDPOINT=s3.example.com
+MINIO_ENDPOINT=s3.example.com
+MINIO_PORT=443                     # 443 if HTTPS via reverse proxy; else Seaweed S3 port
+MINIO_USE_SSL=true                 # must match TLS (true for https:// public gateway)
 MINIO_ACCESS_KEY=<identity>
 MINIO_SECRET_KEY=<secret>
 MINIO_APP_BUCKET=app-uploads
 MINIO_BACKUP_BUCKET=backups
-MINIO_PUBLIC_URL=https://files.example.com
+MINIO_PUBLIC_URL=https://s3.example.com   # OK to include https:// here
 ```
+
+If HTTPS terminates on 443 and proxies to Seaweed `:8333`, use **port 443 +
+useSSL true** from the container (same as browsers). Use `:8333` only if the API
+talks to that port directly.
 
 Create the buckets in SeaweedFS (or let `ensureBuckets()` create them if your
 gateway allows `CreateBucket`).
