@@ -162,6 +162,28 @@ is reached over TLS. Username/password via `REDIS_USERNAME` / `REDIS_PASSWORD`.
 - Redis should be durable enough for your queue tolerance (AOF is enabled in the
   sample Compose Redis).
 
+## Bootstrap portfolio content (one-shot)
+
+Deploy does **not** seed blogs/projects/etc. Boot only seeds system RBAC. To
+load the JSON fixtures (`prisma/seed/data/`) into an **empty** production DB
+once:
+
+1. Stack healthy (`backend-api` up, Mongo reachable).
+2. Prefer a backup first (even if empty — practice the restore path).
+3. From the VPS checkout (repo root), with the same `.env` / `.env.image` as
+   deploy:
+
+```bash
+CONFIRM_PROD_SEED=yes docker compose -f infra/docker/docker-compose.deploy.yml \
+  --env-file .env --env-file .env.image --profile seed run --rm portfolio-seed
+```
+
+Without `CONFIRM_PROD_SEED=yes`, the job exits and refuses to wipe. The job
+**deletes** portfolio CMS collections then re-inserts fixtures; users / RBAC /
+tokens are untouched.
+
+After this, manage content via the CMS admin. Do not re-run on every push.
+
 ## Security headers and cookies
 
 - Confirm `COOKIE_SECURE`, `COOKIE_SAME_SITE`, and domain settings for your

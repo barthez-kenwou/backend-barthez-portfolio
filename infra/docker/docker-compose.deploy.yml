@@ -169,6 +169,27 @@ services:
     networks:
       - backend_network
 
+  # One-shot portfolio content bootstrap (NOT started by deploy).
+  # Wipes portfolio CMS collections then inserts prisma/seed/data/*.json.
+  # Usage (repo root on VPS, after stack is up):
+  #   CONFIRM_PROD_SEED=yes docker compose -f infra/docker/docker-compose.deploy.yml \
+  #     --env-file .env --env-file .env.image --profile seed run --rm portfolio-seed
+  portfolio-seed:
+    profiles: ['seed']
+    image: ${IMAGE_REF:?Set IMAGE_REF to the published image ref}
+    env_file: ../../.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: 'no'
+    environment:
+      DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
+      NODE_ENV: production
+      CONFIRM_PROD_SEED: ${CONFIRM_PROD_SEED:-}
+    entrypoint: ['node', '-r', 'module-alias/register', 'dist/scripts/seed-portfolio.js']
+    networks:
+      - backend_network
+
   nginx:
     image: nginx:stable-alpine
     container_name: ${NGINX_NAME:-nginx}

@@ -215,7 +215,7 @@ export default [
   },
   // One-shot CLI / seed scripts (outside the HTTP app)
   {
-    files: ['infra/scripts/**/*.{ts,tsx}', 'prisma/**/*.{ts,tsx}'],
+    files: ['infra/scripts/**/*.{ts,tsx}', 'prisma/**/*.{ts,tsx}', 'src/scripts/**/*.{ts,tsx}'],
     rules: {
       'no-console': 'off',
       'no-process-exit': 'off',

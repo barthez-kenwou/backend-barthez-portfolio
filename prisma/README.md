@@ -26,13 +26,15 @@ prisma/
 │   ├── language.prisma    # Spoken languages
 │   ├── contact-info.prisma    # Singleton profile / contact card
 │   └── contact-response.prisma # Contact-form inbox
-├── seed.ts                # RBAC + portfolio content from frontend mocks
+├── seed.ts                # Local entry → src/scripts/seed (RBAC + content)
 ├── seed/
-│   ├── portfolio-content.ts
 │   ├── README.md
 │   └── data/              # blogs.json, projects.json, smaller-domains.json
 └── README.md
 ```
+
+Seed logic: `src/scripts/seed/portfolio-content.ts` (prod binary:
+`dist/scripts/seed-portfolio.js`). Production requires `CONFIRM_PROD_SEED=yes`.
 
 ## Commands
 
@@ -40,6 +42,7 @@ prisma/
 npm run prisma:generate
 npm run prisma:push
 npm run prisma:seed
+npm run prisma:seed:prod   # after build; NODE_ENV=production needs CONFIRM_PROD_SEED=yes
 npm run prisma:studio      # localhost:5555, dev only
 ```
 

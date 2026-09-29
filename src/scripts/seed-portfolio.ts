@@ -1,13 +1,9 @@
 /**
- * Database seed entrypoint (local / CI via ts-node).
+ * Production-safe portfolio seed entrypoint (compiled into dist/).
  *
- * 1. System RBAC roles & permissions
- * 2. Portfolio CMS content from frontend mocks (barthez-kenwou-porfolio)
- *
- * Production image: use `npm run prisma:seed:prod` (compiled) with
- * CONFIRM_PROD_SEED=yes — see docs/deployment/production.md.
- *
- * Run: npm run prisma:seed
+ * Local:  npm run prisma:seed
+ * Prod:   CONFIRM_PROD_SEED=yes npm run prisma:seed:prod
+ *         (or compose profile `seed` — see docs/deployment/production.md)
  */
 import { rbacService } from '@/modules/rbac';
 import { seedPortfolioContent } from '@/scripts/seed/portfolio-content';
@@ -19,12 +15,12 @@ const main = async (): Promise<void> => {
   log.info('System RBAC seeded');
 
   await seedPortfolioContent();
-  log.info('Prisma seed completed');
+  log.info('Portfolio seed completed');
 };
 
 main()
   .catch((error) => {
-    log.error('Prisma seed failed', { error });
+    log.error('Portfolio seed failed', { error });
     process.exit(1);
   })
   .finally(async () => {

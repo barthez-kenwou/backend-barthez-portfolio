@@ -190,6 +190,6 @@ docker compose -f infra/docker/docker-compose.deploy.yml \
 ## Related
 
 - [Docker](./docker.md) — local Compose + tools profile
-- [Production](./production.md) — runtime hardening
+- [Production](./production.md) — runtime hardening + one-shot portfolio seed
 - [Security scanning](./security-scanning.md)
 - [JWT keys](./jwt-keys.md)

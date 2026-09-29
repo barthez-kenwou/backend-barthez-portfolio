@@ -3,6 +3,8 @@
  *
  * JSON under prisma/seed/data/ mirrors frontend entity mocks + CV languages/references
  * + admin CMS demo contact responses.
+ *
+ * Production: requires CONFIRM_PROD_SEED=yes (wipe + re-insert). Never wire into CD.
  */
 import type {
   ContactResponseStatus,
@@ -13,10 +15,27 @@ import type {
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { config } from '@/app/config';
 import prisma from '@/shared/infrastructure/database/prisma.client';
 import log from '@/shared/infrastructure/logging/logger';
 
-const DATA_DIR = join(__dirname, 'data');
+/** Repo / image cwd is `/app` — JSON stays under prisma/seed/data (copied into the image). */
+const DATA_DIR = join(process.cwd(), 'prisma', 'seed', 'data');
+
+function assertProdSeedAllowed(): void {
+  if (!config.app.isProduction) {
+    return;
+  }
+  if (config.app.confirmProdSeed) {
+    log.warn(
+      'CONFIRM_PROD_SEED=yes — wiping and re-inserting portfolio CMS collections (users/RBAC untouched)',
+    );
+    return;
+  }
+  throw new Error(
+    'Refusing portfolio content seed in production. Set CONFIRM_PROD_SEED=yes to proceed (wipes portfolio collections).',
+  );
+}
 
 type SmallerDomains = {
   achievements: Array<{
@@ -253,6 +272,8 @@ const mapProject = (project: ProjectSeed, sortOrder: number): Prisma.ProjectCrea
  * Does not touch users, RBAC, auth tokens, or audit logs.
  */
 export async function seedPortfolioContent(): Promise<void> {
+  assertProdSeedAllowed();
+
   const smaller = loadJson<SmallerDomains>('smaller-domains.json');
   const blogs = loadJson<BlogSeed[]>('blogs.json');
   const projects = loadJson<ProjectSeed[]>('projects.json');
