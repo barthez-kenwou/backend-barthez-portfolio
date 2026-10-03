@@ -190,6 +190,36 @@ services:
     networks:
       - backend_network
 
+  # One-shot SUPER_ADMIN upsert (NOT started by deploy). Pass secrets on the CLI only.
+  #   CONFIRM_PROD_BOOTSTRAP_ADMIN=yes \
+  #   BOOTSTRAP_ADMIN_EMAIL='...' BOOTSTRAP_ADMIN_PASSWORD='...' \
+  #   BOOTSTRAP_ADMIN_FIRST_NAME='Barthez' BOOTSTRAP_ADMIN_LAST_NAME='Kenwou' \
+  #   BOOTSTRAP_ADMIN_PHONE='...' BOOTSTRAP_ADMIN_AVATAR_URL='...' \
+  #   docker compose -f infra/docker/docker-compose.deploy.yml \
+  #     --env-file .env --env-file .env.image --profile bootstrap-admin \
+  #     run --rm bootstrap-admin
+  bootstrap-admin:
+    profiles: ['bootstrap-admin']
+    image: ${IMAGE_REF:?Set IMAGE_REF to the published image ref}
+    env_file: ../../.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: 'no'
+    environment:
+      DATABASE_URL: 'mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?replicaSet=rs0&authSource=admin'
+      NODE_ENV: production
+      CONFIRM_PROD_BOOTSTRAP_ADMIN: ${CONFIRM_PROD_BOOTSTRAP_ADMIN:-}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      BOOTSTRAP_ADMIN_FIRST_NAME: ${BOOTSTRAP_ADMIN_FIRST_NAME:-Barthez}
+      BOOTSTRAP_ADMIN_LAST_NAME: ${BOOTSTRAP_ADMIN_LAST_NAME:-Kenwou}
+      BOOTSTRAP_ADMIN_PHONE: ${BOOTSTRAP_ADMIN_PHONE:-}
+      BOOTSTRAP_ADMIN_AVATAR_URL: ${BOOTSTRAP_ADMIN_AVATAR_URL:-}
+    entrypoint: ['node', '-r', 'module-alias/register', 'dist/scripts/bootstrap-super-admin.js']
+    networks:
+      - backend_network
+
   nginx:
     image: nginx:stable-alpine
     container_name: ${NGINX_NAME:-nginx}

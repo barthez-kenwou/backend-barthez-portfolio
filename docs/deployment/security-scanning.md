@@ -49,14 +49,29 @@ Known **moderate** residual (tracked, not forced):
 | `stream-json` (via `minio`) | Fixed in 3.x but MinIO still imports the 1.x path layout; forcing 3.x breaks MinIO ESM imports. Ignored in `osv-scanner.toml` (`GHSA-528h-pc64-c93x`) to match npm audit high+ policy. |
 | `vitest` 3.x (dev)          | `GHSA-82fw-gwwq-j7x9` fixed only in Vitest **4.1.11+**. Major bump deferred; ignored in `osv-scanner.toml` (devDependency, not in production image).                                   |
 
+## TypeScript pin
+
+Keep `typescript` on **`~5.9.x`**. TypeScript **7** is incompatible with
+`@typescript-eslint` (peer still `<6.1.0`, no TS7 compiler API yet). Dependabot
+ignores TS / Prisma / Vitest majors — see `.github/dependabot.yml`. Do **not**
+merge mega “development-deps” PRs that bump TypeScript to 7.
+
 `file-type` is pinned to **≥22** (ESM, dynamic import + ambient shim under
 `src/types/shims/`) to clear GHSA-5v7r-6r5c-r473.
 
 ## Overrides
 
 `package.json` → `overrides` pins patched transitive versions (`protobufjs`,
-`qs`, `validator`, `cookie`, `decode-uri-component`, `minimatch`, …) without
-waiting for every upstream release.
+`qs`, `validator`, `cookie`, `decode-uri-component`, `minimatch`,
+`brace-expansion`, `ip-address`, `moment`, `fast-uri`, nested
+`markdownlint-cli2` → `js-yaml` / `markdown-it`, …) without waiting for every
+upstream release.
+
+## Dependency Review
+
+Requires **Dependency graph** enabled (`Settings → Security → Code security`).
+Until then the workflow soft-fails unless repo variable
+`DEPENDENCY_REVIEW_ENFORCE=true`.
 
 ## After dependency bumps
 

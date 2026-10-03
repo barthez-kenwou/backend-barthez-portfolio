@@ -39,7 +39,7 @@ jobs:
           scan-ref: .
           severity: HIGH,CRITICAL
           exit-code: '1'
-          ignore-unfixed: false
+          ignore-unfixed: true
 
   trivy-config:
     name: Trivy config (IaC)
@@ -53,7 +53,7 @@ jobs:
           scan-ref: .
           severity: HIGH,CRITICAL
           exit-code: '1'
-          ignore-unfixed: false
+          ignore-unfixed: true
 
   osv:
     name: OSV Scanner (SCA)

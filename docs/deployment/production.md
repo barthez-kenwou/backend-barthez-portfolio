@@ -184,6 +184,34 @@ tokens are untouched.
 
 After this, manage content via the CMS admin. Do not re-run on every push.
 
+## Bootstrap SUPER_ADMIN (one-shot)
+
+Deploy does **not** create an operator user. Create (or refresh) a verified
+`super-admin` once from the VPS — credentials on the **command line only**,
+never committed and preferably not left permanently in `.env`.
+
+```bash
+CONFIRM_PROD_BOOTSTRAP_ADMIN=yes \
+BOOTSTRAP_ADMIN_EMAIL='you@example.com' \
+BOOTSTRAP_ADMIN_PASSWORD='use-a-long-unique-password' \
+BOOTSTRAP_ADMIN_FIRST_NAME='Barthez' \
+BOOTSTRAP_ADMIN_LAST_NAME='Kenwou' \
+BOOTSTRAP_ADMIN_PHONE='655 66 688' \
+BOOTSTRAP_ADMIN_AVATAR_URL='https://example.com/avatar.jpeg' \
+docker compose -f infra/docker/docker-compose.deploy.yml \
+  --env-file .env --env-file .env.image --profile bootstrap-admin \
+  run --rm bootstrap-admin
+```
+
+Requires the image that contains `dist/scripts/bootstrap-super-admin.js`.
+Without `CONFIRM_PROD_BOOTSTRAP_ADMIN=yes`, the job refuses. The script upserts
+by email, hashes the password (bcrypt), sets `isActive` / `isVerified`, and
+assigns `SUPER_ADMIN`.
+
+After success: login via the admin UI / auth API, then remove the password from
+your shell history if needed (`history -d`). Rotate the password if it was ever
+pasted into chat, tickets, or git.
+
 ## Security headers and cookies
 
 - Confirm `COOKIE_SECURE`, `COOKIE_SAME_SITE`, and domain settings for your

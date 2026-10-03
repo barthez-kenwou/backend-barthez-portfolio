@@ -30,11 +30,12 @@ Everyday development: `npm run docker:up` / `npm run docker:tools`.
 
 ## Keys, scaffold, bootstrap
 
-| Script / npm alias                  | Description                                  |
-| ----------------------------------- | -------------------------------------------- |
-| `npm run keys:generate`             | RS256 PEMs into `./keys` (gitignored)        |
-| `npm run scaffold:module -- <name>` | Generate a bounded-context module            |
-| `npm run bootstrap:admin`           | Local verified super-admin for route testing |
+| Script / npm alias                  | Description                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------- |
+| `npm run keys:generate`             | RS256 PEMs into `./keys` (gitignored)                                              |
+| `npm run scaffold:module -- <name>` | Generate a bounded-context module                                                  |
+| `npm run bootstrap:admin`           | Local verified SUPER_ADMIN upsert (`src/scripts/bootstrap-super-admin.ts`)         |
+| `npm run bootstrap:admin:prod`      | Same entrypoint compiled (`dist/…`); prod needs `CONFIRM_PROD_BOOTSTRAP_ADMIN=yes` |
 
 ## Live QA
 

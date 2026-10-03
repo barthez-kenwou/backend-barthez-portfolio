@@ -92,7 +92,8 @@
     "generate:openapi": "node docs/api/openapi.config.js",
     "keys:generate": "bash infra/scripts/generate-jwt-keys.sh",
     "scaffold:module": "node infra/scripts/scaffold/module.mjs",
-    "bootstrap:admin": "tsx -r tsconfig-paths/register infra/scripts/bootstrap-admin.ts",
+    "bootstrap:admin": "tsx -r tsconfig-paths/register src/scripts/bootstrap-super-admin.ts",
+    "bootstrap:admin:prod": "node -r module-alias/register dist/scripts/bootstrap-super-admin.js",
     "test:routes:portfolio": "python3 infra/scripts/test-portfolio-routes.py",
     "postinstall": "npm run prisma:generate",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=10 --fix",
@@ -207,7 +208,7 @@
     "eslint-plugin-unused-imports": "^4.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
-    "markdownlint-cli2": "^0.23.2",
+    "markdownlint-cli2": "^0.23.3",
     "prettier": "^3.6.2",
     "prisma": "^6.19.3",
     "supertest": "^7.1.4",
@@ -215,7 +216,7 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.23.13",
-    "typescript": "^5.2.2",
+    "typescript": "~5.9.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
@@ -229,8 +230,16 @@
     "path-to-regexp": "^0.1.13",
     "deepmerge-ts": "^8.0.0",
     "minimatch": "^10.2.3",
+    "brace-expansion": "^5.0.12",
     "cookie": "^0.7.2",
     "decode-uri-component": "^0.5.0",
+    "ip-address": "^10.7.2",
+    "moment": "^2.31.0",
+    "fast-uri": "^3.1.8",
+    "markdownlint-cli2": {
+      "js-yaml": "5.4.1",
+      "markdown-it": "15.0.1"
+    },
     "swagger-ui-express": {
       "swagger-ui-dist": "5.32.15"
     },

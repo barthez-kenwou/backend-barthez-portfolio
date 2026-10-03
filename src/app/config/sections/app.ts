@@ -45,7 +45,7 @@ export const appConfig = {
    * One-shot production portfolio seed gate.
    * Must be exactly `yes` when NODE_ENV=production (never set in CD).
    */
-  confirmProdSeed: fromEnv.get('CONFIRM_PROD_SEED').default('yes').asString() === 'yes',
+  confirmProdSeed: fromEnv.get('CONFIRM_PROD_SEED').default('').asString() === 'yes',
 
   timezone: fromEnv.get('APP_TZ').default('UTC').asString(),
   locale: fromEnv.get('APP_LOCALE').default('en-US').asString(),

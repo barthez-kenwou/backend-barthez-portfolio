@@ -6,6 +6,7 @@
  */
 import { appConfig } from './sections/app';
 import { authConfig } from './sections/auth';
+import { bootstrapConfig } from './sections/bootstrap';
 import { databaseConfig } from './sections/database';
 import { featuresConfig } from './sections/features';
 import { mailConfig } from './sections/mail';
@@ -32,6 +33,7 @@ export const config = Object.freeze({
   queue: queueConfig,
   features: featuresConfig,
   observability: observabilityConfig,
+  bootstrap: bootstrapConfig,
 });
 
 export type AppConfiguration = typeof config;
