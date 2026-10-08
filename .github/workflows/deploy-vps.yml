@@ -139,14 +139,17 @@ jobs:
 
             ensure_pem_perms || true
 
-            # Drop a leftover nginx container that still has host :80 published (NPM owns :80).
-            if docker inspect BACKEND_NGINX >/dev/null 2>&1; then
-              HAS_80="$(docker inspect -f '{{range $p, $c := .HostConfig.PortBindings}}{{println $p}}{{end}}' BACKEND_NGINX || true)"
-              if echo "${HAS_80}" | grep -q '^80/'; then
-                echo "Removing stale BACKEND_NGINX (still bound to host :80)…"
-                docker rm -f BACKEND_NGINX
+            # Drop any leftover backend nginx that still publishes host :80 (NPM owns 80/443).
+            # Often left behind by a mistaken `docker compose up` on docker-compose.yml (local).
+            for cname in BACKEND_NGINX nginx; do
+              if docker inspect "${cname}" >/dev/null 2>&1; then
+                HAS_80="$(docker inspect -f '{{range $p, $c := .HostConfig.PortBindings}}{{println $p}}{{end}}' "${cname}" || true)"
+                if echo "${HAS_80}" | grep -q '^80/'; then
+                  echo "Removing stale ${cname} (still bound to host :80)…"
+                  docker rm -f "${cname}"
+                fi
               fi
-            fi
+            done
 
             # Login to GHCR when pulling a private package
             if [ -n "${GHCR_TOKEN:-}" ]; then
@@ -156,22 +159,24 @@ jobs:
             export IMAGE_REF
             printf 'IMAGE_REF=%s\n' "${IMAGE_REF}" > .env.image
 
-            docker compose \
-              -f "${COMPOSE}" \
-              --env-file .env \
-              --env-file .env.image \
-              pull backend-api backend-worker
+            COMPOSE_BASE=(docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image)
 
-            docker compose \
-              -f "${COMPOSE}" \
-              --env-file .env \
-              --env-file .env.image \
-              up -d --remove-orphans
+            "${COMPOSE_BASE[@]}" pull backend-api backend-worker
+
+            # Recreate API/worker every deploy so DNS/env/image cannot stay stale.
+            # deploy compose already attaches api/worker/nginx to external web-proxy (no manual connect).
+            "${COMPOSE_BASE[@]}" up -d --remove-orphans \
+              --force-recreate backend-api backend-worker
+
+            # Bring the rest of the stack (mongo/redis/clamav/nginx) without touching host :80.
+            "${COMPOSE_BASE[@]}" up -d --remove-orphans
 
             # Container name = ${APP_NAME}-http (see docker-compose.deploy.yml). Any APP_NAME works.
             APP_NAME_VAL="$(grep -E '^[[:space:]]*APP_NAME=' .env | tail -1 | cut -d= -f2- | tr -d '\"' | tr -d "'" | tr -d '\r' | xargs)"
             APP_NAME_VAL="${APP_NAME_VAL:-backend_api}"
             API_CONTAINER="${APP_NAME_VAL}-http"
+            NGINX_NAME_VAL="$(grep -E '^[[:space:]]*NGINX_NAME=' .env | tail -1 | cut -d= -f2- | tr -d '\"' | tr -d "'" | tr -d '\r' | xargs)"
+            NGINX_NAME_VAL="${NGINX_NAME_VAL:-nginx}"
 
             # Authoritative probe: inside the API container (no Cloudflare / NPM / DNS).
             # Public DEPLOY_HEALTH_URL often returns 403 (cf-mitigated challenge) to curl.
@@ -187,11 +192,16 @@ jobs:
             done
             if [ "${ok}" != "1" ]; then
               echo "Local health check failed after deploy (container=${API_CONTAINER})"
-              docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image ps
-              docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image logs --tail=80 backend-api || true
+              "${COMPOSE_BASE[@]}" ps
+              "${COMPOSE_BASE[@]}" logs --tail=80 backend-api || true
               exit 1
             fi
             echo "Local health OK (${API_CONTAINER})"
+
+            # Refresh nginx upstream DNS after API recreate (avoids sticky 502 to old container IP).
+            echo "Recreating nginx (${NGINX_NAME_VAL}) to refresh upstream …"
+            "${COMPOSE_BASE[@]}" up -d --no-deps --force-recreate nginx
+            docker restart "${NGINX_NAME_VAL}" >/dev/null 2>&1 || true
 
             if [ -n "${HEALTH_URL:-}" ]; then
               echo "Optional public probe: ${HEALTH_URL}"

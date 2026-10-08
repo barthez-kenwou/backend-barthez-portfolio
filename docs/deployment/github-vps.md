@@ -153,17 +153,37 @@ File: `infra/docker/docker-compose.deploy.yml`
 - External network **`web-proxy`** (must exist before `compose up`)
 
 ```bash
-# Manual smoke on the VPS
+# Manual smoke on the VPS (ALWAYS this file — never bare `docker compose up`)
 export IMAGE_REF=ghcr.io/<owner>/backend-barthez-portfolio:main
 printf 'IMAGE_REF=%s\n' "$IMAGE_REF" > .env.image
 docker compose -f infra/docker/docker-compose.deploy.yml \
-  --env-file .env --env-file .env.image up -d
+  --env-file .env --env-file .env.image up -d --remove-orphans
+```
+
+**Do not** run `docker compose up -d` without `-f …deploy.yml` on the VPS. The
+local `infra/docker/docker-compose.yml` publishes host `:80` and will fight NPM
+(`Bind for 0.0.0.0:80 failed: port is already allocated`).
+
+CD already: pull → `--force-recreate` api/worker → up stack → recreate/restart
+nginx (upstream DNS) → local `/health/live`. `web-proxy` is attached in compose
+(no manual `docker network connect`).
+
+### Unblock if nginx is stuck on :80
+
+```bash
+# Who owns host :80? (usually NPM)
+docker ps --format 'table {{.Names}}\t{{.Ports}}' | grep -E ':80|->80'
+
+# Kill the bad backend nginx (published :80), then use deploy compose only
+docker rm -f BACKEND_NGINX 2>/dev/null || true
+cd "${VPS_APP_PATH}"   # repo root that contains infra/ + .env
+docker compose -f infra/docker/docker-compose.deploy.yml \
+  --env-file .env --env-file .env.image up -d --remove-orphans
 ```
 
 ### Nginx Proxy Manager
 
-1. Attach the target to `web-proxy` (compose already joins `nginx`; or connect
-   `${APP_NAME}-http` manually).
+1. Compose already joins `nginx` + api/worker to `web-proxy`.
 2. Proxy host → `${NGINX_NAME}:80` **or** `${APP_NAME}-http:3000` (example:
    `barthez-portfolio-api-http:3000`).
 3. Cloudflare SSL mode **Full** (not Flexible).
