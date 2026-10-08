@@ -24,6 +24,8 @@ export function registerRoutes(app: Express, container: AppContainer): void {
   app.use('/metrics', container.system.metrics);
 
   // --- Versioned domain API --------------------------------------------------
+  // Also under /api/v1 so edge proxies that only expose /api/ can reach CSRF.
+  api.use('/csrf-token', rateLimitingSubRoute, container.system.csrf);
   api.use('/auth', rateLimitingSubRoute, container.auth.router);
   api.use('/auth/oauth', rateLimitingSubRoute, container.oauth.router);
   api.use('/users', rateLimitingSubRoute, container.users.router);

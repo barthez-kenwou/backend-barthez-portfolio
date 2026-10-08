@@ -110,6 +110,7 @@ Redis, and Prisma. Worker-only processes pass `server=null`.
 Compose ships `infra/nginx/default.conf`. Public locations are **only**:
 
 - `GET /health` (and `/health/live`, `/health/ready` under that prefix)
+- `GET /csrf-token` (CSRF secret cookie + JSON token for browser mutations)
 - `/api/` (versioned REST)
 
 `client_max_body_size` is **2m** (avatar multipart). Larger objects must use
