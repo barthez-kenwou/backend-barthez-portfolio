@@ -6,6 +6,7 @@ import { body } from 'express-validator';
 
 import {
   emailValidation,
+  loginPasswordValidation,
   nameValidation,
   passwordFieldValidation,
   passwordValidation,
@@ -32,7 +33,7 @@ export const authSchemas = {
 
   login: [
     emailValidation(),
-    passwordValidation(),
+    loginPasswordValidation(),
     body('totpCode')
       .optional()
       .trim()

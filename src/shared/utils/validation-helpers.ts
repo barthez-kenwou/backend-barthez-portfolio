@@ -30,6 +30,7 @@ export const emailValidation = (field = 'email') =>
     .normalizeEmail()
     .escape();
 
+/** Strong password for signup / reset / change — not for login. */
 export const passwordFieldValidation = (field: string) =>
   body(field)
     .trim()
@@ -46,5 +47,19 @@ export const passwordFieldValidation = (field: string) =>
       'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol',
     );
 
-/** Default login/signup password field (`password`). */
+/**
+ * Login credentials: only require a non-empty secret.
+ * Strength rules on login reject valid stored passwords (e.g. bootstrap admins)
+ * and leak policy to attackers — keep them on signup/reset only.
+ */
+export const loginPasswordValidation = (field = 'password') =>
+  body(field)
+    .notEmpty()
+    .withMessage('Password is required')
+    .isString()
+    .withMessage('Password must be a string')
+    .isLength({ min: 1, max: 128 })
+    .withMessage('Password must be between 1 and 128 characters');
+
+/** Default strong password field (`password`) for signup/reset. */
 export const passwordValidation = () => passwordFieldValidation('password');
