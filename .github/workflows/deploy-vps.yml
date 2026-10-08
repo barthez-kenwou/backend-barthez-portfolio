@@ -139,17 +139,71 @@ jobs:
 
             ensure_pem_perms || true
 
-            # Drop any leftover backend nginx that still publishes host :80 (NPM owns 80/443).
-            # Often left behind by a mistaken `docker compose up` on docker-compose.yml (local).
-            for cname in BACKEND_NGINX nginx; do
-              if docker inspect "${cname}" >/dev/null 2>&1; then
-                HAS_80="$(docker inspect -f '{{range $p, $c := .HostConfig.PortBindings}}{{println $p}}{{end}}' "${cname}" || true)"
-                if echo "${HAS_80}" | grep -q '^80/'; then
-                  echo "Removing stale ${cname} (still bound to host :80)…"
-                  docker rm -f "${cname}"
-                fi
+            env_val() {
+              # Read KEY=value from root .env (last wins). Empty if unset.
+              local key="$1"
+              grep -E "^[[:space:]]*${key}=" .env 2>/dev/null | tail -1 \
+                | cut -d= -f2- | tr -d '\"' | tr -d "'" | tr -d '\r' | xargs || true
+            }
+
+            # Stable project name so every deploy owns the same containers.
+            # Without this, a prior `docker compose up` (local compose / other cwd)
+            # leaves BACKEND_CLAMAV etc. under another project → name Conflict.
+            export COMPOSE_PROJECT_NAME
+            COMPOSE_PROJECT_NAME="$(env_val COMPOSE_PROJECT_NAME)"
+            COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-barthez-backend}"
+
+            APP_NAME_VAL="$(env_val APP_NAME)"
+            APP_NAME_VAL="${APP_NAME_VAL:-backend_api}"
+            NGINX_NAME_VAL="$(env_val NGINX_NAME)"
+            NGINX_NAME_VAL="${NGINX_NAME_VAL:-nginx}"
+            MONGO_NAME_VAL="$(env_val MONGO_NAME)"
+            MONGO_NAME_VAL="${MONGO_NAME_VAL:-mongo_db}"
+            REDIS_NAME_VAL="$(env_val REDIS_NAME)"
+            REDIS_NAME_VAL="${REDIS_NAME_VAL:-redis_cache}"
+            MINIO_NAME_VAL="$(env_val MINIO_NAME)"
+            MINIO_NAME_VAL="${MINIO_NAME_VAL:-minio_storage}"
+            CLAMAV_NAME_VAL="$(env_val CLAMAV_NAME)"
+            CLAMAV_NAME_VAL="${CLAMAV_NAME_VAL:-clamav}"
+
+            # Reclaim fixed container_name if held by another compose project (or none).
+            # Named volumes (mongo_data, …) are NOT removed — only the container shell.
+            reclaim_named_container() {
+              local name="$1"
+              [ -n "${name}" ] || return 0
+              docker inspect "${name}" >/dev/null 2>&1 || return 0
+
+              local project
+              project="$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}' "${name}" 2>/dev/null || true)"
+
+              # Always drop nginx that still publishes host :80 (NPM owns 80/443).
+              local has_80
+              has_80="$(docker inspect -f '{{range $p, $c := .HostConfig.PortBindings}}{{println $p}}{{end}}' "${name}" || true)"
+              if echo "${has_80}" | grep -q '^80/'; then
+                echo "Removing ${name} (still bound to host :80)…"
+                docker rm -f "${name}"
+                return 0
               fi
-            done
+
+              if [ "${project}" = "${COMPOSE_PROJECT_NAME}" ]; then
+                return 0
+              fi
+
+              echo "Reclaiming ${name} (was compose project=${project:-none}, want=${COMPOSE_PROJECT_NAME})…"
+              docker rm -f "${name}"
+            }
+
+            reclaim_named_container "${CLAMAV_NAME_VAL}"
+            reclaim_named_container "${MONGO_NAME_VAL}"
+            reclaim_named_container "${REDIS_NAME_VAL}"
+            reclaim_named_container "${MINIO_NAME_VAL}"
+            reclaim_named_container "${NGINX_NAME_VAL}"
+            reclaim_named_container "MINIO_INITIALIZER"
+            reclaim_named_container "${APP_NAME_VAL}-http"
+            reclaim_named_container "${APP_NAME_VAL}-worker"
+            reclaim_named_container "${APP_NAME_VAL}"
+            # Legacy name from older local compose runs
+            reclaim_named_container "BACKEND_NGINX"
 
             # Login to GHCR when pulling a private package
             if [ -n "${GHCR_TOKEN:-}" ]; then
@@ -159,7 +213,7 @@ jobs:
             export IMAGE_REF
             printf 'IMAGE_REF=%s\n' "${IMAGE_REF}" > .env.image
 
-            COMPOSE_BASE=(docker compose -f "${COMPOSE}" --env-file .env --env-file .env.image)
+            COMPOSE_BASE=(docker compose -p "${COMPOSE_PROJECT_NAME}" -f "${COMPOSE}" --env-file .env --env-file .env.image)
 
             "${COMPOSE_BASE[@]}" pull backend-api backend-worker
 
@@ -171,12 +225,7 @@ jobs:
             # Bring the rest of the stack (mongo/redis/clamav/nginx) without touching host :80.
             "${COMPOSE_BASE[@]}" up -d --remove-orphans
 
-            # Container name = ${APP_NAME}-http (see docker-compose.deploy.yml). Any APP_NAME works.
-            APP_NAME_VAL="$(grep -E '^[[:space:]]*APP_NAME=' .env | tail -1 | cut -d= -f2- | tr -d '\"' | tr -d "'" | tr -d '\r' | xargs)"
-            APP_NAME_VAL="${APP_NAME_VAL:-backend_api}"
             API_CONTAINER="${APP_NAME_VAL}-http"
-            NGINX_NAME_VAL="$(grep -E '^[[:space:]]*NGINX_NAME=' .env | tail -1 | cut -d= -f2- | tr -d '\"' | tr -d "'" | tr -d '\r' | xargs)"
-            NGINX_NAME_VAL="${NGINX_NAME_VAL:-nginx}"
 
             # Authoritative probe: inside the API container (no Cloudflare / NPM / DNS).
             # Public DEPLOY_HEALTH_URL often returns 403 (cf-mitigated challenge) to curl.

@@ -161,23 +161,36 @@ docker compose -f infra/docker/docker-compose.deploy.yml \
 ```
 
 **Do not** run `docker compose up -d` without `-f …deploy.yml` on the VPS. The
-local `infra/docker/docker-compose.yml` publishes host `:80` and will fight NPM
-(`Bind for 0.0.0.0:80 failed: port is already allocated`).
+local `infra/docker/docker-compose.yml` publishes host `:80` and will fight NPM.
+It also creates the same `container_name`s (`BACKEND_CLAMAV`, `PORTFOLIO_DB`, …)
+under another Compose project →
+`Conflict. The container name is already in use`.
 
-CD already: pull → `--force-recreate` api/worker → up stack → recreate/restart
-nginx (upstream DNS) → local `/health/live`. `web-proxy` is attached in compose
-(no manual `docker network connect`).
+CD already: reclaim foreign named containers → pull → `--force-recreate`
+api/worker → up stack → recreate nginx → local `/health/live`. Uses
+`COMPOSE_PROJECT_NAME=barthez-backend` (override in `.env`). `web-proxy` is
+attached in compose (no manual `docker network connect`).
 
-### Unblock if nginx is stuck on :80
+### Unblock name conflicts / :80 now
 
 ```bash
-# Who owns host :80? (usually NPM)
+cd "${VPS_APP_PATH}"   # repo root with infra/ + .env
+
+# Who owns host :80? (NPM — leave it)
 docker ps --format 'table {{.Names}}\t{{.Ports}}' | grep -E ':80|->80'
 
-# Kill the bad backend nginx (published :80), then use deploy compose only
-docker rm -f BACKEND_NGINX 2>/dev/null || true
-cd "${VPS_APP_PATH}"   # repo root that contains infra/ + .env
-docker compose -f infra/docker/docker-compose.deploy.yml \
+# See which Compose project holds a conflicting name
+docker inspect BACKEND_CLAMAV --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || true
+
+# Reclaim fixed names from a wrong/old project (named volumes keep Mongo/Redis data)
+docker rm -f BACKEND_CLAMAV PORTFOLIO_DB PORTFOLIO_CACHE PORTFOLIO_STORAGE \
+  BACKEND_NGINX MINIO_INITIALIZER \
+  Barthez-Kenwou-Portfolio-API Barthez-Kenwou-Portfolio-API-http \
+  Barthez-Kenwou-Portfolio-API-worker 2>/dev/null || true
+
+export COMPOSE_PROJECT_NAME=barthez-backend
+# optional once: echo 'COMPOSE_PROJECT_NAME=barthez-backend' >> .env
+docker compose -p barthez-backend -f infra/docker/docker-compose.deploy.yml \
   --env-file .env --env-file .env.image up -d --remove-orphans
 ```
 
