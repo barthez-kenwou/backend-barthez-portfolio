@@ -21,12 +21,22 @@ type BreakdownResponse = {
 
 const DEFAULT_PERIOD: PlausiblePeriod = '7d';
 
+// Strip quotes / accidental "Bearer " paste from .env
+function normalizeApiKey(raw: string): string {
+  return raw
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/^Bearer\s+/i, '')
+    .trim();
+}
+
 function assertConfigured(): { baseUrl: string; siteId: string; apiKey: string } {
-  const { baseUrl, siteId, apiKey } = config.observability.plausible;
-  if (!apiKey.trim()) {
+  const { baseUrl, siteId, apiKey: rawKey } = config.observability.plausible;
+  const apiKey = normalizeApiKey(rawKey);
+  if (!apiKey) {
     throw AppError.serviceUnavailable('Plausible API key is not configured (PLAUSIBLE_API_KEY)');
   }
-  return { baseUrl, siteId, apiKey };
+  return { baseUrl, siteId: siteId.trim(), apiKey };
 }
 
 async function plausibleGet<T>(
@@ -77,10 +87,20 @@ async function plausibleGet<T>(
       path,
       status: response.status,
       elapsedMs: Date.now() - started,
+      siteId,
       body,
     });
     if (response.status === 401 || response.status === 403) {
-      throw AppError.serviceUnavailable('Plausible Stats API rejected the API key');
+      const detail =
+        body &&
+        typeof body === 'object' &&
+        'error' in body &&
+        typeof (body as { error: unknown }).error === 'string'
+          ? (body as { error: string }).error
+          : 'Invalid API key or site_id';
+      throw AppError.serviceUnavailable(
+        `Plausible rejected credentials for site_id=${siteId}: ${detail}`,
+      );
     }
     throw AppError.serviceUnavailable(`Plausible Stats API returned ${response.status}`);
   }
