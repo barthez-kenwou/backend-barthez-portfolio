@@ -194,14 +194,25 @@ export async function fetchTopPagesByPrefix(
     .slice(0, limit);
 }
 
+/** Plausible auto / noise events — keep product goals only for CMS engagement. */
+const PLAUSIBLE_NOISE_EVENTS = new Set([
+  'pageview',
+  'engagement',
+  'Outbound Link: Click',
+  'File Download',
+  '404',
+  'Hash Change',
+]);
+
 export async function fetchCustomEvents(period: PlausiblePeriod = DEFAULT_PERIOD, limit = 20) {
-  const rows = await fetchBreakdown('event:name', period, limit, 'visitors');
+  const rows = await fetchBreakdown('event:name', period, Math.max(limit * 2, 40), 'visitors');
   return rows
     .map((row) => ({
       name: String(row.name ?? ''),
       visitors: Number(row.visitors ?? 0),
     }))
-    .filter((row) => row.name && row.name !== 'pageview');
+    .filter((row) => row.name && !PLAUSIBLE_NOISE_EVENTS.has(row.name))
+    .slice(0, limit);
 }
 
 export function parsePeriod(raw: unknown): PlausiblePeriod {
