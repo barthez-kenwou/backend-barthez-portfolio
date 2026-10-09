@@ -7,6 +7,7 @@ import type {
   CreateNewsletterCampaignInput,
   NewsletterCampaignEntity,
   NewsletterCampaignListResult,
+  NewsletterCampaignStats,
   NewsletterCampaignStatus,
   NewsletterCampaignType,
   UpdateNewsletterCampaignInput,
@@ -79,6 +80,59 @@ export class PrismaNewsletterCampaignRepository implements NewsletterCampaignRep
       page: input.page,
       limit: input.limit,
       totalPages: Math.ceil(total / input.limit) || 0,
+    };
+  }
+
+  async stats(): Promise<NewsletterCampaignStats> {
+    const base = { ...prismaNotDeleted };
+    const [
+      total,
+      queued,
+      sending,
+      sent,
+      failed,
+      cancelled,
+      confirm,
+      welcome,
+      blogPublish,
+      digest,
+      broadcast,
+      aggregates,
+    ] = await Promise.all([
+      prisma.newsletterCampaign.count({ where: base }),
+      prisma.newsletterCampaign.count({ where: { ...base, status: 'queued' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, status: 'sending' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, status: 'sent' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, status: 'failed' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, status: 'cancelled' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, type: 'confirm' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, type: 'welcome' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, type: 'blog_publish' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, type: 'digest' } }),
+      prisma.newsletterCampaign.count({ where: { ...base, type: 'broadcast' } }),
+      prisma.newsletterCampaign.aggregate({
+        where: base,
+        _sum: { totalRecipients: true, sentCount: true, failCount: true },
+      }),
+    ]);
+
+    return {
+      total,
+      queued,
+      sending,
+      sent,
+      failed,
+      cancelled,
+      byType: {
+        confirm,
+        welcome,
+        blog_publish: blogPublish,
+        digest,
+        broadcast,
+      },
+      totalRecipients: aggregates._sum.totalRecipients ?? 0,
+      totalSent: aggregates._sum.sentCount ?? 0,
+      totalFailed: aggregates._sum.failCount ?? 0,
     };
   }
 

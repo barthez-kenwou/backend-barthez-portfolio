@@ -34,12 +34,26 @@ export async function runNewsletterFanout(campaignId: string): Promise<void> {
 
   const template = campaign.template as MailTemplateName;
   const payload = campaign.payload ?? {};
+  const targetLocale =
+    payload.targetLocale === 'fr' || payload.targetLocale === 'en'
+      ? payload.targetLocale
+      : undefined;
   let skip = 0;
   let sent = 0;
   let fail = 0;
 
   for (;;) {
-    const batch = await subscribers.listActive({ skip, take: BATCH });
+    const latest = await campaigns.findById(campaignId);
+    if (!latest || latest.status === 'cancelled') {
+      log.info('newsletter-fanout: aborted (cancelled)', { campaignId, sent, fail });
+      return;
+    }
+
+    const batch = await subscribers.listActive({
+      skip,
+      take: BATCH,
+      locale: targetLocale,
+    });
     if (batch.length === 0) break;
 
     for (const sub of batch) {

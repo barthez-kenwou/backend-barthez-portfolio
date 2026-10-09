@@ -90,6 +90,16 @@ export function createNewsletterRoutes(controller: NewsletterController): Router
     controller.remove,
   );
 
+  /** GET /campaigns/stats — Campaign KPIs (before :campaignId). */
+  router.get(
+    '/campaigns/stats',
+    authenticate,
+    requireVerified,
+    requireActive,
+    requirePermission('newsletter:read'),
+    controller.campaignStats,
+  );
+
   /** GET /campaigns */
   router.get(
     '/campaigns',
@@ -112,6 +122,30 @@ export function createNewsletterRoutes(controller: NewsletterController): Router
     newsletterSchemas.broadcast,
     validationErrorHandler,
     controller.broadcast,
+  );
+
+  /** GET /campaigns/:campaignId */
+  router.get(
+    '/campaigns/:campaignId',
+    authenticate,
+    requireVerified,
+    requireActive,
+    requirePermission('newsletter:read'),
+    newsletterSchemas.byCampaignId,
+    validationErrorHandler,
+    controller.getCampaign,
+  );
+
+  /** POST /campaigns/:campaignId/cancel — Cancel queued campaign. */
+  router.post(
+    '/campaigns/:campaignId/cancel',
+    authenticate,
+    requireVerified,
+    requireActive,
+    requirePermission('newsletter:broadcast'),
+    newsletterSchemas.byCampaignId,
+    validationErrorHandler,
+    controller.cancelCampaign,
   );
 
   return router;

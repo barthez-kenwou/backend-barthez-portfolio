@@ -3,6 +3,7 @@ import type {
   CreateNewsletterSubscriberInput,
   NewsletterCampaignEntity,
   NewsletterCampaignListResult,
+  NewsletterCampaignStats,
   NewsletterCampaignStatus,
   NewsletterCampaignType,
   NewsletterLocale,
@@ -50,6 +51,7 @@ export type NewsletterCampaignRepositoryPort = {
     type?: NewsletterCampaignType;
     status?: NewsletterCampaignStatus;
   }): Promise<NewsletterCampaignListResult>;
+  stats(): Promise<NewsletterCampaignStats>;
   update(id: string, data: UpdateNewsletterCampaignInput): Promise<NewsletterCampaignEntity>;
   incrementCounters(
     id: string,

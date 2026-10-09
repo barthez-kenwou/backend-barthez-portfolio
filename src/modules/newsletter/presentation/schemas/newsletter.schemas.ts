@@ -32,6 +32,8 @@ export const newsletterSchemas = {
 
   byId: [param('subscriberId').isMongoId()],
 
+  byCampaignId: [param('campaignId').isMongoId()],
+
   listCampaigns: [
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
@@ -55,5 +57,8 @@ export const newsletterSchemas = {
     body('ctaUrl').optional().isURL({ require_protocol: true }),
     body('ctaLabelFr').optional().isString().trim().isLength({ max: 80 }),
     body('ctaLabelEn').optional().isString().trim().isLength({ max: 80 }),
+    body('locale')
+      .optional()
+      .isIn([...locales]),
   ],
 };

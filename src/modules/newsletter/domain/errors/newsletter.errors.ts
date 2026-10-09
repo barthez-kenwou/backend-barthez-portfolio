@@ -27,3 +27,10 @@ export class NewsletterAlreadySendingError extends AppError {
     this.name = 'NewsletterAlreadySendingError';
   }
 }
+
+export class NewsletterCampaignNotCancellableError extends AppError {
+  constructor(message = 'Only queued campaigns can be cancelled') {
+    super(409, message, 'NEWSLETTER_CAMPAIGN_NOT_CANCELLABLE');
+    this.name = 'NewsletterCampaignNotCancellableError';
+  }
+}

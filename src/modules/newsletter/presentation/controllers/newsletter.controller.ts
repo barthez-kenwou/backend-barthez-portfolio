@@ -4,11 +4,14 @@ import { envs } from '@/app/config';
 import { asyncHandler, response } from '@/shared/utils/http/responses/helpers';
 
 import type { BroadcastNewsletterCommand } from '../../application/commands/broadcast-newsletter.command';
+import type { CancelNewsletterCampaignCommand } from '../../application/commands/cancel-newsletter-campaign.command';
 import type { ConfirmNewsletterCommand } from '../../application/commands/confirm-newsletter.command';
 import type { DeleteNewsletterSubscriberCommand } from '../../application/commands/delete-newsletter-subscriber.command';
 import type { SubscribeNewsletterCommand } from '../../application/commands/subscribe-newsletter.command';
 import type { UnsubscribeNewsletterCommand } from '../../application/commands/unsubscribe-newsletter.command';
 import type {
+  GetNewsletterCampaignQuery,
+  GetNewsletterCampaignStatsQuery,
   GetNewsletterStatsQuery,
   GetNewsletterSubscriberQuery,
   ListNewsletterCampaignsQuery,
@@ -24,10 +27,13 @@ export type NewsletterControllerDeps = {
   unsubscribe: UnsubscribeNewsletterCommand;
   deleteSubscriber: DeleteNewsletterSubscriberCommand;
   broadcast: BroadcastNewsletterCommand;
+  cancelCampaign: CancelNewsletterCampaignCommand;
   getSubscriber: GetNewsletterSubscriberQuery;
   listSubscribers: ListNewsletterSubscribersQuery;
   stats: GetNewsletterStatsQuery;
   listCampaigns: ListNewsletterCampaignsQuery;
+  getCampaign: GetNewsletterCampaignQuery;
+  campaignStats: GetNewsletterCampaignStatsQuery;
 };
 
 const frontendRedirect = (path: string): string => {
@@ -111,6 +117,21 @@ export function createNewsletterController(deps: NewsletterControllerDeps) {
     return response.ok(req, res, NewsletterSerializer.campaigns(result), 'Campaigns retrieved');
   });
 
+  const campaignStats = asyncHandler(async (req: Request, res: Response) => {
+    const data = await deps.campaignStats.execute();
+    return response.ok(req, res, NewsletterSerializer.campaignStats(data), 'Campaign stats');
+  });
+
+  const getCampaign = asyncHandler(async (req: Request, res: Response) => {
+    const row = await deps.getCampaign.execute(req.params.campaignId);
+    return response.ok(req, res, NewsletterSerializer.campaignDetail(row), 'Campaign retrieved');
+  });
+
+  const cancelCampaign = asyncHandler(async (req: Request, res: Response) => {
+    const row = await deps.cancelCampaign.execute({ campaignId: req.params.campaignId });
+    return response.ok(req, res, NewsletterSerializer.campaign(row), 'Campaign cancelled');
+  });
+
   const broadcast = asyncHandler(async (req: AuthRequest, res: Response) => {
     const result = await deps.broadcast.execute({
       actorId: req.user!.id,
@@ -125,6 +146,7 @@ export function createNewsletterController(deps: NewsletterControllerDeps) {
       ctaUrl: req.body.ctaUrl,
       ctaLabelFr: req.body.ctaLabelFr,
       ctaLabelEn: req.body.ctaLabelEn,
+      locale: req.body.locale,
     });
     return response.created(req, res, result, 'Broadcast queued');
   });
@@ -139,6 +161,9 @@ export function createNewsletterController(deps: NewsletterControllerDeps) {
     stats,
     remove,
     campaigns,
+    campaignStats,
+    getCampaign,
+    cancelCampaign,
     broadcast,
   };
 }

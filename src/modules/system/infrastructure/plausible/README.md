@@ -5,9 +5,13 @@ Server-side Stats API proxy for the CMS dashboard (`/api/v1/admin/analytics/*`).
 ## Env
 
 ```bash
-PLAUSIBLE_BASE_URL=https://analytics.zenora360.com
+# Server-to-server URL — prefer INTERNAL (Docker DNS / private host).
+# Public https://analytics.… is often behind Cloudflare Bot Fight → 403 HTML
+# "Just a moment..." which breaks the Stats API from the API container.
+PLAUSIBLE_BASE_URL=http://plausible:8000
 PLAUSIBLE_SITE_ID=barthez-kenwou.dev
 PLAUSIBLE_API_KEY=          # Stats API key (never expose to the SPA)
+# Browser link for operators (public UI is fine)
 PLAUSIBLE_PUBLIC_URL=https://analytics.zenora360.com/barthez-kenwou.dev
 ```
 

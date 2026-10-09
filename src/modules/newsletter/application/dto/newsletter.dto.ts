@@ -35,6 +35,8 @@ export type BroadcastNewsletterDto = {
   ctaUrl?: string;
   ctaLabelFr?: string;
   ctaLabelEn?: string;
+  /** Optional segment: only active subscribers with this locale. */
+  locale?: NewsletterLocale;
 };
 
 export type NotifyBlogPublishedDto = {

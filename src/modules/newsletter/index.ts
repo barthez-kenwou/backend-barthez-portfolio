@@ -4,6 +4,7 @@ import type { BlogEntity } from '@/modules/blog/domain/entities/blog.entity';
 import { type AuditPort, auditRepository } from '@/shared/infrastructure/audit';
 
 import { BroadcastNewsletterCommand } from './application/commands/broadcast-newsletter.command';
+import { CancelNewsletterCampaignCommand } from './application/commands/cancel-newsletter-campaign.command';
 import { ConfirmNewsletterCommand } from './application/commands/confirm-newsletter.command';
 import { DeleteNewsletterSubscriberCommand } from './application/commands/delete-newsletter-subscriber.command';
 import { NotifyBlogPublishedCommand } from './application/commands/notify-blog-published.command';
@@ -12,6 +13,8 @@ import type { BlogDigestSourcePort } from './application/commands/send-weekly-di
 import { SubscribeNewsletterCommand } from './application/commands/subscribe-newsletter.command';
 import { UnsubscribeNewsletterCommand } from './application/commands/unsubscribe-newsletter.command';
 import {
+  GetNewsletterCampaignQuery,
+  GetNewsletterCampaignStatsQuery,
   GetNewsletterStatsQuery,
   GetNewsletterSubscriberQuery,
   ListNewsletterCampaignsQuery,
@@ -58,12 +61,15 @@ export type NewsletterModule = {
     unsubscribeNewsletter: UnsubscribeNewsletterCommand;
     deleteNewsletterSubscriber: DeleteNewsletterSubscriberCommand;
     broadcastNewsletter: BroadcastNewsletterCommand;
+    cancelNewsletterCampaign: CancelNewsletterCampaignCommand;
     notifyBlogPublished: NotifyBlogPublishedCommand;
     sendWeeklyDigest: SendWeeklyDigestCommand;
     getNewsletterSubscriber: GetNewsletterSubscriberQuery;
     listNewsletterSubscribers: ListNewsletterSubscribersQuery;
     getNewsletterStats: GetNewsletterStatsQuery;
     listNewsletterCampaigns: ListNewsletterCampaignsQuery;
+    getNewsletterCampaign: GetNewsletterCampaignQuery;
+    getNewsletterCampaignStats: GetNewsletterCampaignStatsQuery;
   };
   controller: NewsletterController;
   router: Router;
@@ -93,12 +99,15 @@ export function createNewsletterModule(deps: NewsletterModuleDeps): NewsletterMo
     unsubscribeNewsletter: new UnsubscribeNewsletterCommand(deps),
     deleteNewsletterSubscriber: new DeleteNewsletterSubscriberCommand(deps),
     broadcastNewsletter: new BroadcastNewsletterCommand(deps),
+    cancelNewsletterCampaign: new CancelNewsletterCampaignCommand(deps),
     notifyBlogPublished: new NotifyBlogPublishedCommand(deps),
     sendWeeklyDigest: new SendWeeklyDigestCommand(deps),
     getNewsletterSubscriber: new GetNewsletterSubscriberQuery(deps),
     listNewsletterSubscribers: new ListNewsletterSubscribersQuery(deps),
     getNewsletterStats: new GetNewsletterStatsQuery(deps),
     listNewsletterCampaigns: new ListNewsletterCampaignsQuery(deps),
+    getNewsletterCampaign: new GetNewsletterCampaignQuery(deps),
+    getNewsletterCampaignStats: new GetNewsletterCampaignStatsQuery(deps),
   };
 
   const controller = createNewsletterController({
@@ -107,10 +116,13 @@ export function createNewsletterModule(deps: NewsletterModuleDeps): NewsletterMo
     unsubscribe: useCases.unsubscribeNewsletter,
     deleteSubscriber: useCases.deleteNewsletterSubscriber,
     broadcast: useCases.broadcastNewsletter,
+    cancelCampaign: useCases.cancelNewsletterCampaign,
     getSubscriber: useCases.getNewsletterSubscriber,
     listSubscribers: useCases.listNewsletterSubscribers,
     stats: useCases.getNewsletterStats,
     listCampaigns: useCases.listNewsletterCampaigns,
+    getCampaign: useCases.getNewsletterCampaign,
+    campaignStats: useCases.getNewsletterCampaignStats,
   });
 
   const router = createNewsletterRoutes(controller);

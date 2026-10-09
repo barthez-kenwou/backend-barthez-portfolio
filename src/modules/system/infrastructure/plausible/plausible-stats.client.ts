@@ -90,6 +90,26 @@ async function plausibleGet<T>(
       siteId,
       body,
     });
+
+    const bodyTextHint =
+      typeof body === 'object' &&
+      body &&
+      'raw' in body &&
+      typeof (body as { raw: unknown }).raw === 'string'
+        ? (body as { raw: string }).raw
+        : typeof body === 'string'
+          ? body
+          : '';
+    // Cloudflare bot challenge often returns HTML 403 — not a bad API key.
+    if (
+      response.status === 403 &&
+      (/just a moment/i.test(bodyTextHint) || /cf-chl|cloudflare/i.test(bodyTextHint))
+    ) {
+      throw AppError.serviceUnavailable(
+        'Plausible blocked by Cloudflare (bot challenge). Point PLAUSIBLE_BASE_URL at the internal Plausible URL (Docker network / bypass CF), not the public analytics hostname.',
+      );
+    }
+
     if (response.status === 401 || response.status === 403) {
       const detail =
         body &&

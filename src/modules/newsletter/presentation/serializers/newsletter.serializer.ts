@@ -1,6 +1,7 @@
 import type {
   NewsletterCampaignEntity,
   NewsletterCampaignListResult,
+  NewsletterCampaignStats,
   NewsletterStats,
   NewsletterSubscriberEntity,
   NewsletterSubscriberListResult,
@@ -38,6 +39,10 @@ export const NewsletterSerializer = {
     return stats;
   },
 
+  campaignStats(stats: NewsletterCampaignStats) {
+    return stats;
+  },
+
   campaign(row: NewsletterCampaignEntity) {
     return {
       id: row.id,
@@ -57,6 +62,14 @@ export const NewsletterSerializer = {
       completedAt: row.completedAt,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
+    };
+  },
+
+  /** Full campaign for admin detail (includes structured payload). */
+  campaignDetail(row: NewsletterCampaignEntity) {
+    return {
+      ...NewsletterSerializer.campaign(row),
+      payload: row.payload ?? null,
     };
   },
 

@@ -5,7 +5,10 @@ import type {
   NewsletterLocale,
   NewsletterStatus,
 } from '../../domain/entities/newsletter.entity';
-import { NewsletterSubscriberNotFoundError } from '../../domain/errors/newsletter.errors';
+import {
+  NewsletterCampaignNotFoundError,
+  NewsletterSubscriberNotFoundError,
+} from '../../domain/errors/newsletter.errors';
 import type {
   NewsletterCampaignRepositoryPort,
   NewsletterSubscriberRepositoryPort,
@@ -60,5 +63,23 @@ export class ListNewsletterCampaignsQuery {
       type: input.type as NewsletterCampaignType | undefined,
       status: input.status as NewsletterCampaignStatus | undefined,
     });
+  }
+}
+
+export class GetNewsletterCampaignQuery {
+  constructor(private readonly deps: { campaignRepository: NewsletterCampaignRepositoryPort }) {}
+
+  async execute(id: string) {
+    const row = await this.deps.campaignRepository.findById(id);
+    if (!row) throw new NewsletterCampaignNotFoundError();
+    return row;
+  }
+}
+
+export class GetNewsletterCampaignStatsQuery {
+  constructor(private readonly deps: { campaignRepository: NewsletterCampaignRepositoryPort }) {}
+
+  async execute() {
+    return this.deps.campaignRepository.stats();
   }
 }

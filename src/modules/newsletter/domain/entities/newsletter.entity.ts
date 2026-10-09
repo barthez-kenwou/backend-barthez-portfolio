@@ -71,6 +71,25 @@ export type NewsletterStats = {
   bounced: number;
 };
 
+export type NewsletterCampaignStats = {
+  total: number;
+  queued: number;
+  sending: number;
+  sent: number;
+  failed: number;
+  cancelled: number;
+  byType: {
+    confirm: number;
+    welcome: number;
+    blog_publish: number;
+    digest: number;
+    broadcast: number;
+  };
+  totalRecipients: number;
+  totalSent: number;
+  totalFailed: number;
+};
+
 export type NewsletterCampaignEntity = {
   id: string;
   type: NewsletterCampaignType;

@@ -18,7 +18,8 @@ export class BroadcastNewsletterCommand {
   constructor(private readonly deps: BroadcastNewsletterCommandDeps) {}
 
   async execute(input: BroadcastNewsletterDto): Promise<{ campaignId: string }> {
-    const activeCount = await this.deps.subscriberRepository.countActive();
+    const locale = input.locale;
+    const activeCount = await this.deps.subscriberRepository.countActive(locale);
 
     const campaign = await this.deps.campaignRepository.create({
       type: 'broadcast',
@@ -38,6 +39,7 @@ export class BroadcastNewsletterCommand {
         ctaUrl: input.ctaUrl?.trim() || null,
         ctaLabelFr: input.ctaLabelFr?.trim() || 'Lire la suite',
         ctaLabelEn: input.ctaLabelEn?.trim() || 'Read more',
+        ...(locale ? { targetLocale: locale } : {}),
       },
     });
 

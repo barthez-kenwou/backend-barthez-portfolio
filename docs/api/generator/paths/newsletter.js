@@ -21,6 +21,13 @@ const subscribeBody = {
   },
 };
 
+const campaignIdParam = {
+  name: 'campaignId',
+  in: 'path',
+  required: true,
+  schema: mongoObjectId,
+};
+
 const broadcastBody = {
   type: 'object',
   required: ['subjectFr', 'subjectEn', 'headlineFr', 'headlineEn', 'bodyFr', 'bodyEn'],
@@ -36,6 +43,7 @@ const broadcastBody = {
     ctaUrl: { type: 'string', format: 'uri' },
     ctaLabelFr: { type: 'string', maxLength: 80 },
     ctaLabelEn: { type: 'string', maxLength: 80 },
+    locale: { type: 'string', enum: ['fr', 'en'], description: 'Optional audience segment' },
   },
 };
 
@@ -201,6 +209,18 @@ module.exports = {
       },
     },
   },
+  '/api/v1/newsletter/campaigns/stats': {
+    get: {
+      tags: ['Newsletter'],
+      summary: 'Campaign KPIs',
+      security: bearer,
+      responses: {
+        200: okContent(null, 'Campaign stats'),
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+      },
+    },
+  },
   '/api/v1/newsletter/campaigns/broadcast': {
     post: {
       tags: ['Newsletter'],
@@ -215,6 +235,32 @@ module.exports = {
         201: okContent(null, 'Broadcast queued'),
         400: { $ref: '#/components/responses/BadRequest' },
         403: { $ref: '#/components/responses/Forbidden' },
+      },
+    },
+  },
+  '/api/v1/newsletter/campaigns/{campaignId}': {
+    get: {
+      tags: ['Newsletter'],
+      summary: 'Get campaign detail (includes payload)',
+      security: bearer,
+      parameters: [campaignIdParam],
+      responses: {
+        200: okContent(null, 'Campaign'),
+        404: { $ref: '#/components/responses/NotFound' },
+      },
+    },
+  },
+  '/api/v1/newsletter/campaigns/{campaignId}/cancel': {
+    post: {
+      tags: ['Newsletter'],
+      summary: 'Cancel a queued campaign',
+      description: 'Requires `newsletter:broadcast`. Only `queued` campaigns can be cancelled.',
+      security: bearer,
+      parameters: [campaignIdParam],
+      responses: {
+        200: okContent(null, 'Campaign cancelled'),
+        404: { $ref: '#/components/responses/NotFound' },
+        409: { $ref: '#/components/responses/Conflict' },
       },
     },
   },
