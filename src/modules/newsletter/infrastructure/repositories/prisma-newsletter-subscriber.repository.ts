@@ -21,9 +21,10 @@ export class PrismaNewsletterSubscriberRepository implements NewsletterSubscribe
         locale: data.locale,
         source: data.source,
         status: data.status,
-        confirmToken: data.confirmToken,
-        confirmTokenExpiresAt: data.confirmTokenExpiresAt,
+        confirmToken: data.confirmToken ?? null,
+        confirmTokenExpiresAt: data.confirmTokenExpiresAt ?? null,
         unsubscribeToken: data.unsubscribeToken,
+        confirmedAt: data.confirmedAt ?? null,
         deletedAt: null,
       },
     });

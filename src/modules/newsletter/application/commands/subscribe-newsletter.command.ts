@@ -8,14 +8,9 @@ import type {
   NewsletterSubscriberRepositoryPort,
 } from '../../domain/repositories/newsletter.repository';
 import type { SubscribeNewsletterDto } from '../dto/newsletter.dto';
-import {
-  buildConfirmUrl,
-  buildUnsubscribeUrl,
-  confirmTokenExpiry,
-  createSecureToken,
-  normalizeEmail,
-} from '../services/newsletter-links';
+import { createSecureToken, normalizeEmail } from '../services/newsletter-links';
 import type { NewsletterMailerPort } from '../services/newsletter.ports';
+import { sendWelcomeIfNeeded } from '../services/send-welcome-email';
 
 export type SubscribeNewsletterCommandDeps = {
   subscriberRepository: NewsletterSubscriberRepositoryPort;
@@ -24,8 +19,9 @@ export type SubscribeNewsletterCommandDeps = {
 };
 
 /**
- * Public blog CTA subscribe — always double opt-in.
- * Response is intentionally opaque (anti-enumeration).
+ * Public blog CTA subscribe — single opt-in.
+ * Subscriber becomes `active` immediately; welcome email once (no confirm/pending).
+ * Response stays opaque (anti-enumeration).
  */
 export class SubscribeNewsletterCommand {
   constructor(private readonly deps: SubscribeNewsletterCommandDeps) {}
@@ -36,9 +32,8 @@ export class SubscribeNewsletterCommand {
     const source = (input.source?.trim() || 'blog').slice(0, 64);
 
     const existing = await this.deps.subscriberRepository.findByEmail(email);
-    const confirmToken = createSecureToken();
-    const confirmTokenExpiresAt = confirmTokenExpiry();
     const unsubscribeToken = existing?.unsubscribeToken || createSecureToken();
+    const now = new Date();
 
     let subscriber: NewsletterSubscriberEntity;
 
@@ -47,58 +42,30 @@ export class SubscribeNewsletterCommand {
         email,
         locale,
         source,
-        status: 'pending',
-        confirmToken,
-        confirmTokenExpiresAt,
+        status: 'active',
+        confirmToken: null,
+        confirmTokenExpiresAt: null,
         unsubscribeToken,
+        confirmedAt: now,
       });
-    } else if (existing.status === 'active') {
-      // Already confirmed — soft acknowledgement email optional; stay quiet.
+    } else if (existing.status === 'active' && !existing.deletedAt) {
       return { ok: true };
     } else {
-      // pending / unsubscribed / bounced / soft-deleted → restart confirmation
+      // pending / unsubscribed / bounced / soft-deleted → activate immediately
       subscriber = await this.deps.subscriberRepository.update(existing.id, {
         locale,
         source,
-        status: 'pending',
-        confirmToken,
-        confirmTokenExpiresAt,
+        status: 'active',
+        confirmToken: null,
+        confirmTokenExpiresAt: null,
         unsubscribeToken,
         unsubscribedAt: null,
-        confirmedAt: null,
+        confirmedAt: existing.confirmedAt ?? now,
         deletedAt: null,
       });
     }
 
-    const confirmUrl = buildConfirmUrl(confirmToken);
-    const unsubscribeUrl = buildUnsubscribeUrl(subscriber.unsubscribeToken);
-
-    await this.deps.mailer.send({
-      to: email,
-      subject:
-        locale === 'fr'
-          ? 'Confirme ton abonnement — Barthez Kenwou'
-          : 'Confirm your subscription — Barthez Kenwou',
-      template: 'newsletter-confirm',
-      data: {
-        name: email.split('@')[0],
-        locale,
-        confirmUrl,
-        unsubscribeUrl,
-      },
-      priority: 2,
-    });
-
-    await this.deps.campaignRepository.create({
-      type: 'confirm',
-      status: 'sent',
-      subjectFr: 'Confirme ton abonnement — Barthez Kenwou',
-      subjectEn: 'Confirm your subscription — Barthez Kenwou',
-      template: 'newsletter-confirm',
-      payload: { email, locale },
-      totalRecipients: 1,
-      createdById: null,
-    });
+    await sendWelcomeIfNeeded(this.deps, subscriber);
 
     return { ok: true };
   }

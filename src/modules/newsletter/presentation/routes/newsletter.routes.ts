@@ -17,7 +17,7 @@ import { newsletterSchemas } from '../schemas/newsletter.schemas';
 export function createNewsletterRoutes(controller: NewsletterController): Router {
   const router = Router();
 
-  /** POST /subscribe — Public double opt-in. */
+  /** POST /subscribe — Public single opt-in (active immediately + welcome). */
   router.post(
     '/subscribe',
     newsletterSchemas.subscribe,

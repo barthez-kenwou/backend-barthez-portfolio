@@ -35,9 +35,10 @@ export type CreateNewsletterSubscriberInput = {
   locale: NewsletterLocale;
   source: string;
   status: NewsletterStatus;
-  confirmToken: string;
-  confirmTokenExpiresAt: Date;
+  confirmToken?: string | null;
+  confirmTokenExpiresAt?: Date | null;
   unsubscribeToken: string;
+  confirmedAt?: Date | null;
 };
 
 export type UpdateNewsletterSubscriberInput = Partial<{

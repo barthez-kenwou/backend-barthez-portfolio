@@ -4,8 +4,8 @@ import type {
   NewsletterSubscriberRepositoryPort,
 } from '../../domain/repositories/newsletter.repository';
 import type { ConfirmNewsletterDto } from '../dto/newsletter.dto';
-import { buildBlogIndexUrl, buildUnsubscribeUrl } from '../services/newsletter-links';
 import type { NewsletterMailerPort } from '../services/newsletter.ports';
+import { sendWelcomeIfNeeded } from '../services/send-welcome-email';
 
 export type ConfirmNewsletterCommandDeps = {
   subscriberRepository: NewsletterSubscriberRepositoryPort;
@@ -14,7 +14,8 @@ export type ConfirmNewsletterCommandDeps = {
 };
 
 /**
- * Activates a pending subscriber and sends the welcome email once.
+ * Legacy double-opt-in confirmation link.
+ * Still activates old `pending` rows and sends welcome once if needed.
  */
 export class ConfirmNewsletterCommand {
   constructor(private readonly deps: ConfirmNewsletterCommandDeps) {}
@@ -45,42 +46,7 @@ export class ConfirmNewsletterCommand {
           unsubscribedAt: null,
         });
 
-    if (!updated.welcomeSentAt) {
-      const unsubscribeUrl = buildUnsubscribeUrl(updated.unsubscribeToken);
-      const blogUrl = buildBlogIndexUrl();
-      const locale = updated.locale;
-
-      await this.deps.mailer.send({
-        to: updated.email,
-        subject:
-          locale === 'fr'
-            ? 'Bienvenue dans le cercle — Barthez Kenwou'
-            : "You're in — Barthez Kenwou Newsletter",
-        template: 'newsletter-welcome',
-        data: {
-          name: updated.email.split('@')[0],
-          locale,
-          blogUrl,
-          unsubscribeUrl,
-        },
-        priority: 3,
-      });
-
-      await this.deps.subscriberRepository.update(updated.id, {
-        welcomeSentAt: new Date(),
-        lastEmailedAt: new Date(),
-      });
-
-      await this.deps.campaignRepository.create({
-        type: 'welcome',
-        status: 'sent',
-        subjectFr: 'Bienvenue dans le cercle — Barthez Kenwou',
-        subjectEn: "You're in — Barthez Kenwou Newsletter",
-        template: 'newsletter-welcome',
-        payload: { email: updated.email },
-        totalRecipients: 1,
-      });
-    }
+    await sendWelcomeIfNeeded(this.deps, updated);
 
     return { ok: true, locale: updated.locale };
   }

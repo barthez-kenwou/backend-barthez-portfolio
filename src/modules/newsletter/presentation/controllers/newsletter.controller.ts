@@ -46,7 +46,7 @@ export function createNewsletterController(deps: NewsletterControllerDeps) {
       req,
       res,
       { ok: true },
-      'If this email is valid, a confirmation message is on its way.',
+      'Subscription registered. You are on the list.',
     );
   });
 
