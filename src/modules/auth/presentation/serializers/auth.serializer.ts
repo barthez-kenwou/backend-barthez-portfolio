@@ -18,6 +18,7 @@ export const AuthSerializer = {
       profileUrl: result.profileUrl,
       roles: result.roles,
       permissions: result.permissions,
+      accessToken: result.accessToken,
     };
   },
 

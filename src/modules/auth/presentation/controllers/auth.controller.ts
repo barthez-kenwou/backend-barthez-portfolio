@@ -65,7 +65,8 @@ export function createAuthController(deps: AuthControllerDeps) {
       totpCode: req.body.totpCode,
     });
 
-    res.setHeader('authorization', `Bearer ${result.accessToken}`);
+    // Access token lives in the JSON body — do not mirror it as an Authorization
+    // response header (with Set-Cookie it overflows nginx proxy_buffer_size → CF 502).
     setSafeCookie(res, AUTH_COOKIES.REFRESH_TOKEN, result.refreshToken, cookieOptions);
 
     return response.ok(req, res, AuthSerializer.login(result), 'Login successful');
@@ -121,7 +122,6 @@ export function createAuthController(deps: AuthControllerDeps) {
 
     const result = await deps.refreshToken.execute({ refreshToken: token });
 
-    res.setHeader('authorization', `Bearer ${result.accessToken}`);
     setSafeCookie(res, AUTH_COOKIES.REFRESH_TOKEN, result.refreshToken, cookieOptions);
 
     return response.ok(req, res, AuthSerializer.refresh(result.accessToken), 'Token refreshed');
@@ -238,7 +238,6 @@ export function createAuthController(deps: AuthControllerDeps) {
       recoveryCode: req.body.recoveryCode,
     });
 
-    res.setHeader('authorization', `Bearer ${result.accessToken}`);
     setSafeCookie(res, AUTH_COOKIES.REFRESH_TOKEN, result.refreshToken, cookieOptions);
 
     return response.ok(

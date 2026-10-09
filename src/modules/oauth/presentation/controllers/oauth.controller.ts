@@ -61,11 +61,10 @@ export function createOAuthController(deps: OAuthControllerDeps) {
     });
 
     res.clearCookie(OAUTH_COOKIES.STATE);
-    res.setHeader('authorization', `Bearer ${result.accessToken}`);
     setSafeCookie(res, AUTH_COOKIES.REFRESH_TOKEN, result.refreshToken, cookieOptions);
 
     if (result.redirectUrl) {
-      // Tokens stay in the Set-Cookie / Authorization header — never in the query string.
+      // Refresh stays in Set-Cookie; access token is only returned in JSON (never in the query string).
       return res.redirect(result.redirectUrl);
     }
 
@@ -82,6 +81,7 @@ export function createOAuthController(deps: OAuthControllerDeps) {
         isNewUser: result.isNewUser,
         roles: result.roles,
         permissions: result.permissions,
+        accessToken: result.accessToken,
       },
       `OAuth login successful via ${req.params.provider.toUpperCase()}`,
     );
@@ -112,7 +112,6 @@ export function createOAuthController(deps: OAuthControllerDeps) {
   const telegramAuth = asyncHandler(async (req: Request, res: Response) => {
     const result = await deps.telegramAuth.execute({ authData: req.body });
 
-    res.setHeader('authorization', `Bearer ${result.accessToken}`);
     setSafeCookie(res, AUTH_COOKIES.REFRESH_TOKEN, result.refreshToken, cookieOptions);
 
     return response.ok(
@@ -127,6 +126,7 @@ export function createOAuthController(deps: OAuthControllerDeps) {
         isNewUser: result.isNewUser,
         roles: result.roles,
         permissions: result.permissions,
+        accessToken: result.accessToken,
       },
       'Telegram login successful',
     );

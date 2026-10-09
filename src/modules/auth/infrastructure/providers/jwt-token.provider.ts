@@ -39,25 +39,28 @@ export type JwtTokenProviderDeps = {
 export class JwtTokenProvider implements TokenServicePort {
   constructor(private readonly deps: JwtTokenProviderDeps) {}
 
-  issueTokenPair(user: UserJwtPayload, permissions: string[], roles: string[]): TokenPair {
+  issueTokenPair(user: UserJwtPayload, _permissions: string[], roles: string[]): TokenPair {
     const accessJti = generateJti();
     const refreshJti = generateJti();
     const familyId = generateFamilyId();
     const pem = keys();
-    const payload = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      avatarUrl: user.avatarUrl,
-      isVerified: user.isVerified,
-      isActive: user.isActive,
-      permissions,
-      roles,
-    };
 
+    // Keep JWTs small: nginx default proxy_buffer_size (~4–8KB) rejects login
+    // responses that also set Authorization + Set-Cookie with fat payloads
+    // (full permission lists). RBAC is reloaded from DB in authenticate middleware.
     const accessToken = jwt.sign(
-      { ...payload, jti: accessJti, type: 'ACCESS' },
+      {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatarUrl: user.avatarUrl,
+        isVerified: user.isVerified,
+        isActive: user.isActive,
+        roles,
+        jti: accessJti,
+        type: 'ACCESS',
+      },
       pem.accessPrivate,
       {
         algorithm: JWT_ALGORITHM,
@@ -66,7 +69,13 @@ export class JwtTokenProvider implements TokenServicePort {
     );
 
     const refreshToken = jwt.sign(
-      { ...payload, jti: refreshJti, familyId, type: 'REFRESH' },
+      {
+        id: user.id,
+        email: user.email,
+        jti: refreshJti,
+        familyId,
+        type: 'REFRESH',
+      },
       pem.refreshPrivate,
       {
         algorithm: JWT_ALGORITHM,
