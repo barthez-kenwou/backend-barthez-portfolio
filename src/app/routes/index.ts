@@ -47,6 +47,7 @@ export function registerRoutes(app: Express, container: AppContainer): void {
   api.use('/projects', rateLimitingSubRoute, container.projects.router);
   api.use('/admin/audit', rateLimitingSubRoute, container.system.audit);
   api.use('/admin/dashboard', rateLimitingSubRoute, container.system.dashboard);
+  api.use('/admin/analytics', rateLimitingSubRoute, container.system.analytics);
 
   app.use(apiPrefix, api);
 }

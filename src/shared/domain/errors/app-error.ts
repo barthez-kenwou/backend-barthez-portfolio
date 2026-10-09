@@ -50,6 +50,14 @@ export class AppError extends Error {
   static internal(message = 'Internal server error'): AppError {
     return new AppError(500, message, 'INTERNAL_ERROR');
   }
+
+  static badGateway(message = 'Bad gateway'): AppError {
+    return new AppError(502, message, 'BAD_GATEWAY');
+  }
+
+  static serviceUnavailable(message = 'Service unavailable'): AppError {
+    return new AppError(503, message, 'SERVICE_UNAVAILABLE');
+  }
 }
 
 export const isAppError = (error: unknown): error is AppError => error instanceof AppError;

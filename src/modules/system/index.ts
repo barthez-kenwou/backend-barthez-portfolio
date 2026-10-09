@@ -3,6 +3,7 @@ import type { Express, Router } from 'express';
 import metricsRouter from '@/shared/infrastructure/metrics/metrics';
 
 import { setupBullBoard } from './presentation/routes/admin-queues.routes';
+import { createAnalyticsRoutes } from './presentation/routes/analytics.routes';
 import { createAuditRoutes } from './presentation/routes/audit.routes';
 import { createCspRoutes } from './presentation/routes/csp.routes';
 import { createCsrfRoutes } from './presentation/routes/csrf.routes';
@@ -16,6 +17,7 @@ export type SystemRouters = {
   metrics: Router;
   audit: Router;
   dashboard: Router;
+  analytics: Router;
   setupBullBoard: (app: Express) => void;
 };
 
@@ -30,11 +32,13 @@ export function createSystemRouters(): SystemRouters {
     metrics: metricsRouter,
     audit: createAuditRoutes(),
     dashboard: createDashboardRoutes(),
+    analytics: createAnalyticsRoutes(),
     setupBullBoard,
   };
 }
 
 export { default, setupBullBoard } from './presentation/routes/admin-queues.routes';
+export { createAnalyticsRoutes } from './presentation/routes/analytics.routes';
 export { createAuditRoutes } from './presentation/routes/audit.routes';
 export { createCspRoutes } from './presentation/routes/csp.routes';
 export { createCsrfRoutes } from './presentation/routes/csrf.routes';
