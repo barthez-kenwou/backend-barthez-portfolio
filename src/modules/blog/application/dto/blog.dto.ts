@@ -42,6 +42,8 @@ export type PublishBlogDto = {
   id: string;
   authorId: string;
   isAdmin: boolean;
+  /** When omitted, defaults to publish (`true`). Pass `false` to unpublish. */
+  isPublished?: boolean;
 };
 
 export type DeleteBlogDto = {
@@ -52,9 +54,12 @@ export type DeleteBlogDto = {
 
 export type GetBlogBySlugDto = {
   slug: string;
+  /** When true, drafts are returned (admin CMS). */
+  includeUnpublished?: boolean;
 };
 
 export type ListPublicBlogsDto = {
   page: number;
   limit: number;
+  includeUnpublished?: boolean;
 };

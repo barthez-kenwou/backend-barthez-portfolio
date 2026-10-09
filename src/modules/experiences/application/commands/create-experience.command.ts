@@ -22,8 +22,8 @@ export class CreateExperienceCommand {
       companyFr: input.companyFr.trim(),
       companyEn: input.companyEn.trim(),
       period: input.period.trim(),
-      descriptionFr: input.descriptionFr.map((s) => s.trim()).filter(Boolean),
-      descriptionEn: input.descriptionEn.map((s) => s.trim()).filter(Boolean),
+      descriptionFr: (input.descriptionFr ?? []).map((s) => s.trim()).filter(Boolean),
+      descriptionEn: (input.descriptionEn ?? []).map((s) => s.trim()).filter(Boolean),
       sortOrder: input.sortOrder ?? 0,
       ownerId: input.ownerId,
     });

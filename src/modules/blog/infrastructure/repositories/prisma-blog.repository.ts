@@ -68,10 +68,25 @@ export class PrismaBlogRepository implements BlogRepositoryPort {
     return blog ? BlogMapper.toDomain(blog) : null;
   }
 
+  async findBySlug(slug: string): Promise<BlogEntity | null> {
+    const blog = await prisma.blog.findFirst({
+      where: {
+        slug,
+        ...prismaNotDeleted,
+      },
+      include: { authorUser: { select: authorUserSelect } },
+    });
+    return blog ? BlogMapper.toDomain(blog) : null;
+  }
+
   async listPublic(page: number, limit: number): Promise<BlogListResult> {
+    return this.listAll(page, limit, false);
+  }
+
+  async listAll(page: number, limit: number, includeUnpublished: boolean): Promise<BlogListResult> {
     const skip = (page - 1) * limit;
     const where = {
-      isPublished: true,
+      ...(includeUnpublished ? {} : { isPublished: true }),
       ...prismaNotDeleted,
     };
 

@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import {
   authenticate,
+  optionalAuthenticate,
   requireActive,
   requirePermission,
   requireVerified,
@@ -28,11 +29,17 @@ export function createBlogRoutes(controller: BlogController): Router {
     controller.search,
   );
 
-  /** GET / — List blog posts (paginated, public). */
-  blogs.get('/', paginationMiddleware, controller.list);
+  /** GET / — List blog posts (paginated). Auth + includeUnpublished=true → drafts too. */
+  blogs.get('/', optionalAuthenticate, paginationMiddleware, controller.list);
 
-  /** GET /:slug — Fetch a single blog post by URL slug. */
-  blogs.get('/:slug', blogSchemas.getBySlug, validationErrorHandler, controller.getBySlug);
+  /** GET /:slug — By slug or Mongo id. Auth sees drafts. */
+  blogs.get(
+    '/:slug',
+    optionalAuthenticate,
+    blogSchemas.getBySlug,
+    validationErrorHandler,
+    controller.getBySlug,
+  );
 
   /** POST / — Create a blog post (`blog:create`). */
   blogs.post(

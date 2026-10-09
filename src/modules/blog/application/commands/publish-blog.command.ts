@@ -16,7 +16,8 @@ export type PublishBlogCommandDeps = {
 };
 
 /**
- * Sets isPublished=true when the actor owns the post or holds :any elevation.
+ * Toggles isPublished when the actor owns the post or holds :any elevation.
+ * Defaults to publish (`true`) when `isPublished` is omitted.
  */
 export class PublishBlogCommand {
   constructor(private readonly deps: PublishBlogCommandDeps) {}
@@ -29,10 +30,11 @@ export class PublishBlogCommand {
 
     assertBlogOwnership(blog, input.authorId, input.isAdmin, 'publish');
 
+    const nextPublished = input.isPublished ?? true;
     const alreadyPublished = blog.isPublished;
 
     const updated = await this.deps.blogRepository.update(input.id, {
-      isPublished: true,
+      isPublished: nextPublished,
     });
 
     await this.deps.cache?.invalidate(`blogs:slug:${blog.slug}`);
@@ -40,12 +42,12 @@ export class PublishBlogCommand {
 
     await this.deps.audit?.record({
       actorId: input.authorId,
-      action: 'blog.publish',
+      action: nextPublished ? 'blog.publish' : 'blog.unpublish',
       resource: 'blog',
       resourceId: input.id,
     });
 
-    if (!alreadyPublished) {
+    if (nextPublished && !alreadyPublished) {
       await this.deps.newsletter?.onBlogPublished(updated);
     }
 

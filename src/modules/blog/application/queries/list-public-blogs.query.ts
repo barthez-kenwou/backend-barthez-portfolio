@@ -11,7 +11,8 @@ export type ListPublicBlogsQueryDeps = {
 };
 
 /**
- * Returns a paginated list of published blogs (isPublished=true, cached).
+ * Returns a paginated blog list.
+ * Public: published only (cached). Admin: pass includeUnpublished for drafts.
  */
 export class ListPublicBlogsQuery {
   constructor(private readonly deps: ListPublicBlogsQueryDeps) {}
@@ -19,6 +20,12 @@ export class ListPublicBlogsQuery {
   async execute(input: ListPublicBlogsDto): Promise<BlogListResult> {
     const page = input.page || 1;
     const limit = input.limit || 10;
+    const includeUnpublished = Boolean(input.includeUnpublished);
+
+    if (includeUnpublished) {
+      return this.deps.blogRepository.listAll(page, limit, true);
+    }
+
     const cacheKey = `blogs:list:public:${page}:${limit}`;
 
     if (!this.deps.cache) {

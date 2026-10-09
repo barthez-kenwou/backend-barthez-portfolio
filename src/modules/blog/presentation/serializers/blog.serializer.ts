@@ -29,9 +29,20 @@ export const BlogSerializer = {
     };
   },
 
+  /** List rows omit markdown bodies — full content is loaded via GET by slug/id. */
+  summary(blog: BlogEntity) {
+    const full = BlogSerializer.one(blog);
+    const { contentFr: _cFr, contentEn: _cEn, ...rest } = full;
+    return {
+      ...rest,
+      contentFr: '',
+      contentEn: '',
+    };
+  },
+
   list(result: BlogListResult) {
     return {
-      items: result.items.map(BlogSerializer.one),
+      items: result.items.map(BlogSerializer.summary),
       total: result.total,
       page: result.page,
       limit: result.limit,

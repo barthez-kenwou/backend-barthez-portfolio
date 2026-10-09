@@ -124,17 +124,6 @@ const blogIdParam = param('id')
   .isMongoId()
   .withMessage('Blog id must be a valid Mongo ObjectId');
 
-const blogSlugParam = param('slug')
-  .trim()
-  .notEmpty()
-  .withMessage('Slug is required')
-  .isString()
-  .withMessage('Slug must be a string')
-  .isLength({ min: 1, max: 220 })
-  .withMessage('Slug must be between 1 and 220 characters')
-  .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i)
-  .withMessage('Slug must be URL-safe (letters, numbers, hyphens)');
-
 const searchQueryRule = query('q')
   .trim()
   .notEmpty()
@@ -166,6 +155,7 @@ export const blogSchemas = {
     authorRule(),
     tagsRule,
     tagsItemRule,
+    optionalIsPublished,
   ],
 
   update: [
@@ -187,7 +177,18 @@ export const blogSchemas = {
     optionalIsPublished,
   ],
 
-  getBySlug: [blogSlugParam],
+  getBySlug: [
+    param('slug')
+      .trim()
+      .notEmpty()
+      .withMessage('Slug is required')
+      .isString()
+      .withMessage('Slug must be a string')
+      .isLength({ min: 1, max: 220 })
+      .withMessage('Slug must be between 1 and 220 characters')
+      .matches(/^(?:[a-f\d]{24}|[a-z0-9]+(?:-[a-z0-9]+)*)$/i)
+      .withMessage('Slug must be URL-safe or a Mongo ObjectId'),
+  ],
 
-  byId: [blogIdParam],
+  byId: [blogIdParam, optionalIsPublished],
 };

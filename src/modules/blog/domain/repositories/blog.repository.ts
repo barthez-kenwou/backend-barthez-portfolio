@@ -16,7 +16,13 @@ export interface BlogRepositoryPort {
 
   findPublicBySlug(slug: string): Promise<BlogEntity | null>;
 
+  /** Any publish state (admin editor / draft preview). Soft-deleted excluded. */
+  findBySlug(slug: string): Promise<BlogEntity | null>;
+
   listPublic(page: number, limit: number): Promise<BlogListResult>;
+
+  /** Admin CMS list — includes drafts when `includeUnpublished` is true. */
+  listAll(page: number, limit: number, includeUnpublished: boolean): Promise<BlogListResult>;
 
   /** Fetch published blogs by id (isPublished=true; preserves search result order). */
   findPublicByIds(ids: string[]): Promise<BlogEntity[]>;

@@ -36,7 +36,9 @@ export function createBlogController(deps: BlogControllerDeps) {
   const list = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const page = req.pagination?.page ?? 1;
     const limit = req.pagination?.limit ?? 10;
-    const result = await deps.listPublicBlogs.execute({ page, limit });
+    const includeUnpublished =
+      String(req.query.includeUnpublished ?? '').toLowerCase() === 'true' && Boolean(req.user?.id);
+    const result = await deps.listPublicBlogs.execute({ page, limit, includeUnpublished });
     return response.ok(req, res, BlogSerializer.list(result), 'Blogs retrieved successfully');
   });
 
@@ -49,7 +51,10 @@ export function createBlogController(deps: BlogControllerDeps) {
   });
 
   const getBySlug = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    const blog = await deps.getBlog.execute({ slug: req.params.slug });
+    const blog = await deps.getBlog.execute({
+      slug: req.params.slug,
+      includeUnpublished: Boolean(req.user?.id),
+    });
     return response.ok(req, res, BlogSerializer.one(blog), 'Blog retrieved successfully');
   });
 
@@ -135,12 +140,20 @@ export function createBlogController(deps: BlogControllerDeps) {
   const publish = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     // Elevation for others' posts / ownerless posts: blog:update:any.
     const canPublishAny = await deps.rbac.hasPermission(req.user!.id, 'blog:update:any');
+    const isPublished =
+      typeof req.body?.isPublished === 'boolean' ? (req.body.isPublished as boolean) : true;
     const blog = await deps.publishBlog.execute({
       id: req.params.id,
       authorId: req.user!.id,
       isAdmin: canPublishAny,
+      isPublished,
     });
-    return response.ok(req, res, BlogSerializer.one(blog), 'Blog published successfully');
+    return response.ok(
+      req,
+      res,
+      BlogSerializer.one(blog),
+      isPublished ? 'Blog published successfully' : 'Blog unpublished successfully',
+    );
   });
 
   const deleteBlog = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
