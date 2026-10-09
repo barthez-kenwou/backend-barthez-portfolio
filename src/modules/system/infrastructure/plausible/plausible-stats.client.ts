@@ -59,7 +59,9 @@ async function plausibleGet<T>(
       path,
       error: error instanceof Error ? error.message : String(error),
     });
-    throw AppError.badGateway('Plausible Stats API unreachable');
+    // Prefer 503 over 502: Cloudflare often replaces origin 502 bodies with
+    // "error code: 502", which hides the real message in the CMS.
+    throw AppError.serviceUnavailable('Plausible Stats API unreachable');
   }
 
   const bodyText = await response.text();
@@ -78,9 +80,9 @@ async function plausibleGet<T>(
       body,
     });
     if (response.status === 401 || response.status === 403) {
-      throw AppError.badGateway('Plausible Stats API rejected the API key');
+      throw AppError.serviceUnavailable('Plausible Stats API rejected the API key');
     }
-    throw AppError.badGateway(`Plausible Stats API returned ${response.status}`);
+    throw AppError.serviceUnavailable(`Plausible Stats API returned ${response.status}`);
   }
 
   return body as T;

@@ -21,6 +21,32 @@ import {
 export function createAnalyticsController() {
   const overview = asyncHandler(async (req: Request, res: Response) => {
     const period = parsePeriod(req.query.period);
+    const { apiKey, publicUrl, siteId } = config.observability.plausible;
+
+    if (!apiKey.trim()) {
+      return response.ok(
+        req,
+        res,
+        {
+          configured: false,
+          publicUrl,
+          siteId,
+          period,
+          visitors: 0,
+          pageviews: 0,
+          visits: 0,
+          bounceRate: 0,
+          visitDuration: 0,
+          topPages: [],
+          topSources: [],
+          topBlogs: [],
+          topProjects: [],
+          events: [],
+        },
+        'Analytics overview (Plausible API key not configured)',
+      );
+    }
+
     const payload = await cacheData(
       `plausible:overview:${period}`,
       async () => {
@@ -35,8 +61,8 @@ export function createAnalyticsController() {
 
         return {
           configured: true,
-          publicUrl: config.observability.plausible.publicUrl,
-          siteId: config.observability.plausible.siteId,
+          publicUrl,
+          siteId,
           period,
           visitors: aggregate.visitors,
           pageviews: aggregate.pageviews,
