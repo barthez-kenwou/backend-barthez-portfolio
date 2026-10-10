@@ -8,6 +8,7 @@ import {
   type PlausiblePeriod,
   fetchAggregate,
   fetchCustomEvents,
+  fetchTimeseries,
   fetchTopPages,
   fetchTopPagesByPrefix,
   fetchTopSources,
@@ -42,22 +43,25 @@ export function createAnalyticsController() {
           topBlogs: [],
           topProjects: [],
           events: [],
+          timeseries: [],
         },
         'Analytics overview (Plausible API key not configured)',
       );
     }
 
     const payload = await cacheData(
-      `plausible:overview:${period}`,
+      `plausible:overview:v2:${period}`,
       async () => {
-        const [aggregate, topPages, topSources, topBlogs, topProjects, events] = await Promise.all([
-          fetchAggregate(period),
-          fetchTopPages(period, 8),
-          fetchTopSources(period, 5),
-          fetchTopPagesByPrefix('/blog', period, 5),
-          fetchTopPagesByPrefix('/projects', period, 5),
-          fetchCustomEvents(period, 15),
-        ]);
+        const [aggregate, timeseries, topPages, topSources, topBlogs, topProjects, events] =
+          await Promise.all([
+            fetchAggregate(period),
+            fetchTimeseries(period),
+            fetchTopPages(period, 8),
+            fetchTopSources(period, 5),
+            fetchTopPagesByPrefix('/blog', period, 5),
+            fetchTopPagesByPrefix('/projects', period, 5),
+            fetchCustomEvents(period, 15),
+          ]);
 
         return {
           configured: true,
@@ -69,6 +73,7 @@ export function createAnalyticsController() {
           visits: aggregate.visits,
           bounceRate: aggregate.bounceRate,
           visitDuration: aggregate.visitDuration,
+          timeseries,
           topPages,
           topSources,
           topBlogs: topBlogs.map((row) => ({

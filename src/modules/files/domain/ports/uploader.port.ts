@@ -12,6 +12,6 @@ export interface UploaderPort {
     size: number;
     /** When set, object key is namespaced under uploads/{ownerId}/. */
     ownerId?: string;
-  }): Promise<{ url: string; key: string; expiresIn: number }>;
+  }): Promise<{ url: string; key: string; expiresIn: number; publicUrl: string }>;
   presignGet(key: string): Promise<{ url: string; expiresIn: number }>;
 }

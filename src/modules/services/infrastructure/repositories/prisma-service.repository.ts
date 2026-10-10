@@ -4,6 +4,7 @@ import prisma from '@/shared/infrastructure/database/prisma.client';
 import type {
   CreateServiceInput,
   ServiceEntity,
+  ServiceListFilters,
   ServiceListResult,
   UpdateServiceInput,
 } from '../../domain/entities/service.entity';
@@ -44,14 +45,17 @@ export class PrismaServiceRepository implements ServiceRepositoryPort {
     return row ? ServiceMapper.toDomain(row) : null;
   }
 
-  async list(page: number, limit: number): Promise<ServiceListResult> {
-    const where = { ...prismaNotDeleted };
+  async list(filters: ServiceListFilters): Promise<ServiceListResult> {
+    const where = {
+      ...prismaNotDeleted,
+      ...(filters.isPublished !== undefined ? { isPublished: filters.isPublished } : {}),
+    };
     const [rows, total] = await Promise.all([
       prisma.service.findMany({
         where,
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
       }),
       prisma.service.count({ where }),
     ]);
@@ -59,9 +63,9 @@ export class PrismaServiceRepository implements ServiceRepositoryPort {
     return {
       items: rows.map(ServiceMapper.toDomain),
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 0,
+      page: filters.page,
+      limit: filters.limit,
+      totalPages: Math.ceil(total / filters.limit) || 0,
     };
   }
 

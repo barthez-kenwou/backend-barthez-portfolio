@@ -1,6 +1,7 @@
 import type {
   ContactResponseEntity,
   ContactResponseListResult,
+  ContactResponseStats,
 } from '../../domain/entities/contact-response.entity';
 
 /**
@@ -42,5 +43,9 @@ export const ContactResponseSerializer = {
       limit: result.limit,
       totalPages: result.totalPages,
     };
+  },
+
+  stats(stats: ContactResponseStats) {
+    return stats;
   },
 };

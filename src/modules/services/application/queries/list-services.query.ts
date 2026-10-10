@@ -15,6 +15,7 @@ export class ListServicesQuery {
   async execute(input: ListServicesDto): Promise<ServiceListResult> {
     const page = Math.max(1, input.page);
     const limit = Math.min(100, Math.max(1, input.limit));
-    return this.deps.serviceRepository.list(page, limit);
+    const isPublished = input.includeUnpublished ? input.isPublished : true;
+    return this.deps.serviceRepository.list({ page, limit, isPublished });
   }
 }

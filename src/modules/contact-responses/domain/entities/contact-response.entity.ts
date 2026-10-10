@@ -50,3 +50,11 @@ export type ContactResponseListResult = {
   limit: number;
   totalPages: number;
 };
+
+export type ContactResponseStats = {
+  total: number;
+  new: number;
+  read: number;
+  replied: number;
+  archived: number;
+};

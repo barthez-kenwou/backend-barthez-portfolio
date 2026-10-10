@@ -5,6 +5,7 @@ import { asyncHandler, response } from '@/shared/utils/http/responses/helpers';
 import type { DeleteContactResponseCommand } from '../../application/commands/delete-contact-response.command';
 import type { SubmitContactResponseCommand } from '../../application/commands/submit-contact-response.command';
 import type { UpdateContactResponseCommand } from '../../application/commands/update-contact-response.command';
+import type { GetContactResponseStatsQuery } from '../../application/queries/get-contact-response-stats.query';
 import type { GetContactResponseQuery } from '../../application/queries/get-contact-response.query';
 import type { ListContactResponsesQuery } from '../../application/queries/list-contact-responses.query';
 import type { ContactResponseStatus } from '../../domain/entities/contact-response.entity';
@@ -17,6 +18,7 @@ export type ContactResponseControllerDeps = {
   updateContactResponse: UpdateContactResponseCommand;
   deleteContactResponse: DeleteContactResponseCommand;
   getContactResponse: GetContactResponseQuery;
+  getContactResponseStats: GetContactResponseStatsQuery;
   listContactResponses: ListContactResponsesQuery;
 };
 
@@ -48,6 +50,11 @@ export function createContactResponseController(deps: ContactResponseControllerD
     );
   });
 
+  const stats = asyncHandler(async (req: Request, res: Response) => {
+    const data = await deps.getContactResponseStats.execute();
+    return response.ok(req, res, ContactResponseSerializer.stats(data), 'Contact Response stats');
+  });
+
   const getById = asyncHandler(async (req: Request, res: Response) => {
     const item = await deps.getContactResponse.execute({
       id: req.params.contactResponseId,
@@ -73,7 +80,7 @@ export function createContactResponseController(deps: ContactResponseControllerD
     return response.ok(req, res, null, 'Contact Response deleted');
   });
 
-  return { submit, list, getById, update, remove };
+  return { submit, list, stats, getById, update, remove };
 }
 
 export type ContactResponseController = ReturnType<typeof createContactResponseController>;

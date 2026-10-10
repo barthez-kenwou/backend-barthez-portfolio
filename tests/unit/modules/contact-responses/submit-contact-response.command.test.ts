@@ -23,6 +23,7 @@ describe('SubmitContactResponseCommand', () => {
       })),
       findById: vi.fn(),
       list: vi.fn(),
+      stats: vi.fn(),
       update: vi.fn(),
     };
 

@@ -58,6 +58,12 @@ export type UpdateServiceInput = Partial<{
   deletedAt: Date | null;
 }>;
 
+export type ServiceListFilters = {
+  page: number;
+  limit: number;
+  isPublished?: boolean;
+};
+
 export type ServiceListResult = {
   items: ServiceEntity[];
   total: number;

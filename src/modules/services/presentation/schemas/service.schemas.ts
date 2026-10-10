@@ -17,6 +17,11 @@ export const serviceSchemas = {
       .optional()
       .isInt({ min: 1, max: 100 })
       .withMessage('limit must be between 1 and 100'),
+    query('isPublished').optional().isBoolean().withMessage('isPublished must be a boolean'),
+    query('includeUnpublished')
+      .optional()
+      .isBoolean()
+      .withMessage('includeUnpublished must be a boolean'),
   ],
 
   byId: [serviceIdParam],

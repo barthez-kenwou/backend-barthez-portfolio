@@ -45,7 +45,7 @@ fetch(base+'/api/v1/stats/aggregate?site_id='+encodeURIComponent(site)+'&period=
 | Method | Path                                                  | Purpose                                             |
 | ------ | ----------------------------------------------------- | --------------------------------------------------- |
 | GET    | `/admin/analytics/status`                             | Configured? + public UI URL                         |
-| GET    | `/admin/analytics/overview?period=7d`                 | Aggregate + top pages/blogs/projects/sources/events |
+| GET    | `/admin/analytics/overview?period=7d`                 | Aggregate + timeseries + tops + events              |
 | GET    | `/admin/analytics/top-pages?period=7d&limit=10`       | Breakdown `event:page`                              |
 | GET    | `/admin/analytics/top-entries?prefix=/blog&period=7d` | Filtered pages (`/blog`, `/projects`)               |
 | GET    | `/admin/analytics/events?period=7d`                   | Breakdown `event:name` (custom goals)               |

@@ -17,7 +17,7 @@ export class MinioUploaderAdapter implements UploaderPort {
     contentType: string;
     size: number;
     ownerId?: string;
-  }): Promise<{ url: string; key: string; expiresIn: number }> {
+  }): Promise<{ url: string; key: string; expiresIn: number; publicUrl: string }> {
     return this.uploader.presignPut(input);
   }
 

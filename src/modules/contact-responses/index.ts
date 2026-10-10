@@ -5,6 +5,7 @@ import { type AuditPort, auditRepository } from '@/shared/infrastructure/audit';
 import { DeleteContactResponseCommand } from './application/commands/delete-contact-response.command';
 import { SubmitContactResponseCommand } from './application/commands/submit-contact-response.command';
 import { UpdateContactResponseCommand } from './application/commands/update-contact-response.command';
+import { GetContactResponseStatsQuery } from './application/queries/get-contact-response-stats.query';
 import { GetContactResponseQuery } from './application/queries/get-contact-response.query';
 import { ListContactResponsesQuery } from './application/queries/list-contact-responses.query';
 import type { ContactResponseRbacPort } from './application/services/rbac.port';
@@ -30,6 +31,7 @@ export type ContactResponseModule = {
     updateContactResponse: UpdateContactResponseCommand;
     deleteContactResponse: DeleteContactResponseCommand;
     getContactResponse: GetContactResponseQuery;
+    getContactResponseStats: GetContactResponseStatsQuery;
     listContactResponses: ListContactResponsesQuery;
   };
   controller: ContactResponseController;
@@ -55,6 +57,7 @@ export function createContactResponseModule(
     updateContactResponse: new UpdateContactResponseCommand(deps),
     deleteContactResponse: new DeleteContactResponseCommand(deps),
     getContactResponse: new GetContactResponseQuery(deps),
+    getContactResponseStats: new GetContactResponseStatsQuery(deps),
     listContactResponses: new ListContactResponsesQuery(deps),
   };
 

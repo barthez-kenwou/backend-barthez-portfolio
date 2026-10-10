@@ -34,7 +34,18 @@ export function createServiceController(deps: ServiceControllerDeps) {
   const list = asyncHandler(async (req: Request, res: Response) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 20;
-    const result = await deps.listServices.execute({ page, limit });
+    const parseBool = (value: unknown): boolean | undefined => {
+      if (value === undefined || value === null || value === '') return undefined;
+      if (value === true || value === 'true') return true;
+      if (value === false || value === 'false') return false;
+      return undefined;
+    };
+    const result = await deps.listServices.execute({
+      page,
+      limit,
+      isPublished: parseBool(req.query.isPublished),
+      includeUnpublished: parseBool(req.query.includeUnpublished) === true,
+    });
     return response.ok(req, res, ServiceSerializer.list(result), 'Services retrieved');
   });
 

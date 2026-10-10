@@ -32,6 +32,16 @@ export function createContactResponseRoutes(controller: ContactResponseControlle
     controller.list,
   );
 
+  /** GET /stats — Inbox KPIs (must be before `/:id`). */
+  router.get(
+    '/stats',
+    authenticate,
+    requireVerified,
+    requireActive,
+    requirePermission('contact_response:read'),
+    controller.stats,
+  );
+
   /** GET /:contactResponseId — Detail; auto-marks `new` → `read`. */
   router.get(
     '/:contactResponseId',

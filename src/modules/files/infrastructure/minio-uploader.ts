@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-import { config } from '@/app/config';
+import { config, envs } from '@/app/config';
 import log from '@/shared/infrastructure/logging/logger';
 
 import { UploadError, ValidationError } from './core/errors';
@@ -20,6 +20,7 @@ export class MinioUploader extends EventEmitter {
   private presigned: PresignedUrlService;
   private scanner?: Scanner;
   private maxRetries: number;
+  private bucket: string;
 
   constructor(configInput: {
     client: unknown;
@@ -32,6 +33,7 @@ export class MinioUploader extends EventEmitter {
     logger?: Logger;
   }) {
     super();
+    this.bucket = configInput.bucket;
     this.validator = new Validator(
       configInput.defaultPolicy ?? { maxSizeBytes: 50 * 1024 * 1024 },
       configInput.profiles,
@@ -44,6 +46,17 @@ export class MinioUploader extends EventEmitter {
     this.presigned = new PresignedUrlService(this.provider);
     this.scanner = configInput.scanner;
     this.maxRetries = configInput.maxRetries ?? 3;
+  }
+
+  private buildPublicUrl(key: string): string {
+    if (envs.MINIO_PUBLIC_URL) {
+      return `${envs.MINIO_PUBLIC_URL.replace(/\/$/, '')}/${this.bucket}/${key}`;
+    }
+    const useSSL = envs.MINIO_USE_SSL;
+    const port = envs.MINIO_PORT;
+    const protocol = useSSL ? 'https' : 'http';
+    const host = envs.MINIO_ENDPOINT === 'minio' ? 'localhost' : envs.MINIO_ENDPOINT;
+    return `${protocol}://${host}:${port}/${this.bucket}/${key}`;
   }
 
   async uploadBuffer(
@@ -138,7 +151,7 @@ export class MinioUploader extends EventEmitter {
     contentType: string;
     size: number;
     ownerId?: string;
-  }): Promise<{ url: string; key: string; expiresIn: number }> {
+  }): Promise<{ url: string; key: string; expiresIn: number; publicUrl: string }> {
     const max = config.storage.upload.presignMaxBytes;
     if (input.size > max) {
       throw new ValidationError('file_too_large', { max, actual: input.size });
@@ -157,7 +170,7 @@ export class MinioUploader extends EventEmitter {
     const { key } = generateFilePath(input.filename, 'uploads', input.ownerId);
     const expiresIn = config.storage.upload.presignTtlSeconds;
     const url = await this.presigned.presignedPut(input.filename, key, expiresIn);
-    return { url: url.url, key, expiresIn };
+    return { url: url.url, key, expiresIn, publicUrl: this.buildPublicUrl(key) };
   }
 
   async presignGet(key: string): Promise<{ url: string; expiresIn: number }> {

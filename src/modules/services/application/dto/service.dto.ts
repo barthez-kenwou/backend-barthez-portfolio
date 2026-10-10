@@ -47,4 +47,6 @@ export type GetServiceDto = {
 export type ListServicesDto = {
   page: number;
   limit: number;
+  isPublished?: boolean;
+  includeUnpublished?: boolean;
 };

@@ -15,14 +15,21 @@ export const uploader = new MinioUploader({
   scanner,
   defaultPolicy: {
     maxSizeBytes: config.storage.upload.presignMaxBytes,
-    allowedMimeTypes: ['image/jpeg', 'image/png', 'application/pdf'],
-    allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+    allowedMimeTypes: [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/avif',
+      'application/pdf',
+    ],
+    allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'pdf'],
   },
   profiles: {
     avatar: {
       maxSizeBytes: config.storage.upload.apiMaxBytes,
-      allowedMimeTypes: ['image/jpeg', 'image/png'],
-      allowedExtensions: ['jpg', 'jpeg', 'png'],
+      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
     },
   },
   maxRetries: 5,

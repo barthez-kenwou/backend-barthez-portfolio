@@ -150,6 +150,23 @@ export async function fetchAggregate(period: PlausiblePeriod = DEFAULT_PERIOD) {
   };
 }
 
+type TimeseriesResponse = {
+  results: Array<Record<string, string | number | null>>;
+};
+
+/** Daily visitors (+ pageviews) for the period — CMS line chart. */
+export async function fetchTimeseries(period: PlausiblePeriod = DEFAULT_PERIOD) {
+  const data = await plausibleGet<TimeseriesResponse>('/api/v1/stats/timeseries', {
+    period,
+    metrics: 'visitors,pageviews',
+  });
+  return (data.results ?? []).map((row) => ({
+    date: String(row.date ?? ''),
+    visitors: Number(row.visitors ?? 0),
+    pageviews: Number(row.pageviews ?? 0),
+  }));
+}
+
 export async function fetchBreakdown(
   property: string,
   period: PlausiblePeriod = DEFAULT_PERIOD,

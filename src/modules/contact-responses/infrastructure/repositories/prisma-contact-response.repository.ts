@@ -7,6 +7,7 @@ import type {
   ContactResponseEntity,
   ContactResponseListFilters,
   ContactResponseListResult,
+  ContactResponseStats,
   CreateContactResponseInput,
   UpdateContactResponseInput,
 } from '../../domain/entities/contact-response.entity';
@@ -62,6 +63,18 @@ export class PrismaContactResponseRepository implements ContactResponseRepositor
       limit: filters.limit,
       totalPages: Math.ceil(total / filters.limit) || 0,
     };
+  }
+
+  async stats(): Promise<ContactResponseStats> {
+    const base = { ...prismaNotDeleted };
+    const [total, newCount, read, replied, archived] = await Promise.all([
+      prisma.contactResponse.count({ where: base }),
+      prisma.contactResponse.count({ where: { ...base, status: 'new' } }),
+      prisma.contactResponse.count({ where: { ...base, status: 'read' } }),
+      prisma.contactResponse.count({ where: { ...base, status: 'replied' } }),
+      prisma.contactResponse.count({ where: { ...base, status: 'archived' } }),
+    ]);
+    return { total, new: newCount, read, replied, archived };
   }
 
   async update(id: string, data: UpdateContactResponseInput): Promise<ContactResponseEntity> {
