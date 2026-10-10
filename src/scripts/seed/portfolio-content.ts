@@ -117,6 +117,8 @@ type SmallerDomains = {
     github: string;
     linkedin: string;
     facebook: string;
+    youtube?: string;
+    presentationVideoUrl?: string;
     photoUrl?: string;
     yearsExperience?: number;
     tags?: string[];
@@ -313,6 +315,8 @@ export async function seedPortfolioContent(): Promise<void> {
     create: {
       singletonKey: 'default',
       ...smaller.contactInfo,
+      youtube: smaller.contactInfo.youtube ?? '',
+      presentationVideoUrl: smaller.contactInfo.presentationVideoUrl ?? '',
       photoUrl: smaller.contactInfo.photoUrl ?? null,
       yearsExperience: smaller.contactInfo.yearsExperience ?? 3,
       tags: smaller.contactInfo.tags ?? ['TypeScript', 'AWS', 'DevOps', 'Full Stack'],
@@ -320,6 +324,8 @@ export async function seedPortfolioContent(): Promise<void> {
     },
     update: {
       ...smaller.contactInfo,
+      youtube: smaller.contactInfo.youtube ?? '',
+      presentationVideoUrl: smaller.contactInfo.presentationVideoUrl ?? '',
       photoUrl: smaller.contactInfo.photoUrl ?? null,
       yearsExperience: smaller.contactInfo.yearsExperience ?? 3,
       tags: smaller.contactInfo.tags ?? ['TypeScript', 'AWS', 'DevOps', 'Full Stack'],

@@ -47,6 +47,8 @@ export class PrismaContactInfoRepository implements ContactInfoRepositoryPort {
       github: data.github,
       linkedin: data.linkedin,
       facebook: data.facebook,
+      youtube: data.youtube ?? '',
+      presentationVideoUrl: data.presentationVideoUrl ?? '',
       photoUrl: data.photoUrl ?? null,
       yearsExperience: data.yearsExperience ?? null,
       tags: data.tags ?? [],
@@ -80,6 +82,10 @@ export class PrismaContactInfoRepository implements ContactInfoRepositoryPort {
         ...(data.github !== undefined ? { github: data.github } : {}),
         ...(data.linkedin !== undefined ? { linkedin: data.linkedin } : {}),
         ...(data.facebook !== undefined ? { facebook: data.facebook } : {}),
+        ...(data.youtube !== undefined ? { youtube: data.youtube } : {}),
+        ...(data.presentationVideoUrl !== undefined
+          ? { presentationVideoUrl: data.presentationVideoUrl }
+          : {}),
         ...(data.photoUrl !== undefined ? { photoUrl: data.photoUrl } : {}),
         ...(data.yearsExperience !== undefined ? { yearsExperience: data.yearsExperience } : {}),
         ...(data.tags !== undefined ? { tags: data.tags } : {}),

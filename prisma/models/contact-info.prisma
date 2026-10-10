@@ -19,6 +19,9 @@ model ContactInfo {
   github        String
   linkedin      String
   facebook      String
+  youtube       String    @default("")
+  /// Home/About presentation video (YouTube URL managed in CMS)
+  presentationVideoUrl String @default("")
   photoUrl      String?
   yearsExperience Int?
   tags          String[]  @default([])

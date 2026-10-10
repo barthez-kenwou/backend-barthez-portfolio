@@ -23,6 +23,8 @@ export const ContactInfoSerializer = {
       github: item.github,
       linkedin: item.linkedin,
       facebook: item.facebook,
+      youtube: item.youtube,
+      presentationVideoUrl: item.presentationVideoUrl,
       photoUrl: item.photoUrl,
       yearsExperience: item.yearsExperience,
       tags: item.tags,

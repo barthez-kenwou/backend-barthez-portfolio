@@ -21,6 +21,8 @@ export type ContactInfoEntity = {
   github: string;
   linkedin: string;
   facebook: string;
+  youtube: string;
+  presentationVideoUrl: string;
   photoUrl: string | null;
   yearsExperience: number | null;
   tags: string[];
@@ -46,6 +48,8 @@ export type UpsertContactInfoInput = {
   github: string;
   linkedin: string;
   facebook: string;
+  youtube?: string;
+  presentationVideoUrl?: string;
   photoUrl?: string | null;
   yearsExperience?: number | null;
   tags?: string[];
@@ -67,6 +71,8 @@ export type UpdateContactInfoInput = Partial<{
   github: string;
   linkedin: string;
   facebook: string;
+  youtube: string;
+  presentationVideoUrl: string;
   photoUrl: string | null;
   yearsExperience: number | null;
   tags: string[];

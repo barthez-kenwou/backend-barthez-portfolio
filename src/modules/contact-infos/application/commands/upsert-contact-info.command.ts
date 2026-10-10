@@ -37,6 +37,8 @@ export class UpsertContactInfoCommand {
       github: input.github.trim(),
       linkedin: input.linkedin.trim(),
       facebook: input.facebook.trim(),
+      youtube: (input.youtube ?? '').trim(),
+      presentationVideoUrl: (input.presentationVideoUrl ?? '').trim(),
       photoUrl: input.photoUrl?.trim() || null,
       yearsExperience: input.yearsExperience ?? null,
       tags: input.tags ?? [],

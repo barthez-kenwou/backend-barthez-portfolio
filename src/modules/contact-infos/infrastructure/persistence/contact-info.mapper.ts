@@ -25,6 +25,8 @@ export const ContactInfoMapper = {
       github: row.github,
       linkedin: row.linkedin,
       facebook: row.facebook,
+      youtube: row.youtube ?? '',
+      presentationVideoUrl: row.presentationVideoUrl ?? '',
       photoUrl: row.photoUrl ?? null,
       yearsExperience: row.yearsExperience ?? null,
       tags: row.tags ?? [],

@@ -37,6 +37,16 @@ export const contactInfoSchemas = {
     requiredStr('github', 500),
     requiredStr('linkedin', 500),
     requiredStr('facebook', 500),
+    body('youtube')
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('youtube must be at most 500 characters'),
+    body('presentationVideoUrl')
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('presentationVideoUrl must be at most 500 characters'),
     body('photoUrl').optional({ nullable: true }).trim().isLength({ max: 1000 }),
     body('yearsExperience').optional({ nullable: true }).isInt({ min: 0, max: 80 }),
     body('tags').optional().isArray(),
