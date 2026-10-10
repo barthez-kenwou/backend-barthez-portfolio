@@ -58,9 +58,14 @@ Register these as custom events / goals so they appear in breakdowns:
 
 - `cta_click` — props: `cta_id`, `location`, `href`
 - `cv_download` — props: `locale`, `source`
+- `contact_start` — props: `source` (first form focus, once/session)
 - `contact_click` — props: `channel`
 - `newsletter_subscribe` — props: `source`, `locale`
 - `outbound_click` — props: `url`, `label`
+- `social_click` — props: `network`, `location`
+- `locale_switch` — props: `from`, `to`
+- `project_filter` — props: `filter`, `tag`
+- `share` — props: `channel`, `content`, `slug?`
 - `scroll_depth` — props: `path`, `depth` (25/50/75/100)
 - `engagement_time` — props: `path`, `seconds`
 - `video_play` / `video_progress` / `video_complete` — props: `video_id`,
