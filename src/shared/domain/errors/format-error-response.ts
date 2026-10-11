@@ -60,6 +60,30 @@ export const formatErrorResponse = (
     };
   }
 
+  // body-parser / raw-body: PayloadTooLargeError (status 413, type entity.too.large)
+  const legacyStatus =
+    (error as { status?: unknown; statusCode?: unknown } | null)?.statusCode ??
+    (error as { status?: unknown } | null)?.status;
+  if (
+    typeof legacyStatus === 'number' &&
+    legacyStatus >= 400 &&
+    legacyStatus < 500 &&
+    error instanceof Error
+  ) {
+    const tooLarge =
+      (error as { type?: string }).type === 'entity.too.large' || /too large/i.test(error.message);
+    return {
+      statusCode: legacyStatus,
+      body: {
+        success: false,
+        message: tooLarge ? 'Request body too large' : error.message,
+        code: tooLarge ? 'PAYLOAD_TOO_LARGE' : 'CLIENT_ERROR',
+        ...requestIdField,
+        ...(includeStack ? { stack: error.stack } : {}),
+      },
+    };
+  }
+
   const message = error instanceof Error ? error.message : 'An unexpected error occurred';
 
   return {

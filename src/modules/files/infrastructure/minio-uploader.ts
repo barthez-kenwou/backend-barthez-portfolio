@@ -149,6 +149,11 @@ export class MinioUploader extends EventEmitter {
     }
   }
 
+  /** Ensure bucket exists + public-read policy (idempotent). */
+  async ensureReady(): Promise<void> {
+    await this.provider.ensureBucketExists();
+  }
+
   async presignPut(input: {
     filename: string;
     contentType: string;
@@ -169,6 +174,13 @@ export class MinioUploader extends EventEmitter {
       undefined,
       undefined,
     );
+
+    // Best-effort: public GET policy so CMS image URLs work in the browser.
+    await this.provider.ensureBucketExists().catch((error: unknown) => {
+      log.warn('Bucket warm-up before presign failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
 
     const { key } = generateFilePath(input.filename, 'uploads', input.ownerId);
     const expiresIn = config.storage.upload.presignTtlSeconds;

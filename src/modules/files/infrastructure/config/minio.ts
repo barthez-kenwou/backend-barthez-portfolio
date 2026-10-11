@@ -37,3 +37,11 @@ export const uploader = new MinioUploader({
 });
 
 uploader.on('uploaded', (infos) => log.info('uploaded', infos));
+
+if (!config.app.isTest) {
+  void uploader.ensureReady().catch((error: unknown) => {
+    log.warn('Object storage bucket warm-up failed', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  });
+}

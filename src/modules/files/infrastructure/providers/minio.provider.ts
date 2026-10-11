@@ -57,6 +57,10 @@ export class MinioProvider {
       } else {
         this.logger.info('Bucket already exists', { bucket: this.bucket });
       }
+
+      // CMS covers/images are referenced by absolute public URL in the SPA.
+      // Without a public GetObject policy, browsers get AccessDenied → broken previews.
+      await this.ensurePublicReadPolicy();
     } catch (err: any) {
       this.logger.error('Bucket check/create failed', {
         bucket: this.bucket,
@@ -65,6 +69,34 @@ export class MinioProvider {
         stack: err.stack,
       });
       throw new UploadError('bucket_check_failed', err);
+    }
+  }
+
+  /** Allow anonymous GET on objects (SeaweedFS / MinIO path-style public CDN). */
+  private async ensurePublicReadPolicy() {
+    const policy = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Sid: 'PublicReadGetObject',
+          Effect: 'Allow',
+          Principal: { AWS: ['*'] },
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${this.bucket}/*`],
+        },
+      ],
+    };
+
+    try {
+      await this.client.setBucketPolicy(this.bucket, JSON.stringify(policy));
+      this.logger.info('Public-read bucket policy applied', { bucket: this.bucket });
+    } catch (err: any) {
+      // Non-fatal: identity may lack PutBucketPolicy — ops can set it in Seaweed admin.
+      this.logger.warn('Could not set public-read bucket policy', {
+        bucket: this.bucket,
+        error: err?.message || err,
+        code: err?.code,
+      });
     }
   }
 

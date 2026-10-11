@@ -8,4 +8,15 @@ describe('formatErrorResponse', () => {
     expect(body.requestId).toBe('req-abc');
     expect(body.success).toBe(false);
   });
+
+  it('maps body-parser PayloadTooLargeError to 413', () => {
+    const err = Object.assign(new Error('request entity too large'), {
+      type: 'entity.too.large',
+      status: 413,
+      statusCode: 413,
+    });
+    const { statusCode, body } = formatErrorResponse(err, false);
+    expect(statusCode).toBe(413);
+    expect(body.code).toBe('PAYLOAD_TOO_LARGE');
+  });
 });

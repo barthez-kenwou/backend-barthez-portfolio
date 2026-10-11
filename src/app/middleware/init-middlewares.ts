@@ -65,8 +65,10 @@ export const initMiddlewares = (app: Express, registerRoutes: () => void): void 
     }),
   );
 
-  app.use(express.json({ limit: '20kb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+  // Blog/project CMS payloads are bilingual markdown — 20kb truncates long posts
+  // into a body-parser error that surfaced as a generic 500 to the admin SPA.
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '256kb' }));
 
   app.use(httpLogMiddleware);
 

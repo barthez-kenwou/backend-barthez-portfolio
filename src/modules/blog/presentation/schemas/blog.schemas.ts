@@ -20,14 +20,17 @@ const bilingualString = (
 
 const contentRule = (field: string, opts: { optional?: boolean } = {}) => {
   const chain = opts.optional ? body(field).optional() : body(field);
-  return chain
-    .trim()
-    .notEmpty()
-    .withMessage(`${field} is required`)
-    .isString()
-    .withMessage(`${field} must be a string`)
-    .isLength({ min: 10, max: 50_000 })
-    .withMessage(`${field} must be between 10 and 50 000 characters`);
+  return (
+    chain
+      .trim()
+      .notEmpty()
+      .withMessage(`${field} is required`)
+      .isString()
+      .withMessage(`${field} must be a string`)
+      // Long technical posts (FR+EN) regularly exceed 50k — keep aligned with 2mb JSON limit.
+      .isLength({ min: 10, max: 500_000 })
+      .withMessage(`${field} must be between 10 and 500 000 characters`)
+  );
 };
 
 const optionalSlug = body('slug')

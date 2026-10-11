@@ -83,6 +83,17 @@ unreachable from the browser and blocked by CSP.
 Create the buckets in SeaweedFS (or let `ensureBuckets()` create them if your
 gateway allows `CreateBucket`).
 
+CMS media URLs are absolute (`MINIO_PUBLIC_URL/...`). The API applies a **public
+`s3:GetObject`** bucket policy on the uploads bucket at warm-up so browsers can
+display covers. If your S3 identity cannot `PutBucketPolicy`, set it once with
+admin keys:
+
+```bash
+aws --endpoint-url https://s3.zenora360.com s3api put-bucket-policy \
+  --bucket app-uploads \
+  --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":["s3:GetObject"],"Resource":["arn:aws:s3:::app-uploads/*"]}]}'
+```
+
 ## Two upload paths
 
 | Path                                                     | Use                       | Limit                                                                |
