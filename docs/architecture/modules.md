@@ -374,6 +374,16 @@ Mounted at: `{API_PREFIX}/services`. Public GET list/detail; admin mutations.
 
 ---
 
+## partners
+
+**Purpose.** Organizations that trusted a collaboration — homepage logo strip
+(`name`, `logoUrl`, optional website/relation/description, `isPublished`,
+`sortOrder`).
+
+Mounted at: `{API_PREFIX}/partners`. Public GET list/detail; admin mutations.
+
+---
+
 ## skills
 
 **Purpose.** Skill matrix (`name`, `category`, `level` 0–100, `icon`,

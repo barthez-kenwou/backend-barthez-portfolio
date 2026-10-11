@@ -44,6 +44,7 @@ export function registerRoutes(app: Express, container: AppContainer): void {
   api.use('/experiences', rateLimitingSubRoute, container.experiences.router);
   api.use('/skills', rateLimitingSubRoute, container.skills.router);
   api.use('/services', rateLimitingSubRoute, container.services.router);
+  api.use('/partners', rateLimitingSubRoute, container.partners.router);
   api.use('/projects', rateLimitingSubRoute, container.projects.router);
   api.use('/admin/audit', rateLimitingSubRoute, container.system.audit);
   api.use('/admin/dashboard', rateLimitingSubRoute, container.system.dashboard);

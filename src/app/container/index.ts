@@ -55,6 +55,11 @@ import {
 } from '@/modules/newsletter';
 import { type OAuthModule, createDefaultOAuthDeps, createOAuthModule } from '@/modules/oauth';
 import {
+  type PartnerModule,
+  createDefaultPartnerDeps,
+  createPartnerModule,
+} from '@/modules/partners';
+import {
   type ProjectModule,
   createDefaultProjectDeps,
   createProjectModule,
@@ -89,6 +94,7 @@ export type AppContainer = {
   files: FilesModule;
   projects: ProjectModule;
   services: ServiceModule;
+  partners: PartnerModule;
   skills: SkillModule;
   experiences: ExperienceModule;
   certifications: CertificationModule;
@@ -112,6 +118,7 @@ export type ContainerOverrides = {
   oauth?: Parameters<typeof createDefaultOAuthDeps>[0];
   projects?: Parameters<typeof createDefaultProjectDeps>[0];
   services?: Parameters<typeof createDefaultServiceDeps>[0];
+  partners?: Parameters<typeof createDefaultPartnerDeps>[0];
   skills?: Parameters<typeof createDefaultSkillDeps>[0];
   experiences?: Parameters<typeof createDefaultExperienceDeps>[0];
   certifications?: Parameters<typeof createDefaultCertificationDeps>[0];
@@ -168,6 +175,7 @@ export function createContainer(overrides: ContainerOverrides = {}): AppContaine
   const experiences = createExperienceModule(createDefaultExperienceDeps(overrides.experiences));
   const skills = createSkillModule(createDefaultSkillDeps(overrides.skills));
   const services = createServiceModule(createDefaultServiceDeps(overrides.services));
+  const partners = createPartnerModule(createDefaultPartnerDeps(overrides.partners));
   const projects = createProjectModule(createDefaultProjectDeps(overrides.projects));
   const cv = createCvModule(createDefaultCvDeps(overrides.cv));
   const system = createSystemRouters();
@@ -182,6 +190,7 @@ export function createContainer(overrides: ContainerOverrides = {}): AppContaine
     files,
     projects,
     services,
+    partners,
     skills,
     experiences,
     certifications,
