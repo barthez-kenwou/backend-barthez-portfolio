@@ -74,6 +74,8 @@ export class CreatePresignedUploadCommand {
       ownerId: input.userId,
     });
 
+    assertBrowserSafePresignUrl(result.url);
+
     // Best-effort: scan after the client finishes the PUT (worker downloads object).
     heavyTasksQueue
       .add(
