@@ -89,7 +89,7 @@ export type {
   ValidationPolicy,
 } from './domain/types/upload.types';
 export { uploader } from './infrastructure/config/minio';
-export { minioClient } from './infrastructure/config/minio-client';
+export { minioClient, minioPublicPresignClient } from './infrastructure/config/minio-client';
 export { UploadError, ValidationError } from './infrastructure/core/errors';
 export type { Uploader } from './infrastructure/core/uploader';
 export { MinioUploader } from './infrastructure/minio-uploader';

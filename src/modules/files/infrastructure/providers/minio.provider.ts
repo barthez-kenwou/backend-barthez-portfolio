@@ -8,7 +8,13 @@ export class MinioProvider {
     private client: MinioClient,
     private bucket: string,
     private logger: Logger,
+    /** When set, browser-facing presigned URLs are signed for this client’s host. */
+    private presignClient?: MinioClient,
   ) {}
+
+  private get signingClient(): MinioClient {
+    return this.presignClient ?? this.client;
+  }
 
   async putObject(key: string, data: any, size?: number, contentType?: string) {
     try {
@@ -91,10 +97,10 @@ export class MinioProvider {
   }
 
   async presignedPutUrl(key: string, expiresSeconds: number) {
-    return this.client.presignedPutObject(this.bucket, key, expiresSeconds);
+    return this.signingClient.presignedPutObject(this.bucket, key, expiresSeconds);
   }
 
   async presignedGetUrl(key: string, expiresSeconds: number) {
-    return this.client.presignedGetObject(this.bucket, key, expiresSeconds);
+    return this.signingClient.presignedGetObject(this.bucket, key, expiresSeconds);
   }
 }

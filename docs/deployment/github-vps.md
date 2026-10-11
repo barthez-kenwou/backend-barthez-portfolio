@@ -63,6 +63,7 @@ chosen names) beforehand if auto-create is disabled.
 STORAGE_PROVIDER=minio
 
 # Talk to Seaweed on the Docker network shared with NPM (web-proxy), NOT via Cloudflare.
+# Server-side put/get uses this internal host.
 MINIO_ENDPOINT=seaweed-s3
 MINIO_PORT=8333
 MINIO_USE_SSL=false
@@ -71,10 +72,16 @@ MINIO_SECRET_KEY=your-seaweed-secret-key
 MINIO_APP_BUCKET=app-uploads
 MINIO_BACKUP_BUCKET=backups
 MINIO_BASE_PATH=uploads/
+# Browser-facing presigned PUT/GET are signed for this public gateway host
+# (required — seaweed-s3 is not reachable from the admin SPA / CSP).
 MINIO_PUBLIC_URL=https://s3.zenora360.com
 ```
 
 Do **not** set `COMPOSE_PROFILES=bundled-storage` when using SeaweedFS.
+
+NPM on `s3.zenora360.com` must forward `X-Forwarded-Host` / `X-Forwarded-Proto`
+so SeaweedFS validates signatures against the public host (see storage-zenora
+README).
 
 ### Network note
 

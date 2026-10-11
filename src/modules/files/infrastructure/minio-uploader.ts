@@ -24,6 +24,8 @@ export class MinioUploader extends EventEmitter {
 
   constructor(configInput: {
     client: unknown;
+    /** Optional client whose host is used when signing browser-facing URLs. */
+    presignClient?: unknown;
     bucket: string;
     basePath?: string;
     defaultPolicy?: ValidationPolicy;
@@ -42,6 +44,7 @@ export class MinioUploader extends EventEmitter {
       configInput.client as never,
       configInput.bucket,
       configInput.logger ?? defaultLogger(),
+      (configInput.presignClient as never) ?? undefined,
     );
     this.presigned = new PresignedUrlService(this.provider);
     this.scanner = configInput.scanner;

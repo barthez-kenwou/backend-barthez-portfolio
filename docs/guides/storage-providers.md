@@ -70,9 +70,15 @@ MINIO_BACKUP_BUCKET=backups
 MINIO_PUBLIC_URL=https://s3.example.com   # OK to include https:// here
 ```
 
-If HTTPS terminates on 443 and proxies to Seaweed `:8333`, use **port 443 +
-useSSL true** from the container (same as browsers). Use `:8333` only if the API
-talks to that port directly.
+If HTTPS terminates on 443 and proxies to Seaweed `:8333`, you can either:
+
+1. Point `MINIO_ENDPOINT` at the public gateway (`s3.example.com:443` + SSL), or
+2. Keep `MINIO_ENDPOINT` on the internal Docker host (`seaweed-s3:8333`) for
+   server-side I/O **and** set `MINIO_PUBLIC_URL=https://s3.example.com` so
+   browser presigns are signed for the public host (recommended on the VPS).
+
+Without (2), the admin SPA receives `http://seaweed-s3:8333/...` PUT URLs —
+unreachable from the browser and blocked by CSP.
 
 Create the buckets in SeaweedFS (or let `ensureBuckets()` create them if your
 gateway allows `CreateBucket`).

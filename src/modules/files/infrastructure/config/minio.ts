@@ -4,12 +4,13 @@ import log from '@/shared/infrastructure/logging/logger';
 
 import { MinioUploader } from '../minio-uploader';
 import { ClamAVScanner } from '../scanner/clamav-scanner';
-import { minioClient } from './minio-client';
+import { minioClient, minioPublicPresignClient } from './minio-client';
 
 const scanner = config.app.isTest ? undefined : new ClamAVScanner();
 
 export const uploader = new MinioUploader({
   client: minioClient,
+  presignClient: minioPublicPresignClient,
   bucket: envs.MINIO_APP_BUCKET || STORAGE_BUCKETS.UPLOADS,
   basePath: envs.MINIO_BASE_PATH,
   scanner,
