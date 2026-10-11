@@ -28,9 +28,10 @@ export const securityConfig = {
      */
     windowMs: fromEnv.get('RATE_LIMIT_WINDOW_MS').default(900000).asInt(),
     maxRequests: fromEnv.get('RATE_LIMIT_MAX_REQUESTS').default(100).asInt(),
-    globalMax: fromEnv.get('MAX_GLOBAL_QUERY_NUMBER').default(100).asInt(),
+    // CMS reorder (partners, etc.) fires several PATCH+GET per click — keep room for admin UX.
+    globalMax: fromEnv.get('MAX_GLOBAL_QUERY_NUMBER').default(300).asInt(),
     globalWindowMs: fromEnv.get('MAX_GLOBAL_QUERY_WINDOW').default(900000).asInt(),
-    uniqueMax: fromEnv.get('MAX_UNIQ_QUERY_NUMBER').default(200).asInt(),
+    uniqueMax: fromEnv.get('MAX_UNIQ_QUERY_NUMBER').default(500).asInt(),
     uniqueWindowMs: fromEnv.get('MAX_UNIQ_QUERY_WINDOW').default(900000).asInt(),
     /** Stricter bucket for login / OTP / forgot / reset / refresh. */
     authMax: fromEnv.get('MAX_AUTH_QUERY_NUMBER').default(10).asInt(),
