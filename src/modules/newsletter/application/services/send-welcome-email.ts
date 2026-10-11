@@ -1,3 +1,5 @@
+import log from '@/shared/infrastructure/logging/logger';
+
 import type { NewsletterSubscriberEntity } from '../../domain/entities/newsletter.entity';
 import type {
   NewsletterCampaignRepositoryPort,
@@ -14,6 +16,8 @@ type WelcomeDeps = {
 
 /**
  * Sends the one-shot welcome email when `welcomeSentAt` is still null.
+ * Uses immediate SMTP so we never mark the subscriber as emailed before delivery.
+ * Failures are logged and left retryable (welcomeSentAt stays null).
  */
 export async function sendWelcomeIfNeeded(
   deps: WelcomeDeps,
@@ -25,28 +29,38 @@ export async function sendWelcomeIfNeeded(
   const blogUrl = buildBlogIndexUrl();
   const locale = subscriber.locale;
 
-  await deps.mailer.send({
-    to: subscriber.email,
-    subject:
-      locale === 'fr'
-        ? 'Bienvenue dans le cercle — Barthez Kenwou'
-        : "You're in — Barthez Kenwou Newsletter",
-    template: 'newsletter-welcome',
-    data: {
-      name: subscriber.email.split('@')[0],
-      locale,
-      blogUrl,
-      unsubscribeUrl,
-    },
-    priority: 3,
-  });
+  try {
+    await deps.mailer.send({
+      to: subscriber.email,
+      subject:
+        locale === 'fr'
+          ? 'Bienvenue dans le cercle — Barthez Kenwou'
+          : "You're in — Barthez Kenwou Newsletter",
+      template: 'newsletter-welcome',
+      data: {
+        name: subscriber.email.split('@')[0],
+        locale,
+        blogUrl,
+        unsubscribeUrl,
+      },
+      priority: 3,
+      immediate: true,
+    });
+  } catch (error) {
+    log.error('newsletter welcome email failed — will retry on next subscribe', {
+      subscriberId: subscriber.id,
+      email: subscriber.email,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return;
+  }
 
   await deps.subscriberRepository.update(subscriber.id, {
     welcomeSentAt: new Date(),
     lastEmailedAt: new Date(),
   });
 
-  await deps.campaignRepository.create({
+  const campaign = await deps.campaignRepository.create({
     type: 'welcome',
     status: 'sent',
     subjectFr: 'Bienvenue dans le cercle — Barthez Kenwou',
@@ -54,5 +68,12 @@ export async function sendWelcomeIfNeeded(
     template: 'newsletter-welcome',
     payload: { email: subscriber.email },
     totalRecipients: 1,
+  });
+
+  await deps.campaignRepository.update(campaign.id, {
+    sentCount: 1,
+    failCount: 0,
+    startedAt: new Date(),
+    completedAt: new Date(),
   });
 }

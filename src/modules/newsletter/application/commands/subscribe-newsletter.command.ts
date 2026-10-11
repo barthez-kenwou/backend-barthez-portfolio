@@ -49,6 +49,8 @@ export class SubscribeNewsletterCommand {
         confirmedAt: now,
       });
     } else if (existing.status === 'active' && !existing.deletedAt) {
+      // Already on the list — still retry welcome if the first SMTP delivery failed.
+      await sendWelcomeIfNeeded(this.deps, existing);
       return { ok: true };
     } else {
       // pending / unsubscribed / bounced / soft-deleted → activate immediately

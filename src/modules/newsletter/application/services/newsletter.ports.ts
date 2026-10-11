@@ -9,6 +9,12 @@ export type NewsletterMailerPort = {
     template: string;
     data?: Record<string, unknown>;
     priority?: number;
+    /**
+     * Send via SMTP in-process instead of BullMQ.
+     * Use for transactional mail that must not be marked sent before delivery
+     * (welcome). Campaign fan-out stays queued.
+     */
+    immediate?: boolean;
   }): Promise<void>;
 };
 

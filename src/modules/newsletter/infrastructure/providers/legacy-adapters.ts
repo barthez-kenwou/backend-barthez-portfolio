@@ -2,7 +2,7 @@ import { BlogMapper } from '@/modules/blog/infrastructure/persistence/blog.mappe
 import { rbacService } from '@/modules/rbac';
 import { prismaNotDeleted } from '@/shared/infrastructure/database/prisma-soft-delete';
 import prisma from '@/shared/infrastructure/database/prisma.client';
-import { queueMail } from '@/shared/infrastructure/mail/mail.service';
+import { queueMail, sendMailDirect } from '@/shared/infrastructure/mail/mail.service';
 import type { MailTemplateName } from '@/shared/infrastructure/mail/mail.types';
 import { heavyTasksQueue } from '@/shared/infrastructure/queue/queue.service';
 
@@ -22,13 +22,20 @@ export function createNewsletterRbacAdapter(): NewsletterRbacPort {
 export function createNewsletterMailerAdapter(): NewsletterMailerPort {
   return {
     async send(input) {
-      await queueMail({
+      const payload = {
         to: input.to,
         subject: input.subject,
         template: input.template as MailTemplateName,
         data: input.data ?? {},
         priority: input.priority,
-      });
+      };
+
+      if (input.immediate) {
+        await sendMailDirect(payload);
+        return;
+      }
+
+      await queueMail(payload);
     },
   };
 }

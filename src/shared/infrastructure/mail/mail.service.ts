@@ -1,6 +1,7 @@
 /**
  * Mail service — SMTP send + BullMQ enqueue.
  * Prefer `queueMail` for application flows; workers call `sendMailDirect`.
+ * Transactional newsletter welcome uses `sendMailDirect` immediately.
  */
 import nodemailer from 'nodemailer';
 
@@ -13,10 +14,15 @@ import { getRequestContext } from '@/shared/infrastructure/request-context';
 import type { MailPayload, MailerPort } from './mail.port';
 import type { MailJobPayload, SendMailOptions } from './mail.types';
 
+const smtpPort = envs.SMTP_PORT;
+const smtpSecure = smtpPort === 465;
+
 const transporter = nodemailer.createTransport({
   host: envs.SMTP_HOST,
-  port: envs.SMTP_PORT,
-  secure: envs.SMTP_PORT === 465,
+  port: smtpPort,
+  secure: smtpSecure,
+  // Port 587: STARTTLS. Do not ignoreTLS — that only suits MailHog locally.
+  requireTLS: !smtpSecure && smtpPort === 587,
   auth: { user: envs.SMTP_USER, pass: envs.SMTP_PASS },
   pool: true,
   maxConnections: 5,
@@ -25,23 +31,55 @@ const transporter = nodemailer.createTransport({
 export const verifyMailTransport = async (): Promise<boolean> => {
   try {
     await transporter.verify();
-    log.info('SMTP transport verified');
+    log.info('SMTP transport verified', {
+      host: envs.SMTP_HOST,
+      port: smtpPort,
+      secure: smtpSecure,
+      from: envs.USER_EMAIL,
+    });
     return true;
   } catch (error) {
-    log.error('SMTP transport verification failed', { error });
+    log.error('SMTP transport verification failed', {
+      host: envs.SMTP_HOST,
+      port: smtpPort,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return false;
   }
 };
 
 export const sendMailDirect = async (payload: MailJobPayload): Promise<void> => {
   const html = await renderTemplate(payload.template, payload.data);
+  const from = getMailFromAddress();
 
-  await transporter.sendMail({
-    from: getMailFromAddress(),
-    to: payload.to,
-    subject: payload.subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from,
+      to: payload.to,
+      subject: payload.subject,
+      html,
+    });
+
+    log.info('Email sent via SMTP', {
+      to: payload.to,
+      subject: payload.subject,
+      template: payload.template,
+      messageId: info.messageId,
+      response: info.response,
+      from,
+    });
+  } catch (error) {
+    log.error('SMTP sendMail failed', {
+      to: payload.to,
+      subject: payload.subject,
+      template: payload.template,
+      from,
+      host: envs.SMTP_HOST,
+      port: smtpPort,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
 };
 
 export const queueMail = async (options: SendMailOptions): Promise<void> => {

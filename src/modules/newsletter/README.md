@@ -34,8 +34,40 @@ brand.
 
 ## Jobs
 
-- `heavy-tasks` → `newsletter-fanout` `{ campaignId }`
+- `heavy-tasks` → `newsletter-fanout` `{ campaignId }` (enqueues one mail job
+  per subscriber)
+- mail queue → SMTP delivery (worker must be running: `PROCESS_ROLE=all` or
+  `worker`)
 - `maintenance` → `newsletter-weekly-digest` (cron)
+
+Welcome mail is sent **immediately over SMTP** (not only queued). Campaigns
+still go through BullMQ — without a healthy `backend-worker` + real `SMTP_*`,
+subscribers are saved but nobody receives anything.
+
+## Production SMTP (required)
+
+MailHog is **dev only**. On the VPS `.env` must use a real relay, for example
+Brevo:
+
+```env
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_USER=<brevo-login>
+SMTP_PASS=<brevo-smtp-key>
+USER_EMAIL=newsletter@your-verified-domain.com
+MAIL_FROM_NAME=Barthez Kenwou
+```
+
+Rules:
+
+1. `USER_EMAIL` must be a **verified sender** on that provider (a raw Gmail
+   address often fails or lands in spam when the SMTP account is not Gmail).
+2. Compose deploy runs `backend-api` + `backend-worker` — both must be up.
+3. After a failed first delivery, re-submitting the same email retries welcome
+   until `welcomeSentAt` is set.
+
+Check logs for `SMTP transport verified`, `Email sent via SMTP`, or
+`newsletter welcome email failed`.
 
 Frontend: wire the Blog “S’abonner” form to `POST /subscribe` with `locale` from
 the language store and `source: "blog"`.
