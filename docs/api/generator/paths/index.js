@@ -20,6 +20,7 @@ const certifications = require('./certifications');
 const experiences = require('./experiences');
 const skills = require('./skills');
 const services = require('./services');
+const partners = require('./partners');
 const projects = require('./projects');
 const system = require('./system');
 
@@ -45,6 +46,7 @@ module.exports = {
   ...experiences,
   ...skills,
   ...services,
+  ...partners,
   ...projects,
   ...systemWithoutQueues,
   ...files,

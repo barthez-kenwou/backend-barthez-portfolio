@@ -2530,6 +2530,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+  /api/v1/newsletter/campaigns/stats:
+    get:
+      tags:
+        - Newsletter
+      summary: 'Campaign KPIs'
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Campaign stats'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /api/v1/newsletter/campaigns/broadcast:
     post:
       tags:
@@ -2586,6 +2605,10 @@ paths:
                 ctaLabelEn:
                   type: string
                   maxLength: 80
+                locale:
+                  type: string
+                  enum: [fr, en]
+                  description: 'Optional audience segment'
       responses:
         '201':
           description: 'Broadcast queued'
@@ -2597,6 +2620,63 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+  '/api/v1/newsletter/campaigns/{campaignId}':
+    get:
+      tags:
+        - Newsletter
+      summary: 'Get campaign detail (includes payload)'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: campaignId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: Campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/api/v1/newsletter/campaigns/{campaignId}/cancel':
+    post:
+      tags:
+        - Newsletter
+      summary: 'Cancel a queued campaign'
+      description: 'Requires `newsletter:broadcast`. Only `queued` campaigns can be cancelled.'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: campaignId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Campaign cancelled'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
   /api/v1/cv:
     get:
       tags:
@@ -4965,207 +5045,6 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /api/v1/partners:
-    get:
-      tags:
-        - Partners
-      summary: 'List partners'
-      description: >-
-        Public paginated list of collaboration logos. Defaults to published
-        only. Pass `includeUnpublished=true` for CMS inventory.
-      parameters:
-        -
-          name: page
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-        -
-          name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-        -
-          name: isPublished
-          in: query
-          schema:
-            type: boolean
-        -
-          name: includeUnpublished
-          in: query
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: 'Partners list (items, totalItems, totalPages, currentPage)'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-    post:
-      tags:
-        - Partners
-      summary: 'Create partner'
-      description: 'Requires `partner:create`.'
-      security:
-        -
-          bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-                - logoUrl
-              properties:
-                name:
-                  type: string
-                logoUrl:
-                  type: string
-                websiteUrl:
-                  type: string
-                descriptionFr:
-                  type: string
-                descriptionEn:
-                  type: string
-                relationFr:
-                  type: string
-                relationEn:
-                  type: string
-                sortOrder:
-                  type: integer
-                  minimum: 0
-                isPublished:
-                  type: boolean
-      responses:
-        '201':
-          description: 'Partner created'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-  '/api/v1/partners/{partnerId}':
-    get:
-      tags:
-        - Partners
-      summary: 'Get partner'
-      parameters:
-        -
-          name: partnerId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 'Partner detail'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    put:
-      tags:
-        - Partners
-      summary: 'Update partner'
-      description: 'Requires `partner:update:own` (admins elevate).'
-      security:
-        -
-          bearerAuth: []
-      parameters:
-        -
-          name: partnerId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                logoUrl:
-                  type: string
-                websiteUrl:
-                  type: string
-                  nullable: true
-                descriptionFr:
-                  type: string
-                  nullable: true
-                descriptionEn:
-                  type: string
-                  nullable: true
-                relationFr:
-                  type: string
-                  nullable: true
-                relationEn:
-                  type: string
-                  nullable: true
-                sortOrder:
-                  type: integer
-                  minimum: 0
-                isPublished:
-                  type: boolean
-      responses:
-        '200':
-          description: 'Partner updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    delete:
-      tags:
-        - Partners
-      summary: 'Delete partner (soft)'
-      description: 'Requires `partner:delete:own` (admins elevate).'
-      security:
-        -
-          bearerAuth: []
-      parameters:
-        -
-          name: partnerId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 'Partner deleted'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
   /api/v1/services:
     get:
       tags:
@@ -5413,6 +5292,230 @@ paths:
       responses:
         '200':
           description: 'Service deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/partners:
+    get:
+      tags:
+        - Partners
+      summary: 'List partners'
+      description: 'Public paginated list of collaboration logos. Defaults to published only. Pass `includeUnpublished=true` for CMS inventory.'
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        -
+          name: isPublished
+          in: query
+          schema:
+            type: boolean
+        -
+          name: includeUnpublished
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 'Partners list (items, totalItems, totalPages, currentPage)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - Partners
+      summary: 'Create partner'
+      description: 'Requires `partner:create`.'
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - logoUrl
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 160
+                logoUrl:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                websiteUrl:
+                  type: string
+                descriptionFr:
+                  type: string
+                  maxLength: 500
+                descriptionEn:
+                  type: string
+                  maxLength: 500
+                relationFr:
+                  type: string
+                  maxLength: 120
+                relationEn:
+                  type: string
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                isPublished:
+                  type: boolean
+      responses:
+        '201':
+          description: 'Partner created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/api/v1/partners/{partnerId}':
+    get:
+      tags:
+        - Partners
+      summary: 'Get partner'
+      parameters:
+        -
+          name: partnerId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Partner detail'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Partners
+      summary: 'Update partner'
+      description: 'Requires `partner:update:own` (admins elevate).'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: partnerId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 160
+                logoUrl:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                websiteUrl:
+                  type: string
+                  nullable: true
+                descriptionFr:
+                  type: string
+                  nullable: true
+                  maxLength: 500
+                descriptionEn:
+                  type: string
+                  nullable: true
+                  maxLength: 500
+                relationFr:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                relationEn:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                sortOrder:
+                  type: integer
+                  minimum: 0
+                isPublished:
+                  type: boolean
+      responses:
+        '200':
+          description: 'Partner updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Partners
+      summary: 'Delete partner (soft)'
+      description: 'Requires `partner:delete:own` (admins elevate).'
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: partnerId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-fA-F0-9]{24}$'
+            example: 507f1f77bcf86cd799439011
+            description: 'MongoDB ObjectId'
+      responses:
+        '200':
+          description: 'Partner deleted'
           content:
             application/json:
               schema:

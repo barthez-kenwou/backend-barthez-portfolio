@@ -72,6 +72,10 @@ const tags = [
     description: 'Offered services and pricing (EUR source of truth)',
   },
   {
+    name: 'Partners',
+    description: 'Collaboration logos for the homepage trust strip',
+  },
+  {
     name: 'Skills',
     description: 'Skill matrix (name, category, level, icon)',
   },
