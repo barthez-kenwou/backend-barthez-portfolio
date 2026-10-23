@@ -4,13 +4,16 @@ import type {
   NewsletterSubscriberRepositoryPort,
 } from '../../domain/repositories/newsletter.repository';
 import type { ConfirmNewsletterDto } from '../dto/newsletter.dto';
-import type { NewsletterMailerPort } from '../services/newsletter.ports';
+import type { NewsletterMailerPort, NewsletterQueuePort } from '../services/newsletter.ports';
 import { sendWelcomeIfNeeded } from '../services/send-welcome-email';
+import type { WelcomeBlogSourcePort } from '../services/welcome-resource';
 
 export type ConfirmNewsletterCommandDeps = {
   subscriberRepository: NewsletterSubscriberRepositoryPort;
   campaignRepository: NewsletterCampaignRepositoryPort;
   mailer: NewsletterMailerPort;
+  queue: NewsletterQueuePort;
+  blogSource: WelcomeBlogSourcePort;
 };
 
 /**

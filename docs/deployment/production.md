@@ -135,7 +135,10 @@ In production:
 | `/metrics`      | HTTP Basic (skipped only when `NODE_ENV=test`)                        | no           |
 | `/admin/queues` | HTTP Basic **then** JWT **then** `isAdmin` (`admin` or `super-admin`) | no           |
 
-CORS allowlist is `CLIENT_URL` plus `CLIENT_URLS` (CSV). Never `*`.
+CORS allowlist is `CLIENT_URL` plus `CLIENT_URLS` (CSV). Never `*`. Include
+`https://www.barthez-kenwou.dev` if www is reachable, **or** redirect www → apex
+at the edge so browsers never send a www `Origin`. Denied origins must not throw
+(that used to surface as HTTP 500 without `Access-Control-Allow-Origin`).
 
 ## Health and metrics
 

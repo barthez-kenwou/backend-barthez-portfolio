@@ -25,6 +25,7 @@ const corsOrigin = (
   origin: string | undefined,
   callback: (err: Error | null, allow?: boolean) => void,
 ): void => {
+  // No Origin (same-origin, curl, server-to-server) — allow.
   if (!origin) {
     callback(null, true);
     return;
@@ -33,7 +34,9 @@ const corsOrigin = (
     callback(null, true);
     return;
   }
-  callback(new Error(`CORS origin not allowed: ${origin}`));
+  // Deny without throwing: `callback(err)` becomes HTTP 500 and strips ACAO,
+  // which browsers report as a confusing "CORS blocked" on top of the 500.
+  callback(null, false);
 };
 
 /**

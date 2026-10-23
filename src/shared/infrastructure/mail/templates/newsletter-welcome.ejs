@@ -1,38 +1,150 @@
 <%
   var isEn = typeof locale !== 'undefined' && locale === 'en';
-  var pageTitle = isEn ? "You're in" : 'Bienvenue dans le cercle';
-  var eyebrow = isEn ? 'Welcome' : 'Bienvenue';
-  var title = isEn ? 'You’re officially on the list' : 'Tu es officiellement dans le cercle';
+  var stepNum = typeof step !== 'undefined' ? Number(step) : 1;
+  if (stepNum !== 2 && stepNum !== 3) stepNum = 1;
+
+  var resourceTitle = isEn
+    ? (typeof resourceTitleEn !== 'undefined' && resourceTitleEn ? resourceTitleEn : 'CI/CD with GitHub Actions')
+    : (typeof resourceTitleFr !== 'undefined' && resourceTitleFr ? resourceTitleFr : 'CI/CD GitHub Actions');
+  var resourceCat = typeof resourceCategory !== 'undefined' && resourceCategory
+    ? resourceCategory
+    : (isEn ? 'Production' : 'Production');
+
+  var pageTitle, eyebrow, title, previewText;
+  if (stepNum === 2) {
+    pageTitle = isEn ? 'Who these notes are for' : 'Pour qui sont ces notes';
+    eyebrow = isEn ? 'Welcome · 2/3' : 'Bienvenue · 2/3';
+    title = pageTitle;
+    previewText = isEn
+      ? 'A clear note on who I write for — founders and tech leads.'
+      : 'Une précision sur le public de ces notes — fondateurs et tech leads.';
+  } else if (stepNum === 3) {
+    pageTitle = isEn ? 'Go deeper on the topic' : 'Approfondir le sujet';
+    eyebrow = isEn ? 'Welcome · 3/3' : 'Bienvenue · 3/3';
+    title = resourceTitle;
+    previewText = isEn
+      ? 'A concrete follow-up on ' + resourceCat + ' — and how to talk about your stack.'
+      : 'Une suite concrète sur ' + resourceCat + ' — et comment parler de votre stack.';
+  } else {
+    pageTitle = isEn ? 'Welcome' : 'Bienvenue';
+    eyebrow = isEn ? 'Welcome · 1/3' : 'Bienvenue · 1/3';
+    title = isEn ? 'Thank you for subscribing' : 'Merci pour votre inscription';
+    previewText = isEn
+      ? 'Production notes once a month — starting with: ' + resourceTitle
+      : 'Notes de production une fois par mois — pour démarrer : ' + resourceTitle;
+  }
 %>
-<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: isEn ? 'Welcome to the Barthez Kenwou newsletter.' : 'Bienvenue dans la newsletter Barthez Kenwou.' }) %>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: eyebrow, title: title, previewText: previewText }) %>
 <tr>
-  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+  <td style="padding:32px 28px 26px;background-color:#0e0c11;">
     <p style="margin:0 0 14px;font-size:16px;line-height:1.7;color:#f7f7f7;">
-      <%= isEn ? 'Hey' : 'Salut' %> <strong style="color:#ffffff;"><%= name %></strong>,
+      <%= isEn ? 'Hello' : 'Bonjour' %><% if (typeof name !== 'undefined' && name) { %>,<% } %>
     </p>
-    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
-      <% if (isEn) { %>
-        Glad you’re here. You’ll get the pieces that matter: deep-dive articles, battle-tested DevOps notes,
-        and the occasional “I shipped this so you don’t have to learn it the hard way.”
-      <% } else { %>
-        Content que tu sois là. Tu recevras ce qui compte vraiment&nbsp;: articles de fond, notes DevOps éprouvées,
-        et de temps en temps un «&nbsp;j’ai livré ça pour que tu n’aies pas à l’apprendre à la dure&nbsp;».
-      <% } %>
+
+    <% if (stepNum === 1) { %>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+        <% if (isEn) { %>
+          You will receive short, practical notes on what holds (or breaks) in production:
+          CI/CD, AWS cloud, security and performance. One edition per month — no daily noise.
+        <% } else { %>
+          Vous recevrez ici des notes courtes et concrètes sur ce qui tient (ou casse) en production&nbsp;:
+          CI/CD, cloud AWS, sécurité et performance. Une édition par mois — pas de flux quotidien.
+        <% } %>
+      </p>
+      <div style="background-color:#17141a;border-left:3px solid #9f6adc;border-radius:6px;padding:16px 18px;margin:20px 0;font-size:14px;line-height:1.65;color:#f7f7f7;">
+        <% if (isEn) { %>
+          <strong style="color:#9f6adc;">Suggested starting point · <%= resourceCat %></strong><br/>
+          The most-read guide in this topic area:<br/>
+          <span style="color:#ffffff;"><%= resourceTitle %></span>
+        <% } else { %>
+          <strong style="color:#9f6adc;">Pour démarrer · <%= resourceCat %></strong><br/>
+          Le guide le plus lu sur ce thème&nbsp;:<br/>
+          <span style="color:#ffffff;"><%= resourceTitle %></span>
+        <% } %>
+      </div>
+      <div style="text-align:center;margin:24px 0 12px;">
+        <a href="<%= blogUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:13px 26px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+          <%= isEn ? 'Read the guide' : 'Lire le guide' %>
+        </a>
+      </div>
+      <p style="margin:18px 0 0;font-size:14px;line-height:1.7;color:#948b9c;">
+        <% if (isEn) { %>
+          If you wish, reply to this email: what is your main friction today — deploy, AWS cost, security, or performance?
+        <% } else { %>
+          Si vous le souhaitez, répondez à ce message&nbsp;: quel est votre frein principal aujourd’hui — déploiement, coût AWS, sécurité, ou performance&nbsp;?
+        <% } %>
+      </p>
+    <% } else if (stepNum === 2) { %>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+        <% if (isEn) { %>
+          To be clear: I write mainly for product founders and tech leads who want more reliable delivery
+          (CI/CD, AWS, full stack, audits).
+        <% } else { %>
+          Pour être transparent&nbsp;: j’écris surtout pour les fondateurs de PME produit et les tech leads
+          qui veulent un delivery plus fiable (CI/CD, AWS, full stack, audits).
+        <% } %>
+      </p>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+        <% if (isEn) { %>
+          The guides on the site are public. Missions are when you want the same standard in your stack —
+          without building everything alone.
+        <% } else { %>
+          Les guides du site sont publics. Les missions, c’est lorsque vous souhaitez le même niveau
+          d’exigence chez vous — sans tout construire seul.
+        <% } %>
+      </p>
+      <div style="text-align:center;margin:24px 0 8px;">
+        <a href="<%= portfolioUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:13px 26px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+          <%= isEn ? 'View the portfolio' : 'Voir le portfolio' %>
+        </a>
+      </div>
+      <p style="margin:16px 0 0;font-size:13px;line-height:1.65;color:#948b9c;text-align:center;">
+        <a href="<%= servicesUrl %>" style="color:#9f6adc;text-decoration:underline;"><%= isEn ? 'Services' : 'Services' %></a>
+      </p>
+    <% } else { %>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+        <% if (isEn) { %>
+          A common production mistake: validating only part of the path
+          (build green, deploy untested — secrets, environments, rollback).
+          The result often shows up late in the week.
+        <% } else { %>
+          Erreur fréquente en production&nbsp;: ne valider qu’une partie du chemin
+          (build vert, déploiement non testé — secrets, environnements, rollback).
+          Le résultat arrive souvent en fin de semaine.
+        <% } %>
+      </p>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#948b9c;">
+        <% if (isEn) { %>
+          In the <strong style="color:#f7f7f7;"><%= resourceCat %></strong> area, this is the guide I recommend next:
+          <strong style="color:#ffffff;"><%= resourceTitle %></strong>.
+        <% } else { %>
+          Sur le thème <strong style="color:#f7f7f7;"><%= resourceCat %></strong>, voici le guide que je recommande ensuite&nbsp;:
+          <strong style="color:#ffffff;"><%= resourceTitle %></strong>.
+        <% } %>
+      </p>
+      <div style="text-align:center;margin:24px 0 12px;">
+        <a href="<%= blogUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:13px 26px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+          <%= isEn ? 'Read the article' : 'Lire l’article' %>
+        </a>
+      </div>
+      <p style="margin:18px 0 0;font-size:14px;line-height:1.7;color:#948b9c;">
+        <% if (isEn) { %>
+          If you want an external look at your stack, reply with a short description —
+          or use the contact form.
+        <% } else { %>
+          Si vous souhaitez un regard externe sur votre stack, répondez avec une courte description —
+          ou utilisez le formulaire de contact.
+        <% } %>
+      </p>
+      <p style="margin:12px 0 0;font-size:13px;line-height:1.65;color:#948b9c;text-align:center;">
+        <a href="<%= contactUrl %>" style="color:#9f6adc;text-decoration:underline;"><%= isEn ? 'Contact' : 'Contact' %></a>
+      </p>
+    <% } %>
+
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.6;color:#f7f7f7;">
+      <%= isEn ? 'Kind regards,' : 'Cordialement,' %><br/>
+      <strong style="color:#ffffff;">Barthez Kenwou</strong>
     </p>
-    <div style="background-color:#17141a;border-left:3px solid #9f6adc;border-radius:8px;padding:18px 20px;margin:22px 0;font-size:14px;line-height:1.65;color:#f7f7f7;">
-      <% if (isEn) { %>
-        <strong style="color:#9f6adc;">What to expect</strong><br/>
-        New posts the moment they go live · a weekly digest when the week was dense · zero sales spam.
-      <% } else { %>
-        <strong style="color:#9f6adc;">À quoi t’attendre</strong><br/>
-        Nouveaux articles dès la publication · un digest hebdo quand la semaine a été dense · zéro spam commercial.
-      <% } %>
-    </div>
-    <div style="text-align:center;margin:28px 0 8px;">
-      <a href="<%= blogUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
-        <%= isEn ? 'Explore the blog' : 'Explorer le blog' %>
-      </a>
-    </div>
   </td>
 </tr>
 <%- include('partials/newsletter-shell-close') %>

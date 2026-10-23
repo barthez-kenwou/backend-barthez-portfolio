@@ -9,13 +9,16 @@ import type {
 } from '../../domain/repositories/newsletter.repository';
 import type { SubscribeNewsletterDto } from '../dto/newsletter.dto';
 import { createSecureToken, normalizeEmail } from '../services/newsletter-links';
-import type { NewsletterMailerPort } from '../services/newsletter.ports';
+import type { NewsletterMailerPort, NewsletterQueuePort } from '../services/newsletter.ports';
 import { sendWelcomeIfNeeded } from '../services/send-welcome-email';
+import type { WelcomeBlogSourcePort } from '../services/welcome-resource';
 
 export type SubscribeNewsletterCommandDeps = {
   subscriberRepository: NewsletterSubscriberRepositoryPort;
   campaignRepository: NewsletterCampaignRepositoryPort;
   mailer: NewsletterMailerPort;
+  queue: NewsletterQueuePort;
+  blogSource: WelcomeBlogSourcePort;
 };
 
 /**
@@ -29,7 +32,7 @@ export class SubscribeNewsletterCommand {
   async execute(input: SubscribeNewsletterDto): Promise<{ ok: true }> {
     const email = normalizeEmail(input.email);
     const locale = (input.locale === 'en' ? 'en' : 'fr') as NewsletterLocale;
-    const source = (input.source?.trim() || 'blog').slice(0, 64);
+    const source = (input.source?.trim() || 'blog').slice(0, 96);
 
     const existing = await this.deps.subscriberRepository.findByEmail(email);
     const unsubscribeToken = existing?.unsubscribeToken || createSecureToken();

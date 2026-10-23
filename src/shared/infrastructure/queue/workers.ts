@@ -17,6 +17,7 @@ import type { MailJobPayload } from '@/shared/infrastructure/mail/mail.types';
 import { purgeUnverifiedUsers } from '@/shared/infrastructure/maintenance/user-cleanup.service';
 import { runNewsletterWeeklyDigest } from '@/shared/infrastructure/newsletter/digest.service';
 import { runNewsletterFanout } from '@/shared/infrastructure/newsletter/fanout.service';
+import { runNewsletterWelcomeDrip } from '@/shared/infrastructure/newsletter/welcome-drip.service';
 import { redisConnection } from '@/shared/infrastructure/queue/queue.service';
 
 /** Lock TTL must exceed worst-case job duration to prevent overlap. */
@@ -199,8 +200,14 @@ export const startWorkers = (): void => {
             await runNewsletterFanout((job.data as { campaignId?: string }).campaignId || '');
             return;
           case 'newsletter-weekly-digest':
+          case 'newsletter-monthly-digest':
             await runNewsletterWeeklyDigest();
             return;
+          case 'newsletter-welcome-drip': {
+            const data = job.data as { subscriberId?: string; step?: number };
+            await runNewsletterWelcomeDrip(data.subscriberId || '', data.step ?? 2);
+            return;
+          }
           case 'export-users':
           case 'export-audit':
             log.info('Heavy export job acknowledged (not yet implemented)', {

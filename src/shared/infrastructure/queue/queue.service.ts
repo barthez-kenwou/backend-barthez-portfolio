@@ -103,11 +103,11 @@ export const registerRepeatableJobs = async (): Promise<void> => {
     );
 
     await heavyTasksQueue.add(
-      'newsletter-weekly-digest',
+      'newsletter-monthly-digest',
       {},
       {
         repeat: { pattern: config.queue.newsletterDigestCron },
-        jobId: 'newsletter-weekly-digest',
+        jobId: 'newsletter-monthly-digest',
       },
     );
   }
@@ -119,6 +119,7 @@ export const registerRepeatableJobs = async (): Promise<void> => {
     maintenanceCron: config.queue.maintenanceCron,
     blacklistPurgeCron: config.queue.blacklistPurgeCron,
     newsletterDigestCron: config.queue.newsletterDigestCron,
+    newsletterAutoBlogAlert: config.queue.newsletterAutoBlogAlert,
   });
 };
 

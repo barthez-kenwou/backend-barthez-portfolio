@@ -11,7 +11,7 @@ export const newsletterSchemas = {
     body('locale')
       .optional()
       .isIn([...locales]),
-    body('source').optional().isString().trim().isLength({ max: 64 }),
+    body('source').optional().isString().trim().isLength({ max: 96 }),
   ],
 
   tokenQuery: [query('token').isString().trim().isLength({ min: 16, max: 128 })],

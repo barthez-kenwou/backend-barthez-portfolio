@@ -6,8 +6,9 @@ import type {
 } from '../../domain/repositories/newsletter.repository';
 import { buildBlogIndexUrl, buildBlogPostUrl } from '../services/newsletter-links';
 import type { NewsletterQueuePort } from '../services/newsletter.ports';
+import type { WelcomeBlogSourcePort } from '../services/welcome-resource';
 
-export type BlogDigestSourcePort = {
+export type BlogDigestSourcePort = WelcomeBlogSourcePort & {
   listPublishedSince(since: Date, limit: number): Promise<BlogEntity[]>;
 };
 
@@ -19,14 +20,15 @@ export type SendWeeklyDigestCommandDeps = {
 };
 
 /**
- * Weekly digest: posts published in the last 7 days → one campaign to actives.
+ * Monthly digest: posts published in the last 30 days → one campaign to actives.
  * No-op when there are zero posts or zero subscribers.
+ * (Filename kept for import stability; behaviour is monthly.)
  */
 export class SendWeeklyDigestCommand {
   constructor(private readonly deps: SendWeeklyDigestCommandDeps) {}
 
   async execute(): Promise<{ campaignId: string | null; postCount: number }> {
-    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const posts = await this.deps.blogSource.listPublishedSince(since, 12);
     if (posts.length === 0) {
       return { campaignId: null, postCount: 0 };
@@ -37,6 +39,9 @@ export class SendWeeklyDigestCommand {
       return { campaignId: null, postCount: posts.length };
     }
 
+    const monthKey = since.toISOString().slice(0, 7);
+    const campaignSlug = `digest-${monthKey}`;
+
     const items = posts.map((p) => ({
       slug: p.slug,
       titleFr: p.titleFr,
@@ -46,20 +51,27 @@ export class SendWeeklyDigestCommand {
       image: p.image,
       category: p.category,
       readTime: p.readTime,
-      postUrl: buildBlogPostUrl(p.slug),
+      postUrl: buildBlogPostUrl(p.slug, {
+        campaign: campaignSlug,
+        content: 'cta-blog',
+      }),
     }));
 
+    const countLabel = posts.length > 1 ? 's' : '';
     const campaign = await this.deps.campaignRepository.create({
       type: 'digest',
       status: 'queued',
-      subjectFr: `Ta dose de la semaine — ${posts.length} article${posts.length > 1 ? 's' : ''}`,
-      subjectEn: `This week’s drop — ${posts.length} article${posts.length > 1 ? 's' : ''}`,
+      subjectFr: `Ce mois-ci sur le blog — ${posts.length} article${countLabel}`,
+      subjectEn: `This month on the blog — ${posts.length} article${countLabel}`,
       previewFr: posts[0]?.excerptFr.slice(0, 120) ?? null,
       previewEn: posts[0]?.excerptEn.slice(0, 120) ?? null,
       template: 'newsletter-digest',
       totalRecipients: activeCount,
       payload: {
-        blogIndexUrl: buildBlogIndexUrl(),
+        blogIndexUrl: buildBlogIndexUrl({
+          campaign: campaignSlug,
+          content: 'cta-blog',
+        }),
         items,
       },
     });

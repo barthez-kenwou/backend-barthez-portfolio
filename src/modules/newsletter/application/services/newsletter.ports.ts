@@ -20,4 +20,6 @@ export type NewsletterMailerPort = {
 
 export type NewsletterQueuePort = {
   enqueueFanout(campaignId: string): Promise<void>;
+  /** Schedule a welcome drip step (2 or 3) after `delayMs`. */
+  scheduleWelcomeStep?(subscriberId: string, step: 2 | 3, delayMs: number): Promise<void>;
 };

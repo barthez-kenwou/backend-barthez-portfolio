@@ -2,20 +2,27 @@
   var isEn = typeof locale !== 'undefined' && locale === 'en';
   var headline = isEn ? headlineEn : headlineFr;
   var body = isEn ? bodyEn : bodyFr;
-  var ctaLabel = isEn ? (ctaLabelEn || 'Read more') : (ctaLabelFr || 'Lire la suite');
+  var ctaLabel = isEn ? (ctaLabelEn || 'Continue reading') : (ctaLabelFr || 'Lire la suite');
   var pageTitle = headline;
 %>
-<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: isEn ? 'From Barthez' : 'De la part de Barthez', title: headline, previewText: typeof previewText !== 'undefined' ? previewText : headline }) %>
+<%- include('partials/newsletter-shell-open', { pageTitle: pageTitle, eyebrow: isEn ? 'Monthly note' : 'Note mensuelle', title: headline, previewText: typeof previewText !== 'undefined' ? previewText : headline }) %>
 <tr>
-  <td style="padding:36px 32px 28px;background-color:#0e0c11;">
+  <td style="padding:32px 28px 26px;background-color:#0e0c11;">
+    <p style="margin:0 0 14px;font-size:16px;line-height:1.7;color:#f7f7f7;">
+      <%= isEn ? 'Hello' : 'Bonjour' %>,
+    </p>
     <div style="font-size:15px;line-height:1.75;color:#948b9c;white-space:pre-wrap;"><%= body %></div>
     <% if (typeof ctaUrl !== 'undefined' && ctaUrl) { %>
-      <div style="text-align:center;margin:28px 0 8px;">
-        <a href="<%= ctaUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
+      <div style="text-align:center;margin:26px 0 8px;">
+        <a href="<%= ctaUrl %>" style="display:inline-block;background-color:#9f6adc;color:#ffffff;padding:13px 26px;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;border:1px solid #803ecc;">
           <%= ctaLabel %>
         </a>
       </div>
     <% } %>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.6;color:#f7f7f7;">
+      <%= isEn ? 'Kind regards,' : 'Cordialement,' %><br/>
+      <strong style="color:#ffffff;">Barthez Kenwou</strong>
+    </p>
   </td>
 </tr>
 <%- include('partials/newsletter-shell-close') %>

@@ -16,8 +16,13 @@ export const queueConfig = {
   maintenanceCron: fromEnv.get('MAINTENANCE_CRON').default('0 0 * * *').asString(),
   blacklistPurgeCron: fromEnv.get('BLACKLIST_PURGE_CRON').default('0 */6 * * *').asString(),
   auditPurgeCron: fromEnv.get('AUDIT_PURGE_CRON').default('15 3 * * *').asString(),
-  /** Mondays 09:00 — weekly newsletter digest of recent posts. */
-  newsletterDigestCron: fromEnv.get('NEWSLETTER_DIGEST_CRON').default('0 9 * * 1').asString(),
+  /** 1st of month 09:00 — monthly digest of posts from the last 30 days. */
+  newsletterDigestCron: fromEnv.get('NEWSLETTER_DIGEST_CRON').default('0 9 1 * *').asString(),
+  /**
+   * Auto email on every blog publish. Default off — conflicts with monthly AIEC cadence.
+   * Set NEWSLETTER_AUTO_BLOG_ALERT=true only for exceptional launches.
+   */
+  newsletterAutoBlogAlert: fromEnv.get('NEWSLETTER_AUTO_BLOG_ALERT').default('false').asBool(),
   auditRetentionDays: fromEnv.get('AUDIT_RETENTION_DAYS').default(365).asInt(),
 } as const;
 

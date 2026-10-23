@@ -53,6 +53,18 @@ export function createNewsletterQueueAdapter(): NewsletterQueuePort {
         },
       );
     },
+    async scheduleWelcomeStep(subscriberId: string, step: 2 | 3, delayMs: number) {
+      await heavyTasksQueue.add(
+        'newsletter-welcome-drip',
+        { subscriberId, step },
+        {
+          jobId: `newsletter-welcome-${step}-${subscriberId}`,
+          delay: delayMs,
+          removeOnComplete: 50,
+          removeOnFail: 100,
+        },
+      );
+    },
   };
 }
 
@@ -69,6 +81,27 @@ export function createBlogDigestSourceAdapter(): BlogDigestSourcePort {
         take: limit,
       });
       return rows.map(BlogMapper.toDomain);
+    },
+    async findPublishedBySlug(slug: string) {
+      const row = await prisma.blog.findFirst({
+        where: {
+          slug,
+          isPublished: true,
+          ...prismaNotDeleted,
+        },
+      });
+      return row ? BlogMapper.toDomain(row) : null;
+    },
+    async findTopViewedPublished(category?: string) {
+      const row = await prisma.blog.findFirst({
+        where: {
+          isPublished: true,
+          ...(category ? { category } : {}),
+          ...prismaNotDeleted,
+        },
+        orderBy: [{ views: 'desc' }, { date: 'desc' }],
+      });
+      return row ? BlogMapper.toDomain(row) : null;
     },
   };
 }
