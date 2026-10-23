@@ -120,7 +120,7 @@
     "chalk": "^5.6.0",
     "clamdjs": "^1.0.2",
     "clamscan": "^2.4.0",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "csurf": "^1.2.2",
@@ -233,9 +233,13 @@
     "brace-expansion": "^5.0.12",
     "cookie": "^0.7.2",
     "decode-uri-component": "^0.5.0",
-    "ip-address": "^10.7.2",
+    "ip-address": "^10.7.4",
     "moment": "^2.31.0",
     "fast-uri": "^3.1.8",
+    "compression": "^1.8.2",
+    "follow-redirects": "1.16.1",
+    "proxy-addr": "^2.0.8",
+    "source-map-js": "1.2.2",
     "markdownlint-cli2": {
       "js-yaml": "5.4.1",
       "markdown-it": "15.0.1"
