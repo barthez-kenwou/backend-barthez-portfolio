@@ -19,4 +19,20 @@ describe('formatErrorResponse', () => {
     expect(statusCode).toBe(413);
     expect(body.code).toBe('PAYLOAD_TOO_LARGE');
   });
+
+  it('maps TokenExpiredError to 401', () => {
+    const err = Object.assign(new Error('jwt expired'), { name: 'TokenExpiredError' });
+    const { statusCode, body } = formatErrorResponse(err, false);
+    expect(statusCode).toBe(401);
+    expect(body.code).toBe('UNAUTHORIZED');
+    expect(body.message).toBe('Access token expired');
+  });
+
+  it('maps JsonWebTokenError to 401', () => {
+    const err = Object.assign(new Error('invalid token'), { name: 'JsonWebTokenError' });
+    const { statusCode, body } = formatErrorResponse(err, false);
+    expect(statusCode).toBe(401);
+    expect(body.code).toBe('UNAUTHORIZED');
+    expect(body.message).toBe('Invalid access token');
+  });
 });

@@ -61,7 +61,7 @@ Missing or empty PEMs abort boot. HS256 `JWT_SECRET` is **not** used.
 
 - `AUTH_ENCRYPTION_KEY` is **required in production** (OAuth provider tokens and
   TOTP secrets at rest, AES-256-GCM).
-- `COOKIE_EXPIRES_IN` must be a duration (`7d`) or milliseconds. Align with
+- `COOKIE_EXPIRES_IN` must be a duration (`30d`) or milliseconds. Align with
   `JWT_REFRESH_EXPIRES_IN`.
 - Leave `COOKIE_DOMAIN` empty for host-only cookies unless you explicitly need a
   parent domain.
@@ -219,7 +219,7 @@ pasted into chat, tickets, or git.
 ## Security headers and cookies
 
 - Confirm `COOKIE_SECURE`, `COOKIE_SAME_SITE`, and domain settings for your
-  public URL. `COOKIE_EXPIRES_IN` is Express `maxAge` (use `7d`, not `2`).
+  public URL. `COOKIE_EXPIRES_IN` is Express `maxAge` (use `30d`, not `2`).
 - Enable CSRF protection when browser cookie flows require it
   (`ALLOW_CSRF_PROTECTION`). `GET /csrf-token` returns JSON only.
 - Keep Helmet / CSP report URI configured; monitor CSP reports.

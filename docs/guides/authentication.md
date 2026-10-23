@@ -50,9 +50,9 @@ session revoke. OAuth: [Adding an OAuth provider](./adding-oauth-provider.md).
 
 ## Cookies
 
-`COOKIE_EXPIRES_IN` is a duration (`7d`, `15m`, or milliseconds). Empty
+`COOKIE_EXPIRES_IN` is a duration (`30d`, `15m`, or milliseconds). Empty
 `COOKIE_DOMAIN` = host-only. Flags: `Secure`, `HttpOnly`, `SameSite`. Align
-cookie TTL with `JWT_REFRESH_EXPIRES_IN`.
+cookie TTL with `JWT_REFRESH_EXPIRES_IN` (default `30d`).
 
 A bare integer is milliseconds (Express `maxAge`). Do not set
 `COOKIE_EXPIRES_IN=2` expecting “2 hours”.

@@ -4,7 +4,7 @@
 import { fromEnv } from '../env';
 import { parseDurationMs } from '../parse-duration';
 
-const SEVEN_DAYS_MS = 7 * 86_400_000;
+const THIRTY_DAYS_MS = 30 * 86_400_000;
 const FIFTEEN_MINUTES_MS = 15 * 60_000;
 
 const nodeEnv = fromEnv.get('NODE_ENV').default('development').asString();
@@ -59,10 +59,10 @@ export const securityConfig = {
       | 'strict'
       | 'lax'
       | 'none',
-    /** Refresh-cookie lifetime. Align with JWT_REFRESH_EXPIRES_IN (default 7d). */
+    /** Refresh-cookie lifetime. Align with JWT_REFRESH_EXPIRES_IN (default 30d). */
     expiresInMs: parseDurationMs(
-      fromEnv.get('COOKIE_EXPIRES_IN').default('7d').asString(),
-      SEVEN_DAYS_MS,
+      fromEnv.get('COOKIE_EXPIRES_IN').default('30d').asString(),
+      THIRTY_DAYS_MS,
     ),
   },
 

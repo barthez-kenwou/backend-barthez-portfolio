@@ -4,6 +4,7 @@
  */
 import type { NextFunction, Response } from 'express';
 
+import type { UserJwtPayload } from '@/modules/auth/domain/types/auth.types';
 import blacklistService from '@/modules/auth/infrastructure/providers/blacklist.provider';
 import jwtService from '@/modules/auth/infrastructure/providers/jwt.service';
 import { PrismaUserRepository } from '@/modules/auth/infrastructure/repositories/prisma-user.repository';
@@ -86,7 +87,21 @@ export const authenticate = asyncHandler(
       throw AppError.unauthorized('Access token is required');
     }
 
-    const decoded = jwtService.verifyAccessToken(accessToken);
+    let decoded: UserJwtPayload;
+    try {
+      decoded = jwtService.verifyAccessToken(accessToken);
+    } catch (error) {
+      // Expired / malformed JWT must be 401 so SPA clients can silent-refresh.
+      // Leaving these as uncaught Error maps to HTTP 500 ("Internal server error").
+      const name = error instanceof Error ? error.name : '';
+      if (name === 'TokenExpiredError') {
+        throw AppError.unauthorized('Access token expired');
+      }
+      if (name === 'JsonWebTokenError' || name === 'NotBeforeError') {
+        throw AppError.unauthorized('Invalid access token');
+      }
+      throw error;
+    }
 
     if (!decoded.jti || (await blacklistService.isRevoked(decoded.jti))) {
       throw AppError.unauthorized('Token has been revoked');

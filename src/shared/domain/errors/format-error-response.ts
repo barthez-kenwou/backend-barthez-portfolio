@@ -60,6 +60,32 @@ export const formatErrorResponse = (
     };
   }
 
+  // jsonwebtoken — defense in depth if a caller forgets to map these to AppError
+  if (error instanceof Error) {
+    if (error.name === 'TokenExpiredError') {
+      return {
+        statusCode: 401,
+        body: {
+          success: false,
+          message: 'Access token expired',
+          code: 'UNAUTHORIZED',
+          ...requestIdField,
+        },
+      };
+    }
+    if (error.name === 'JsonWebTokenError' || error.name === 'NotBeforeError') {
+      return {
+        statusCode: 401,
+        body: {
+          success: false,
+          message: 'Invalid access token',
+          code: 'UNAUTHORIZED',
+          ...requestIdField,
+        },
+      };
+    }
+  }
+
   // body-parser / raw-body: PayloadTooLargeError (status 413, type entity.too.large)
   const legacyStatus =
     (error as { status?: unknown; statusCode?: unknown } | null)?.statusCode ??

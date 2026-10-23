@@ -14,7 +14,7 @@ export const authConfig = {
      */
     algorithm: 'RS256' as const,
     accessExpiresIn: fromEnv.get('JWT_ACCESS_EXPIRES_IN').default('15m').asString(),
-    refreshExpiresIn: fromEnv.get('JWT_REFRESH_EXPIRES_IN').default('7d').asString(),
+    refreshExpiresIn: fromEnv.get('JWT_REFRESH_EXPIRES_IN').default('30d').asString(),
     /**
      * Deprecated — not used for signing. Prefer JWT_ACCESS_EXPIRES_IN /
      * JWT_REFRESH_EXPIRES_IN. Kept so older .env files still parse.

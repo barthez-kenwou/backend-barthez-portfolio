@@ -26,7 +26,7 @@ export const validateRuntimeConfig = (): void => {
   }
 
   if (config.security.cookie.expiresInMs < 1_000) {
-    throw new Error('COOKIE_EXPIRES_IN resolves to less than 1 second — use a duration like 7d');
+    throw new Error('COOKIE_EXPIRES_IN resolves to less than 1 second — use a duration like 30d');
   }
 
   if (config.app.isProduction) {
